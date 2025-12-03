@@ -1,24 +1,55 @@
-
+import { useState, useEffect } from "react";
+import Loader from "../components/loader";
 
 export default function Homepage() {
+  const [status, setStatus] = useState("loading");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStatus("success");
+    }, 3000); // 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (status === "loading") {
+    return <Loader />;
+  }
+
   return (
     <>
-     
-
-      {/* Hero */}
-      <section className="min-h-[70vh] bg-gradient-to-b from-white to-gray-50 flex items-center">
+      {/* Main Content starts after 3 seconds */}
+      <section className="min-h-[70vh] bg-linear-to-b from-white to-gray-50 flex items-center">
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
             <h3 className="text-lg text-gray-500">Welcome to</h3>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">Increase Your Production <span className="text-red-500">10X</span></h1>
-            <p className="mt-4 text-gray-600 max-w-xl">We deliver industrial automation solutions that streamline production, reduce downtime, and improve product quality — fast and reliably.</p>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+              Increase Your Production <span className="text-red-500">10X</span>
+            </h1>
+            <p className="mt-4 text-gray-600 max-w-xl">
+              We deliver industrial automation solutions that streamline production, reduce downtime, and improve product quality — fast and reliably.
+            </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <a className="inline-flex items-center px-5 py-3 bg-red-500 text-white rounded-md shadow hover:bg-red-600" href="#quota">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"></path></svg>
+              <a
+                className="inline-flex items-center px-5 py-3 bg-red-500 text-white rounded-md shadow hover:bg-red-600"
+                href="#quota"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"></path>
+                </svg>
                 Get Quote
               </a>
-              <a className="inline-flex items-center px-5 py-3 bg-white border border-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-50" href="/store">
+              <a
+                className="inline-flex items-center px-5 py-3 bg-white border border-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-50"
+                href="/store"
+              >
                 Visit Store
               </a>
             </div>
@@ -26,7 +57,9 @@ export default function Homepage() {
 
           <div className="flex items-center justify-center">
             <div className="w-full max-w-lg bg-gradient-to-br from-gray-100 to-white rounded-2xl p-6 shadow-lg">
-              <div className="h-56 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">Illustration / Image</div>
+              <div className="h-56 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+                Illustration / Image
+              </div>
               <div className="mt-4 grid grid-cols-2 gap-4">
                 <div className="p-3 bg-white rounded border">PLC Integration</div>
                 <div className="p-3 bg-white rounded border">Robotics</div>
@@ -38,12 +71,14 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* What we do / Services */}
+      {/* What We Do Section */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-800">What We Do</h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">Designing and deploying tailored automation systems — from concept to commissioning.</p>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Designing and deploying tailored automation systems — from concept to commissioning.
+            </p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -63,7 +98,7 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Projects */}
+      {/* Projects Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
@@ -73,26 +108,38 @@ export default function Homepage() {
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">Project Image</div>
+              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                Project Image
+              </div>
               <div className="p-4">
                 <h3 className="font-semibold">Conveyor Line Modernization</h3>
-                <p className="text-sm text-gray-600 mt-2">Reduced downtime by 35% after automation and controls upgrade.</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Reduced downtime by 35% after automation and controls upgrade.
+                </p>
               </div>
             </div>
 
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">Project Image</div>
+              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                Project Image
+              </div>
               <div className="p-4">
                 <h3 className="font-semibold">Automated Sorting System</h3>
-                <p className="text-sm text-gray-600 mt-2">High-precision sorting for mixed SKU production.</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  High-precision sorting for mixed SKU production.
+                </p>
               </div>
             </div>
 
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">Project Image</div>
+              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                Project Image
+              </div>
               <div className="p-4">
                 <h3 className="font-semibold">Robotic Palletizing</h3>
-                <p className="text-sm text-gray-600 mt-2">Increased throughput and ergonomic safety improvements.</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Increased throughput and ergonomic safety improvements.
+                </p>
               </div>
             </div>
           </div>
@@ -110,9 +157,21 @@ export default function Homepage() {
           <div>
             <h4 className="font-semibold">Quick Links</h4>
             <ul className="mt-2 text-gray-400 text-sm space-y-1">
-              <li><a href="/store" className="hover:text-white">Store</a></li>
-              <li><a href="/about" className="hover:text-white">About</a></li>
-              <li><a href="/contact" className="hover:text-white">Contact</a></li>
+              <li>
+                <a href="/store" className="hover:text-white">
+                  Store
+                </a>
+              </li>
+              <li>
+                <a href="/about" className="hover:text-white">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="hover:text-white">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -123,8 +182,10 @@ export default function Homepage() {
           </div>
         </div>
 
-        <div className="mt-6 text-center text-gray-500 text-sm">&copy; 2024 Titec Automation. All rights reserved.</div>
+        <div className="mt-6 text-center text-gray-500 text-sm">
+          &copy; 2024 Titec Automation. All rights reserved.
+        </div>
       </footer>
     </>
-  )
+  );
 }

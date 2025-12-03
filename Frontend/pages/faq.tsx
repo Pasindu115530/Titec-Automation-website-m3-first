@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react'
+import { useState, type JSX } from 'react'
 
 const FAQS: { q: string; a: string }[] = [
     { q: 'What services do you provide?', a: 'We provide automation design, integration, PLC/HMI programming, and maintenance services.' },
