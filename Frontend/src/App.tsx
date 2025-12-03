@@ -29,7 +29,10 @@ function App() {
       </section>
 
       <section className="p-6">
-        <h1 className="text-2xl font-bold text-gray-800">WHAT WE DO</h1>
+        <div className='flex flex-col items-center'>
+          <h1 className="text-2xl font-bold text-gray-800">WHAT WE DO</h1>
+          <hr className='w-[5%] border-2 rounded-2xl border-red-600'/>
+        </div>
         <p className="mt-4 text-gray-600">
           We design and deploy industrial and factory automation solutions that streamline production,
           reduce downtime, and improve quality. Services include PLC/SCADA and HMI development, robotic
@@ -43,7 +46,10 @@ function App() {
       </section>
 
       <section className="p-6">
-        <h1 className="text-2xl font-bold text-gray-800">OUR PROJECTS</h1>
+        <div className='flex flex-col items-center'>
+          <h1 className="text-2xl font-bold text-gray-800">OUR PROJECTS</h1>
+          <hr className='w-[5%] border-2 rounded-2xl border-red-600'/>
+        </div>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {/* Placeholder for project images */}
           <div className="h-32 bg-gray-200 rounded shadow"></div>
