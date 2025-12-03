@@ -1,11 +1,55 @@
 @import "tailwindcss";
 
-/* Define master colors using CSS custom properties on :root */
+/* Project color system and small UI helpers */
 :root {
-	--base-red:#ff0000;
+	--primary-red: #C1272D;
+	--primary-blue: #0C2340;
+	--neutral-gray-light: #F5F5F5;
+	--neutral-gray: #6B7280;
+	--blue-hover: #1A3A5F;
+
+	--background: #FFFFFF;
 }
 
-/* Optional: some base styles to see it working */
+/* Small global adjustments and component helpers */
 @layer base {
 	html, body { height: 100%; }
+
+	/* Header background uses variable so the theme can be changed easily */
+	.site-header { background: var(--background); }
+
+	/* Logo: constrain huge images while keeping aspect ratio */
+	.logo-img {
+		display: block;
+		max-height: 56px;
+		max-width: 220px;
+		width: auto;
+		height: auto;
+		object-fit: contain;
+	}
+
+	/* Generic image containment utility for any oversized image */
+	.img-contain {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		object-fit: contain;
+	}
+
+	/* Title and link colors using the new tokens */
+	.site-title { color: var(--primary-blue); }
+	.site-title:hover { color: var(--blue-hover); }
+
+	.nav-link { color: var(--neutral-gray); }
+	.nav-link:hover { color: var(--primary-blue); }
+
+	/* Primary call-to-action button */
+	.btn-primary {
+		background: var(--primary-red);
+		color: #ffffff;
+	}
+	.btn-primary:hover { filter: brightness(0.95); }
+
+	/* Muted small text */
+	.muted { color: var(--neutral-gray); }
 }

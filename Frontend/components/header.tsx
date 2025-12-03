@@ -2,25 +2,25 @@ import { Link } from 'react-router-dom'
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm">
+    <header className="site-header shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-6">
-        <img src="/logo.png" className="h-full" alt="logo" />
+        <img src="/logo.jpg" className="logo-img" alt="logo" />
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded flex items-center justify-center text-white font-bold">T</div>
+          
           <div>
-            <Link to="/" className="text-lg font-semibold text-gray-800 hover:text-gray-900">Titec Automation</Link>
-            <div className="text-xs text-gray-400">Industrial Automation</div>
+            <Link to="/" className="text-lg font-semibold site-title">Titec Automation</Link>
+            <div className="text-xs muted">Industrial Automation</div>
           </div>
         </div>
 
         {/* Navigation - desktop */}
         <nav className="hidden md:flex ml-6 flex-1">
           <ul className="flex gap-6 items-center text-gray-600 font-medium">
-            <li><Link className="hover:text-blue-600" to="/">Home</Link></li>
-            <li><Link className="hover:text-blue-600" to="/store">Store</Link></li>
-            <li><Link className="hover:text-blue-600" to="/about">About</Link></li>
-            <li><Link className="hover:text-blue-600" to="/contact">Contact</Link></li>
-            <li><Link className="hover:text-blue-600" to="/faq">FAQ</Link></li>
+            <li><Link className="nav-link" to="/">Home</Link></li>
+            <li><Link className="nav-link" to="/store">Store</Link></li>
+            <li><Link className="nav-link" to="/about">About</Link></li>
+            <li><Link className="nav-link" to="/contact">Contact</Link></li>
+            <li><Link className="nav-link" to="/faq">FAQ</Link></li>
           </ul>
         </nav>
 
@@ -31,7 +31,7 @@ export default function Header() {
             <input className="bg-transparent outline-none text-sm text-gray-700" placeholder="Search products or services" />
           </div>
 
-          <Link to="/store" className="hidden md:inline-block px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Visit Store</Link>
+          <Link to="/store" className="hidden md:inline-block px-4 py-2 rounded-md btn-primary">Visit Store</Link>
 
           {/* Mobile hamburger (visual only) */}
           <button aria-label="menu" className="md:hidden p-2 rounded-md bg-gray-100">
