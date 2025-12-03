@@ -7,7 +7,7 @@ export default function Homepage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStatus("success");
-    }, 3000); // 3 seconds
+    }, 2000); // 2 seconds
 
     return () => clearTimeout(timer);
   }, []);
@@ -19,18 +19,20 @@ export default function Homepage() {
   return (
     <>
       {/* Main Content starts after 3 seconds */}
-      <section className="min-h-[70vh] bg-linear-to-b from-white to-gray-50 flex items-center">
-        <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h3 className="text-lg text-gray-500">Welcome to</h3>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-              Increase Your Production <span className="text-red-500">10X</span>
+      <section className="min-h-[70vh] bg-linear-to-b from-white to-gray-50 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
+          <div className="text-center">
+            <h3 className="text-lg font-bold" style={{ color: '#0C2340' }}>WELCOME!</h3>
+            <h1 className="text-4xl md:text-6xl font-semibold" style={{ color: '#0C2340', lineHeight: '1.1' }} tracking-tight>
+              Transform Your Workflow with <br/> Next-Level Precision Robotics <br/> <span className="text-red-500">Smarter. Faster. Reliable</span>
             </h1>
-            <p className="mt-4 text-gray-600 max-w-xl">
-              We deliver industrial automation solutions that streamline production, reduce downtime, and improve product quality — fast and reliably.
+            <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
+              We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
+               enhance product quality. <strong>With years of expertise and successful collaborations</strong> with leading global brands, we provide fast, reliable, 
+               and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
             </p>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 className="inline-flex items-center px-5 py-3 bg-red-500 text-white rounded-md shadow hover:bg-red-600"
                 href="#quota"
