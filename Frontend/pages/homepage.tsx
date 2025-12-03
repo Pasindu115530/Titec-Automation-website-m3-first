@@ -19,7 +19,16 @@ export default function Homepage() {
   return (
     <>
       {/* Main Content starts after 3 seconds */}
-      <section className="min-h-[70vh] bg-linear-to-b from-white to-gray-50 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <section
+        className="min-h-[90vh] bg-linear-to-b from-white to-gray-20 flex items-center"
+        style={{
+          fontFamily: 'Poppins, sans-serif',
+          backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,1) 20%, rgba(255,255,255,0) 195%), url('/src/assets/hero-bg.png')",
+          backgroundSize: '100% 1120px, 120%',
+          backgroundPosition: 'top left, center -250px',
+          backgroundRepeat: 'no-repeat, no-repeat',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
             <h3 className="text-lg font-bold" style={{ color: '#0C2340' }}>WELCOME!</h3>
