@@ -24,7 +24,7 @@ export default function Homepage() {
         className="relative min-h-[90vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
       >
         <div className="absolute inset-0 z-0 bg-[url('/src/assets/hero-bg.png')] bg-no-repeat bg-cover bg-center opacity-[10%] pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
+        <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
             <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME!</h3>
             <h1 className="text-4xl md:text-6xl font-semibold text-(--primary-blue) leading-tight tracking-tight">
@@ -60,19 +60,36 @@ export default function Homepage() {
               </a>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="flex items-center justify-center">
-            <div className="w-full max-w-lg bg-(--card-bg-gray) rounded-2xl p-6 shadow-lg">
-              <div className="h-56 bg-(--card-border-gray) rounded-lg flex items-center justify-center text-gray-400">
-                Illustration / Image
+      {/* Our Clients Section */}
+      <section className="w-full bg-white py-12">
+        <div className="w-full">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-gray-800">Our Clients</h2>
+            <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
+            {[
+              "CBL", "Jat+", "Elcado", "Everest",
+              "WinsLanka", "LCT Lanka", "Sky Roofing", "Motherson",
+              "ACME Lanka Distilleries", "Sierra Cables", "Lanka Weld Mesh", "Texlan"
+            ].map((client, index) => (
+              <div key={index} className="relative group w-full h-48 border border-gray-100 overflow-hidden">
+                <img
+                  src={`https://placehold.co/600x400/f3f4f6/4b5563?text=${encodeURIComponent(client)}`}
+                  alt={client}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
+                    View Project
+                  </a>
+                </div>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <div className="p-3 bg-white rounded border">PLC Integration</div>
-                <div className="p-3 bg-white rounded border">Robotics</div>
-                <div className="p-3 bg-white rounded border">HMI / SCADA</div>
-                <div className="p-3 bg-white rounded border">Support</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

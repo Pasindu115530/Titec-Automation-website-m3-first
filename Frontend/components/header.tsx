@@ -2,13 +2,16 @@ import { Link, useLocation } from 'react-router-dom'
 
 export default function Header() {
   const location = useLocation()
-  
+
   return (
-    <header className="site-header shadow-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <header
+      className={`site-header ${location.pathname === '/' ? 'absolute top-0 left-0 w-full z-50 bg-transparent' : 'shadow-sm'}`}
+      style={{ fontFamily: 'Poppins, sans-serif' }}
+    >
       <div className="max-w-full mx-auto px-8 py-6 flex items-center gap-15">
         <img src="../src/assets/titec-logo.svg" className="logo-img" alt="logo" width="64" height="64" style={{ transform: 'scale(2.8)' }} />
         <div className="flex items-center gap-3">
-          
+
           <div>
             <Link to="/" className="text-lg font-semibold site-title">TiTec Automation</Link>
             <div className="text-xs muted">Industrial Automation</div>
