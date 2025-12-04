@@ -20,20 +20,14 @@ export default function Homepage() {
     <>
       {/* Main Content starts after 3 seconds */}
       <section
-        className="min-h-[90vh] bg-linear-to-b from-white to-gray-20 flex items-center"
-        style={{
-          fontFamily: 'Poppins, sans-serif',
-          backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,1) 20%, rgba(255,255,255,0) 195%), url('/src/assets/hero-bg.png')",
-          backgroundSize: '100% 1120px, 120%',
-          backgroundPosition: 'top left, center -250px',
-          backgroundRepeat: 'no-repeat, no-repeat',
-        }}
+        className="relative min-h-[90vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
       >
-        <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
+        <div className="absolute inset-0 z-0 bg-[url('/src/assets/hero-bg.png')] bg-no-repeat bg-cover bg-center opacity-[10%] pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
-            <h3 className="text-lg font-bold" style={{ color: '#0C2340' }}>WELCOME!</h3>
-            <h1 className="text-4xl md:text-6xl font-semibold" style={{ color: '#0C2340', lineHeight: '1.1' }} tracking-tight>
-              Transform Your Workflow with <br/> Next-Level Precision Robotics <br/> <span className="text-red-500">Smarter. Faster. Reliable</span>
+            <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME!</h3>
+            <h1 className="text-4xl md:text-6xl font-semibold text-(--primary-blue) leading-tight tracking-tight">
+              Transform Your Workflow with <br/> Next-Level Precision Robotics <br/> <span className="text-(--primary-red)">Smarter. Faster. Reliable</span>
             </h1>
             <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
               We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
@@ -43,7 +37,7 @@ export default function Homepage() {
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
-                className="inline-flex items-center px-5 py-3 bg-red-500 text-white rounded-md shadow hover:bg-red-600"
+                className="inline-flex items-center px-5 py-3 bg-(--primary-red) text-white rounded-md shadow hover:bg-(--cta-hover-red)"
                 href="#quota"
               >
                 <svg
@@ -58,7 +52,7 @@ export default function Homepage() {
                 Get Quote
               </a>
               <a
-                className="inline-flex items-center px-5 py-3 bg-white border border-gray-200 text-gray-800 rounded-md shadow hover:bg-gray-50"
+                className="inline-flex items-center px-5 py-3 bg-(--background) border border-(--card-border-gray) text-gray-800 rounded-md shadow hover:bg-gray-50"
                 href="/store"
               >
                 Visit Store
@@ -67,8 +61,8 @@ export default function Homepage() {
           </div>
 
           <div className="flex items-center justify-center">
-            <div className="w-full max-w-lg bg-gradient-to-br from-gray-100 to-white rounded-2xl p-6 shadow-lg">
-              <div className="h-56 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
+            <div className="w-full max-w-lg bg-(--card-bg-gray) rounded-2xl p-6 shadow-lg">
+              <div className="h-56 bg-(--card-border-gray) rounded-lg flex items-center justify-center text-gray-400">
                 Illustration / Image
               </div>
               <div className="mt-4 grid grid-cols-2 gap-4">
