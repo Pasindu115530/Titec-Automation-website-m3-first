@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Loader from "../components/loader";
+import Footer from "../components/footer";
 
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
@@ -7,7 +8,7 @@ export default function Homepage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStatus("success");
-    }, 3000); // 2 seconds
+    }, 2000); // 2 seconds
 
     return () => clearTimeout(timer);
   }, []);
@@ -27,17 +28,17 @@ export default function Homepage() {
           <div className="text-center">
             <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME!</h3>
             <h1 className="text-4xl md:text-6xl font-semibold text-(--primary-blue) leading-tight tracking-tight">
-              Transform Your Workflow with <br/> Next-Level Precision Robotics <br/> <span className="text-(--primary-red)">Smarter. Faster. Reliable</span>
+              Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--primary-red)">Smarter. Faster. Reliable</span>
             </h1>
             <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
               We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
-               enhance product quality. <strong>With years of expertise and successful collaborations</strong> with leading global brands, we provide fast, reliable, 
-               and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
+              enhance product quality. <strong>With years of expertise and successful collaborations</strong> with leading global brands, we provide fast, reliable,
+              and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
             </p>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
-                className="inline-flex items-center px-5 py-3 bg-(--primary-red) text-white rounded-md shadow hover:bg-(--cta-hover-red)"
+                className="inline-flex items-center px-5 py-3 bg-(--primary-red) text-white rounded-4xl shadow hover:bg-(--cta-hover-red) transition"
                 href="/contact"
               >
                 <svg
@@ -52,7 +53,7 @@ export default function Homepage() {
                 Get Quote
               </a>
               <a
-                className="inline-flex items-center px-5 py-3 bg-(--background) border border-(--card-border-gray) text-gray-800 rounded-md shadow hover:bg-gray-50"
+                className="inline-flex items-center px-5 py-3 border-4 border(--primary-red) text-(--primary-red) rounded-4xl shadow hover:bg-(--cta-hover-red) hover:text-white hover:border-(--cta-hover-red)"
                 href="/store"
               >
                 Visit Store
@@ -152,45 +153,7 @@ export default function Homepage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <h4 className="font-semibold">Titec Automation</h4>
-            <p className="text-gray-400 mt-2 text-sm">Industrial automation solutions and services.</p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold">Quick Links</h4>
-            <ul className="mt-2 text-gray-400 text-sm space-y-1">
-              <li>
-                <a href="/store" className="hover:text-white">
-                  Store
-                </a>
-              </li>
-              <li>
-                <a href="/about" className="hover:text-white">
-                  About
-                </a>
-              </li>
-              <li>
-                <a href="/contact" className="hover:text-white">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold">Contact</h4>
-            <p className="text-gray-400 text-sm mt-2">Email: info@titec-automation.example</p>
-            <p className="text-gray-400 text-sm">Phone: +1 234 567 890</p>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center text-gray-500 text-sm">
-          &copy; 2024 Titec Automation. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

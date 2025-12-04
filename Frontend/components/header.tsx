@@ -5,7 +5,7 @@ export default function Header() {
   
   return (
     <header className="site-header shadow-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
-      <div className="max-w-7xl mx-auto px-8 py-6 flex items-center gap-15">
+      <div className="max-w-full mx-auto px-8 py-6 flex items-center gap-15">
         <img src="../src/assets/titec-logo.svg" className="logo-img" alt="logo" width="64" height="64" style={{ transform: 'scale(2.8)' }} />
         <div className="flex items-center gap-3">
           
