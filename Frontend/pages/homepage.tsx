@@ -38,7 +38,7 @@ export default function Homepage() {
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 className="inline-flex items-center px-5 py-3 bg-(--primary-red) text-white rounded-md shadow hover:bg-(--cta-hover-red)"
-                href="#quota"
+                href="/contact"
               >
                 <svg
                   className="w-5 h-5 mr-2"
