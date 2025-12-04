@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react'
+
 
 const PRODUCTS = [
     { id: 'p1', name: 'Industrial Sensor', price: '$149', desc: 'Robust sensor for harsh environments.' },
@@ -6,7 +6,7 @@ const PRODUCTS = [
     { id: 'p3', name: 'HMI Panel 7"', price: '$299', desc: '7-inch touch HMI with pre-built templates.' },
 ]
 
-export default function Store(): JSX.Element {
+export default function Store() {
     return (
         <main className="max-w-6xl mx-auto px-6 py-12">
             <div className="flex items-center justify-between mb-6">

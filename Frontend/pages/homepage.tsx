@@ -7,7 +7,7 @@ export default function Homepage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setStatus("success");
-    }, 2000); // 2 seconds
+    }, 3000); // 2 seconds
 
     return () => clearTimeout(timer);
   }, []);

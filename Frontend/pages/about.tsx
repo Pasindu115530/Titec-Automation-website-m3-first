@@ -1,6 +1,6 @@
-import React, { type JSX } from 'react'
 
-export default function About(): JSX.Element {
+
+export default function About() {
     return (
         <main className="max-w-5xl mx-auto px-6 py-12">
             <section className="text-center mb-10">

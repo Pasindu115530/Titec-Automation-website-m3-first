@@ -1,26 +1,35 @@
-export default function Loader() {
+interface LoaderProps {
+    size?: number | string;
+    speed?: number;
+}
+
+export default function Loader({ size = 400, speed = 3 }: LoaderProps) {
+    // Ensure size is a valid CSS value
+    const sizeValue = typeof size === 'number' ? `${size}px` : size;
+
     return (
         <div className="w-full h-screen fixed top-0 left-0 bg-black/40 flex items-center justify-center z-[99999]">
-
-            <div className="relative w-[130px] h-[130px] flex items-center justify-center">
-
-                {/* Animated Gradient Ring */}
-                <div className="
-                    absolute w-full h-full rounded-full animate-spin
-                    bg-conic-gradient from-blue-500 via-red-500 to-blue-500
-                    p-[4px]
-                ">
-                    <div className="w-full h-full bg-transparent rounded-full"></div>
-                </div>
-
-                {/* Logo with gentle pulse */}
+            <div
+                className="relative flex items-center justify-center"
+                style={{ width: sizeValue, height: sizeValue }}
+            >
+                {/* Static Logo */}
                 <img
-                    src="/logo.jpg"
+                    src="/loader-logo.png"
                     alt="Logo"
-                    className="w-[70px] h-[70px] object-contain rounded-lg animate-pulse"
+                    className="absolute w-[500px] h-[500px] object-contain"
                 />
+                
+                {/* Spinning Gear */}
+                <div className="absolute left-0 top-[47%] -translate-y-1/2 w-[20%] h-[20%]">
+                    <img
+                        src="/loader-gear.png"
+                        alt="Loading..."
+                        className="w-full h-full object-contain animate-spin"
+                        style={{ animationDuration: `${speed}s` }}
+                    />
+                </div>
             </div>
-
         </div>
     );
 }
