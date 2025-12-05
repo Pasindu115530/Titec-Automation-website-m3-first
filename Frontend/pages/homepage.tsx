@@ -28,7 +28,7 @@ export default function Homepage() {
           <div className="text-center">
             <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME!</h3>
             <h1 className="text-4xl md:text-6xl font-semibold text-(--primary-blue) leading-tight tracking-tight">
-              Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--primary-red)">Smarter. Faster. Reliable</span>
+              Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--secondary-blue)">Smarter. Faster. Reliable</span>
             </h1>
             <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
               We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
@@ -36,9 +36,9 @@ export default function Homepage() {
               and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
             </p>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
               <a
-                className="inline-flex items-center px-5 py-3 bg-(--primary-red) text-white rounded-4xl shadow hover:bg-(--cta-hover-red) transition"
+                className="button-1"
                 href="/contact"
               >
                 <svg
@@ -53,7 +53,7 @@ export default function Homepage() {
                 Get Quote
               </a>
               <a
-                className="inline-flex items-center px-5 py-3 border-4 border(--primary-red) text-(--primary-red) rounded-4xl shadow hover:bg-(--cta-hover-red) hover:text-white hover:border-(--cta-hover-red)"
+                className="button-2"
                 href="/store"
               >
                 Visit Store
