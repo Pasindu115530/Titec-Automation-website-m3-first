@@ -21,13 +21,13 @@ export default function Homepage() {
     <>
       {/* Main Content starts after 3 seconds */}
       <section
-        className="relative min-h-[90vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
+        className="relative min-h-[50vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
       >
-        <div className="absolute inset-0 z-0 bg-[url('/src/assets/hero-bg.png')] bg-no-repeat bg-cover bg-center opacity-[10%] pointer-events-none" />
+        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/src/assets/hero-bg1.png')] bg-no-repeat bg-center opacity-[100%] pointer-events-none" />
         <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
-            <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME!</h3>
-            <h1 className="text-4xl md:text-6xl font-semibold text-(--primary-blue) leading-tight tracking-tight">
+            <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME !</h3>
+            <h1 className="text-4xl md:text-6xl font-semibold text-(--blue-hover) leading-tight tracking-tight">
               Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--secondary-blue)">Smarter. Faster. Reliable</span>
             </h1>
             <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
@@ -67,29 +67,52 @@ export default function Homepage() {
       <section className="w-full bg-white py-12">
         <div className="w-full">
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-gray-800">Our Clients</h2>
+            <h1 className="text-2xl font-bold text-gray-800 section-title">Our Clients</h1>
             <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
-            {[
-              "CBL", "Jat+", "Elcado", "Everest",
-              "WinsLanka", "LCT Lanka", "Sky Roofing", "Motherson",
-              "ACME Lanka Distilleries", "Sierra Cables", "Lanka Weld Mesh", "Texlan"
-            ].map((client, index) => (
-              <div key={index} className="relative group w-full h-48 border border-gray-100 overflow-hidden">
-                <img
-                  src={`https://placehold.co/600x400/f3f4f6/4b5563?text=${encodeURIComponent(client)}`}
-                  alt={client}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
-                    View Project
-                  </a>
+          <div className="clients-scroll-container">
+            <div className="clients-scroll-track">
+              {[
+                { name: "CBL", logo: "/src/assets/clients/cbl.png" },
+                { name: "Jat+", logo: "/src/assets/clients/JAT.png" },
+                { name: "Elcado", logo: "/src/assets/clients/elcado.png" },
+                { name: "Everest", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Everest" },
+                { name: "WinsLanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=WinsLanka" },
+                { name: "LCT Lanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=LCT+Lanka" },
+                { name: "Sky Roofing", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sky+Roofing" },
+                { name: "Motherson", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Motherson" },
+                { name: "ACME Lanka Distilleries", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=ACME" },
+                { name: "Sierra Cables", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sierra" },
+                { name: "Lanka Weld Mesh", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Lanka+Weld" },
+                { name: "Texlan", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Texlan" },
+                { name: "CBL", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=CBL" },
+                { name: "Jat+", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Jat+" },
+                { name: "Elcado", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Elcado" },
+                { name: "Everest", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Everest" },
+                { name: "WinsLanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=WinsLanka" },
+                { name: "LCT Lanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=LCT+Lanka" },
+                { name: "Sky Roofing", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sky+Roofing" },
+                { name: "Motherson", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Motherson" },
+                { name: "ACME Lanka Distilleries", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=ACME" },
+                { name: "Sierra Cables", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sierra" },
+                { name: "Lanka Weld Mesh", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Lanka+Weld" },
+                { name: "Texlan", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Texlan" }
+              ].map((client, index) => (
+                <div key={index} className="client-item relative group h-32 border border-gray-100 overflow-hidden bg-white flex items-center justify-center">
+                  <img
+                    src={client.logo}
+                    alt={client.name}
+                    className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
+                      View Project
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -98,7 +121,7 @@ export default function Homepage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800">What We Do</h2>
+            <h2 className="text-2xl font-bold text-gray-800 section-title">What We Do</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Designing and deploying tailored automation systems — from concept to commissioning.
             </p>
@@ -125,7 +148,7 @@ export default function Homepage() {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800">Our Projects</h2>
+            <h2 className="text-2xl font-bold text-gray-800 section-title">Our Projects</h2>
             <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
           </div>
 

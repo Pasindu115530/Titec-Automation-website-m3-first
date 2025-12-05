@@ -5,17 +5,17 @@ export default function Header() {
 
   return (
     <header
-      className={`site-header ${location.pathname === '/' ? 'absolute top-0 left-0 w-full z-50 bg-transparent' : 'shadow-sm'}`}
-      style={{ fontFamily: 'Poppins, sans-serif' }}
+      className={`site-header glass-effect ${location.pathname === '/' ? 'absolute top-0 left-1/2 z-50 m-4 -translate-x-1/2' : 'shadow-sm relative'}`}
+      style={{ fontFamily: 'Poppins, sans-serif', maxWidth: 'calc(100% - 2rem)' }}
     >
-      <div className="max-w-full mx-auto px-16 py-6 flex items-center gap-15">
+      <div className="mx-auto px-45 py-4 flex items-center w-full gap-25">
         <img src="../src/assets/titec-logo.svg" className="logo-img" alt="TiTEC-Automation-Solutions-logo" width="64" height="64" style={{ transform: 'scale(2.8)' }} />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-12">
 
-          <div>
+          {/* <div>
             <Link to="/" className="text-lg font-semibold site-title">TiTec Automation</Link>
             <div className="text-xs muted">Industrial Automation</div>
-          </div>
+          </div> */}
         </div>
 
         {/* Navigation - desktop */}
@@ -31,12 +31,12 @@ export default function Header() {
 
         {/* Actions */}
         <div className="ml-auto flex items-center gap-4">
-          <div className="hidden md:flex items-center bg-gray-100 rounded-md px-3 py-1.5 gap-1">
+          {/* <div className="hidden md:flex items-center bg-gray-100 rounded-md px-3 py-1.5 gap-1">
             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 19a8 8 0 100-16 8 8 0 000 16z"></path></svg>
             <input className="bg-transparent outline-none text-sm text-gray-700" placeholder="Search products or services" />
-          </div>
+          </div> */}
 
-          <Link to="/store" className="hidden md:inline-block px-4 py-2 rounded-md btn-primary">Visit Store</Link>
+          <Link to="/store" className="hidden md:inline-block px-8 py-0.5 rounded-md btn-primary whitespace-nowrap">Visit Store</Link>
 
           {/* Mobile hamburger (visual only) */}
           <button aria-label="menu" className="md:hidden p-2 rounded-md bg-gray-100">
