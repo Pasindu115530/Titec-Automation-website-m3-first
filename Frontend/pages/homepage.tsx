@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import Loader from "../components/loader";
 import Footer from "../components/footer";
+import { clients } from "../src/assets/clients/clients";
+
+interface Client {
+  name: string;
+  logo: string;
+}
 
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
@@ -73,32 +79,7 @@ export default function Homepage() {
 
           <div className="clients-scroll-container">
             <div className="clients-scroll-track">
-              {[
-                { name: "CBL", logo: "/src/assets/clients/cbl.png" },
-                { name: "Jat+", logo: "/src/assets/clients/JAT.png" },
-                { name: "Elcado", logo: "/src/assets/clients/elcado.png" },
-                { name: "Everest", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Everest" },
-                { name: "WinsLanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=WinsLanka" },
-                { name: "LCT Lanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=LCT+Lanka" },
-                { name: "Sky Roofing", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sky+Roofing" },
-                { name: "Motherson", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Motherson" },
-                { name: "ACME Lanka Distilleries", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=ACME" },
-                { name: "Sierra Cables", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sierra" },
-                { name: "Lanka Weld Mesh", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Lanka+Weld" },
-                { name: "Texlan", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Texlan" },
-                { name: "CBL", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=CBL" },
-                { name: "Jat+", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Jat+" },
-                { name: "Elcado", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Elcado" },
-                { name: "Everest", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Everest" },
-                { name: "WinsLanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=WinsLanka" },
-                { name: "LCT Lanka", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=LCT+Lanka" },
-                { name: "Sky Roofing", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sky+Roofing" },
-                { name: "Motherson", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Motherson" },
-                { name: "ACME Lanka Distilleries", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=ACME" },
-                { name: "Sierra Cables", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Sierra" },
-                { name: "Lanka Weld Mesh", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Lanka+Weld" },
-                { name: "Texlan", logo: "https://via.placeholder.com/200x100/f3f4f6/4b5563?text=Texlan" }
-              ].map((client, index) => (
+              {clients.map((client: Client, index) => (
                 <div key={index} className="client-item relative group h-32 border border-gray-100 overflow-hidden bg-white flex items-center justify-center">
                   <img
                     src={client.logo}
