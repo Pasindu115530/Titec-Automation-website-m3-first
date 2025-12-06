@@ -36,7 +36,7 @@ export default function Header() {
             <input className="bg-transparent outline-none text-sm text-gray-700" placeholder="Search products or services" />
           </div> */}
 
-          <Link to="/store" className="hidden md:inline-block px-8 py-0.5 rounded-md btn-primary whitespace-nowrap">Visit Store</Link>
+          <Link to="/store" className="button-1">Visit Store</Link>
 
           {/* Mobile hamburger (visual only) */}
           <button aria-label="menu" className="md:hidden p-2 rounded-md bg-gray-100">

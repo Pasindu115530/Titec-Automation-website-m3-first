@@ -1,10 +1,16 @@
 import React, { useState, type JSX } from 'react'
 import Footer from "../components/footer";
+import { Map, APIProvider, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
 
 export default function Contact(): JSX.Element {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState('')
+
+    const defaultCenter = {
+        lat: 7.183163519396652,
+        lng: 79.93233839777095
+    }
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -43,7 +49,25 @@ export default function Contact(): JSX.Element {
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Send Message</button>
                     </div>
                 </form>
+            </main>
 
+            
+            <section className='w-full h-[75vh]'>
+                    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                        <Map
+                            defaultCenter={defaultCenter}
+                            defaultZoom={13}
+                            mapId={import.meta.env.VITE_MAP_ID}
+                        >
+                            <AdvancedMarker
+                                key={'TiTec_Location'}
+                                position={defaultCenter}
+                                title={"Titec Automation"}>
+                                <Pin background={'red'} glyphColor={'#000'} borderColor={'#000'} />
+                            </AdvancedMarker>
+                        </Map>
+                    </APIProvider>
+                </section>
                 <section className="mt-10">
                     <h2 className="text-xl font-semibold mb-2">Other ways to contact</h2>
                     <ul className="text-gray-600">
@@ -51,7 +75,6 @@ export default function Contact(): JSX.Element {
                         <li>Phone: <a href="tel:+1234567890" className="text-blue-600">+1 234 567 890</a></li>
                     </ul>
                 </section>
-            </main>
             <Footer />
         </>
     )

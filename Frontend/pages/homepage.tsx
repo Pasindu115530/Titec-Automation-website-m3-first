@@ -29,7 +29,7 @@ export default function Homepage() {
       <section
         className="relative min-h-[50vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
       >
-        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/src/assets/hero-bg1.png')] bg-no-repeat bg-center opacity-[100%] pointer-events-none" />
+        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/src/assets/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
         <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
             <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME !</h3>
@@ -73,7 +73,7 @@ export default function Homepage() {
       <section className="w-full bg-white py-12">
         <div className="w-full">
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-gray-800 section-title">Our Clients</h1>
+            <h1 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">CLIENTS</span></h1>
             <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
           </div>
 
@@ -102,7 +102,7 @@ export default function Homepage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-gray-800 section-title">What We Do</h2>
+            <h2 className="text-4xl font-bold text-gray-800 section-title"><span className="text-(--secondary-blue)">WHAT</span> We Do</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Designing and deploying tailored automation systems — from concept to commissioning.
             </p>
@@ -129,7 +129,7 @@ export default function Homepage() {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-gray-800 section-title">Our Projects</h2>
+            <h2 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">PROJECTS</span></h2>
             <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
           </div>
 
