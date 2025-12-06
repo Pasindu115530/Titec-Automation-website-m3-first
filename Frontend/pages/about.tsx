@@ -35,7 +35,7 @@ export default function About() {
                 </section>
 
                 <section className="mt-12">
-                    <h2 className="text-2xl font-bold mb-4">Meet the Team</h2>
+                    <h2 className="text-4xl font-bold mb-4">Meet the Team</h2>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         <div className="p-4 bg-white rounded-lg shadow-sm">
                             <div className="h-24 w-24 bg-gray-200 rounded-full mb-3" />

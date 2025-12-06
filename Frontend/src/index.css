@@ -224,7 +224,7 @@
 			transform: translateX(0);
 		}
 		100% {
-			transform: translateX(-100%);
+			transform: translateX(-50%);
 		}
 	}
 
@@ -240,7 +240,6 @@
 		display: flex;
 		gap: 1rem;
 		animation: scroll-clients 30s linear infinite;
-		min-width: 200%;
 	}
 
 	.clients-scroll-track:hover {

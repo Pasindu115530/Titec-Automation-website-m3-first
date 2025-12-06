@@ -73,14 +73,14 @@ export default function Homepage() {
       <section className="w-full bg-white py-12">
         <div className="w-full">
           <div className="text-center mb-10">
-            <h1 className="text-2xl font-bold text-gray-800 section-title">Our Clients</h1>
+            <h1 className="text-4xl font-bold text-gray-800 section-title">Our Clients</h1>
             <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
           </div>
 
           <div className="clients-scroll-container">
             <div className="clients-scroll-track">
               {clients.map((client: Client, index) => (
-                <div key={index} className="client-item relative group h-32 border border-gray-100 overflow-hidden bg-white flex items-center justify-center">
+                <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
                   <img
                     src={client.logo}
                     alt={client.name}
@@ -102,7 +102,7 @@ export default function Homepage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 section-title">What We Do</h2>
+            <h2 className="text-4xl font-bold text-gray-800 section-title">What We Do</h2>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Designing and deploying tailored automation systems — from concept to commissioning.
             </p>
@@ -129,7 +129,7 @@ export default function Homepage() {
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 section-title">Our Projects</h2>
+            <h2 className="text-4xl font-bold text-gray-800 section-title">Our Projects</h2>
             <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
           </div>
 
