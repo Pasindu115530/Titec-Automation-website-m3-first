@@ -233,6 +233,7 @@
 		overflow: hidden;
 		width: 100%;
 		gap: 1rem;
+		box-shadow: rgba(16,75,147,0.18) 0 10px 30px;
 	}
 
 	.clients-scroll-track {

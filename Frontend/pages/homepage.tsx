@@ -135,7 +135,7 @@ export default function Homepage() {
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
                 Project Image
               </div>
               <div className="p-4">
@@ -147,7 +147,7 @@ export default function Homepage() {
             </div>
 
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
                 Project Image
               </div>
               <div className="p-4">
@@ -159,7 +159,7 @@ export default function Homepage() {
             </div>
 
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
                 Project Image
               </div>
               <div className="p-4">
