@@ -28,6 +28,34 @@ transformation for enterprise clients
 
 ----------Overview---------------------
 Rethink how your business works
-IBM Consulting’s extreme automation consulting services enable enterprises to move beyond simple task automations to handling high-profile, customer-facing and revenue-producing processes with built-in adoption and scale. You can create connected, intelligent, end-to-end processes and managed services, underpinned with exponential technologies and trust. With the seamless orchestration of work across robots and your human workforce, enterprises can drive adaptive and flexible business models that enhance operational efficiency and productivity.
+IBM Consulting’s extreme automation consulting services enable enterprises to move beyond simple task automations to handling
+ high-profile, customer-facing and revenue-producing processes with built-in adoption and scale. You can create connected, 
+ intelligent, end-to-end processes and managed services, underpinned with exponential technologies and trust. With the seamless 
+ orchestration of work across robots and your human workforce, enterprises can drive adaptive and flexible business models that 
+ enhance operational efficiency and productivity.
 
-We provide a holistic approach to automation with a framework designed to deliver value fast. We meet you where you are, from strategy and roadmap design to running engagements that support automation programs at scale.
+We provide a holistic approach to automation with a framework designed to deliver value fast. We meet you where you are, from 
+strategy and roadmap design to running engagements that support automation programs at scale.
+
+
+option 0 - We deliver high-precision industrial automation solutions that help Sri Lankan manufacturers operate smarter, faster, and with 
+greater reliability. From PLCs to robotics and machinery integration, we combine global-grade engineering with local expertise to 
+reduce downtime, boost efficiency, and keep your business ahead of the technology curve.
+
+Option 1 — Strong, Corporate, Trusted
+
+We help Sri Lankan industries transform their operations with high-precision automation built on global engineering standards. Our
+ solutions reduce downtime, improve production quality, and seamlessly integrate with modern technologies—making us one of the 
+ country’s most trusted partners in advanced industrial automation.
+
+Option 2 — Premium + Local Authority
+
+We empower Sri Lankan manufacturers with enterprise-grade automation systems that boost efficiency, enhance quality, and modernize
+ production. Backed by international partnerships and years of proven field expertise, we deliver reliable, future-ready solutions 
+ trusted by leading companies across the country.
+
+Option 3 — Shorter, Clean, High-Impact
+
+We deliver advanced automation systems trusted by Sri Lanka’s leading industries—helping businesses reduce downtime, enhance
+ quality, and stay ahead of modern technology. With global engineering expertise and proven reliability, we build solutions that 
+ drive long-term performance and smarter operations.
