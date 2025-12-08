@@ -9,7 +9,7 @@ interface SectionHeaderProps {
 
 export default function SectionHeader({ title, highlightedText, highlightPosition = 'suffix', subtitle }: SectionHeaderProps) {
     return (
-        <div className="text-center">
+        <div className="text-center pb-6">
             <h2 className="section-title">
                 {highlightPosition === 'prefix' && highlightedText && <span className="text-(--secondary-blue)">{highlightedText} </span>}
                 {title}

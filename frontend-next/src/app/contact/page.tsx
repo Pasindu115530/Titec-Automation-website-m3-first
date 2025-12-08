@@ -18,22 +18,22 @@ export default function Contact(): JSX.Element {
                     subtitle="Have a question or need a quote? Send us a message and we will respond shortly."
                 />
 
-                <div className="mt-12">
+                <div className="mt-5">
                     <ContactForm />
                 </div>
 
             </main>
 
-            <section className="mt-10 mb-20 bg-black/10 p-5">
+            <section className="mt-10 mb-20 bg-black/10">
                 <div className='p-5'>
-                    <SectionHeader
+                <SectionHeader
                     title="Us On"
                     highlightedText='View'
                     highlightPosition='prefix'
                     subtitle=""
                 />
                 </div>
-                <div className="flex flex-wrap justify-center gap-20 mt-8 ">
+                <div className="flex flex-wrap justify-center gap-20 pb-5">
                     <a href={contacts[0].facebook} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group transition-transform hover:-translate-y-1">
                         <div className="p-4 bg-gray-50 rounded-full shadow-sm group-hover:shadow-md group-hover:bg-blue-50 transition-all">
                             <FaFacebook className="w-8 h-8 text-blue-700" />
@@ -64,7 +64,7 @@ export default function Contact(): JSX.Element {
                 </div>
             </section>
 
-            <div className='flex flex-col gap-12'>
+            <div className='flex flex-col gap-5'>
                 <SectionHeader
                     title="Our"
                     highlightedText='Office'

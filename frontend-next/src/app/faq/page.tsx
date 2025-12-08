@@ -104,7 +104,11 @@ export default function Faq(): JSX.Element {
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
                 />
-                <SectionHeader title="Frequently Asked Questions" />
+                <SectionHeader
+                                    title="Frequently Asked"
+                                    highlightedText='Questions'
+                                    subtitle=""
+                                />
 
                 <div className="space-y-4">
                     {FAQs.map((FAQ: FAQ, i) => (
