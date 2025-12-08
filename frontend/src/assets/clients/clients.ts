@@ -12,7 +12,13 @@ import Lct from './LCT.jpeg';
 import Lwm from './LWM.jpg';
 import Sky from './SKY.jpg'
 
-export const clients = [
+
+export interface Client {
+    name: string;
+    logo: string;
+}
+
+export const clients: Client[] = [
     { name: "Lanka Weld Mesh", logo: Lwm },
     { name: "WinsLanka", logo: Wins },
     { name: "CBL", logo: cblLogo },

@@ -1,11 +1,11 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom';
-import Homepage from '../pages/homepage';
-import Store from '../pages/store';
-import About from '../pages/about';
-import Contact from '../pages/contact';
-import Faq from '../pages/faq';
-import Header from '../components/header';
+import Homepage from './pages/homepage';
+import Store from './pages/store';
+import About from './pages/about';
+import Contact from './pages/contact';
+import Faq from './pages/faq';
+import Header from './components/header';
 
 function App() {
 

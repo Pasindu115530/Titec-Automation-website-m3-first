@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import Loader from "../components/loader";
 import Footer from "../components/footer";
-import { clients } from "../src/assets/clients/clients";
-
-interface Client {
-  name: string;
-  logo: string;
-}
+import { clients } from "../assets/clients/clients";
+import type { Client } from "../assets/clients/clients";
 
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
