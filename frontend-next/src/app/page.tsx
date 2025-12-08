@@ -2,6 +2,7 @@
 // import { useState, useEffect } from "react"; // Removed
 // import Loader from "../components/loader"; // Removed
 import Footer from "../components/footer";
+import SectionHeader from "../components/section-header";
 import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
 
@@ -59,10 +60,12 @@ export default function Homepage() {
       {/* Our Clients Section */}
       <section className="w-full bg-white py-12">
         <div className="w-full">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">CLIENTS</span></h1>
-            <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
-          </div>
+          <SectionHeader
+            title="Our"
+            highlightedText="CLIENTS"
+            subtitle="Trusted by industry leaders."
+          />
+          <div className="text-center mb-10 hidden"></div>
 
           <div className="clients-scroll-container">
             <div className="clients-scroll-track">
@@ -89,10 +92,12 @@ export default function Homepage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <h2 className="text-4xl font-bold text-gray-800 section-title"><span className="text-(--secondary-blue)">WHAT</span> We Do</h2>
-            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-              Designing and deploying tailored automation systems — from concept to commissioning.
-            </p>
+            <SectionHeader
+              title="We Do"
+              highlightedText="WHAT"
+              highlightPosition="prefix"
+              subtitle="Designing and deploying tailored automation systems — from concept to commissioning."
+            />
           </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,10 +120,11 @@ export default function Homepage() {
       {/* Projects Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center">
-            <h2 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">PROJECTS</span></h2>
-            <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
-          </div>
+          <SectionHeader
+            title="Our"
+            highlightedText="PROJECTS"
+            subtitle="Selected deployments and case studies."
+          />
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">

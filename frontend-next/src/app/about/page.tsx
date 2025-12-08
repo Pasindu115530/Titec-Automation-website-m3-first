@@ -1,11 +1,16 @@
 import Footer from "../../components/footer";
+import SectionHeader from "../../components/section-header";
 
 export default function About() {
     return (
         <>
             <main className="max-w-5xl mx-auto px-6 py-12">
                 <section className="text-center mb-10">
-                    <h1 className="text-4xl font-bold mb-4">About Titec Automation</h1>
+                    <SectionHeader
+                        title="About"
+                        highlightedText="Titec"
+                        subtitle="Trusted by industry leaders."
+                    />
                     <p className="text-gray-600">
                         We design and deliver industrial automation solutions that help manufacturers
                         improve reliability, efficiency, and safety. Our team blends hardware,

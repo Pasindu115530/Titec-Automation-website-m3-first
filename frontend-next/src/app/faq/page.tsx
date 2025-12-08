@@ -2,12 +2,10 @@
 
 import { useState, type JSX } from 'react'
 import Footer from "../../components/footer";
+import { FAQs } from "../../assets/FAQ";
+import type { FAQ } from "../../assets/FAQ";
+import SectionHeader from '../../components/section-header';
 
-const FAQS: { q: string; a: string }[] = [
-    { q: 'What services do you provide?', a: 'We provide automation design, integration, PLC/HMI programming, and maintenance services.' },
-    { q: 'Do you offer on-site support?', a: 'Yes — we offer commissioning and on-site maintenance agreements. Contact us for details.' },
-    { q: 'Can you build custom control cabinets?', a: 'Yes, our engineering team designs and ships custom control panels to spec.' },
-]
 
 export default function Faq(): JSX.Element {
     const faqSchema = {
@@ -106,21 +104,21 @@ export default function Faq(): JSX.Element {
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
                 />
-                <h1 className="text-3xl font-bold mb-6">Frequently Asked Questions</h1>
+                <SectionHeader title="Frequently Asked Questions" />
 
                 <div className="space-y-4">
-                    {FAQS.map((f, i) => (
+                    {FAQs.map((FAQ: FAQ, i) => (
                         <div key={i} className="border rounded-lg overflow-hidden">
                             <button
                                 className="w-full text-left px-4 py-3 flex justify-between items-center bg-white"
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                             >
-                                <span className="font-medium">{f.q}</span>
+                                <span className="font-medium">{FAQ.question}</span>
                                 <span className="text-gray-500">{openIndex === i ? '−' : '+'}</span>
                             </button>
 
                             {openIndex === i && (
-                                <div className="px-4 py-3 bg-gray-50 text-gray-700">{f.a}</div>
+                                <div className="px-4 py-3 bg-gray-50 text-gray-700">{FAQ.answer}</div>
                             )}
                         </div>
                     ))}
