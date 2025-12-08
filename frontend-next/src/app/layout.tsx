@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <div className="w-full min-h-screen flex flex-col">
           <Header />
-          <div className="w-full flex-grow bg-white text-black">
+          <div className="w-full grow bg-white text-black">
             {children}
           </div>
         </div>

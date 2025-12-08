@@ -1,25 +1,13 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Loader from "../components/loader";
+// "use client" removed to make this a Server Component
+// import { useState, useEffect } from "react"; // Removed
+// import Loader from "../components/loader"; // Removed
 import Footer from "../components/footer";
 import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
 
 export default function Homepage() {
-  const [status, setStatus] = useState("loading");
+  // Loading state logic removed for SSR
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setStatus("success");
-    }, 2000); // 2 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (status === "loading") {
-    return <Loader />;
-  }
 
   return (
     <>
