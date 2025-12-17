@@ -1,4 +1,8 @@
+"use client"
+
+import Loader from "@/components/loader";
 import Footer from "../../components/footer";
+import { useEffect, useState } from "react";
 
 const PRODUCTS = [
     { id: 'p1', name: 'Industrial Sensor', price: '$149', desc: 'Robust sensor for harsh environments.' },
@@ -7,6 +11,25 @@ const PRODUCTS = [
 ]
 
 export default function Store() {
+    const [loading, setLoading] = useState(true);
+
+    // Helper function to create a pause
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const loadingFunc = async () => {
+        setLoading(true);
+        await sleep(1000);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        loadingFunc();
+    }, []);
+
+    if (loading) {
+        return <Loader />;
+    }
+
     return (
         <>
             <main className="max-w-6xl mx-auto px-6 py-12">
