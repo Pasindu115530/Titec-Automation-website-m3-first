@@ -17,7 +17,7 @@ export default function Homepage() {
         className="relative min-h-[50vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
       >
         {/* Updated background path to public asset */}
-        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/assets/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
+        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
         <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
           <div className="text-center">
             <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME !</h3>
