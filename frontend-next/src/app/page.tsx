@@ -5,9 +5,18 @@ import Footer from "../components/footer";
 import SectionHeader from "../components/section-header";
 import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
+import { projectService } from "../services/projectService";
+import { Project } from "../types";
 
-export default function Homepage() {
-  // Loading state logic removed for SSR
+export default async function Homepage() {
+  // Fetch projects from API
+  let projects: Project[] = [];
+  try {
+    projects = await projectService.getProjects();
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+    // Optionally handle error state or show empty list
+  }
 
 
   return (
@@ -69,20 +78,34 @@ export default function Homepage() {
 
           <div className="clients-scroll-container">
             <div className="clients-scroll-track">
-              {clients.map((client: Client, index) => (
-                <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
-                  <img
-                    src={typeof client.logo === 'string' ? client.logo : client.logo.src} // Handle Next.js image import object or string
-                    alt={client.name}
-                    className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
-                      View Project
-                    </a>
+              {clients.map((client: Client, index) => {
+                // Inline slugify logic or import it. Since this is a client component potentially (or server), 
+                // and we want avoid importing utility if not needed or simple enough.
+                // Let's import create a slug here or import the utility. 
+                // Since I cannot easily add top-level imports with replace_file_content effectively if they are far away, 
+                // I will settle for a local helper or simple replacement for now, OR I will duplicate the slug logic briefly 
+                // or best: use the utility if I added the import. 
+
+                // Wait, I should add the import first or just use a simple regex here if I don't want to mess up imports.
+                // Actually, I can use multi_replace to add import and change this.
+                // But for now, let's just use a simple transform since I am in a ReplaceBlock.
+                const slug = client.name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+
+                return (
+                  <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
+                    <img
+                      src={typeof client.logo === 'string' ? client.logo : client.logo.src}
+                      alt={client.name}
+                      className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <a href={`/clients/${slug}`} className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
+                        View Projects
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -117,7 +140,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Projects Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader
@@ -127,41 +149,28 @@ export default function Homepage() {
           />
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Conveyor Line Modernization</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Reduced downtime by 35% after automation and controls upgrade.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Automated Sorting System</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  High-precision sorting for mixed SKU production.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Robotic Palletizing</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Increased throughput and ergonomic safety improvements.
-                </p>
-              </div>
-            </div>
+            {/* We will slice to show only first 3 projects */}
+            {projects.slice(0, 3).map((project) => (
+              <a
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition block"
+              >
+                <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400 relative">
+                  {project.image ? (
+                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>Project Image</span>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold">{project.title}</h3>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {project.description}
+                  </p>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
