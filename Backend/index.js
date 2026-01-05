@@ -7,6 +7,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 import errorHandler from "./middleware/errorHandler.js"
 import orderRouter from "./routes/orderRouter.js"
+import quotationRouter from "./routes/quotationRouter.js"
 
 dotenv.config()
 
@@ -54,6 +55,7 @@ app.use(
 app.use("/api/users", userRouter)
 app.use("/api/products", productRouter)
 app.use("/api/orders", orderRouter)
+app.use("/api/quotations", quotationRouter)
 
 
 // Centralized error handler

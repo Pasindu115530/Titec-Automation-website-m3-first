@@ -3,9 +3,15 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import logo from '../assets/titec-logo.svg';
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
+import { ShoppingBag, LogOut, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Header() {
   const pathname = usePathname();
+  const { user, logout, isAdmin } = useAuth();
+  const { setIsOpen, totalItems } = useCart();
 
   return (
     <header
@@ -30,7 +36,37 @@ export default function Header() {
 
         {/* Actions */}
         <div className="ml-auto flex items-center gap-4">
-          <Link href="/store" className="button-1">Visit Store</Link>
+          {user ? (
+            <>
+              {!isAdmin && (
+                <button
+                  onClick={() => setIsOpen(true)}
+                  className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Quotation Cart"
+                >
+                  <ShoppingBag className="w-6 h-6" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+              )}
+              <div className="hidden md:flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span className="text-sm">{user.firstName}</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={logout} className="gap-2">
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="button-1">Login</Link>
+              <Link href="/register" className="hidden md:block px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Register</Link>
+            </>
+          )}
 
           {/* Mobile hamburger (visual only) */}
           <button aria-label="menu" className="md:hidden p-2 rounded-md bg-gray-100">

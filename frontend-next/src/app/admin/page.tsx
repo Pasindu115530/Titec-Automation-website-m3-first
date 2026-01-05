@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     Users,
@@ -10,18 +10,63 @@ import {
     ArrowDownRight,
     Search,
     Filter,
-    MoreHorizontal
+    MoreHorizontal,
+    FileText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
+    const [quotationStats, setQuotationStats] = useState({
+        total: 0,
+        pending: 0,
+        reviewed: 0,
+        quoted: 0
+    });
+    const { user, isAdmin } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        // Redirect to admin login if not authenticated as admin
+        if (!isAdmin) {
+            router.push('/admin/login');
+            return;
+        }
+        fetchQuotationStats();
+    }, [isAdmin, router]);
+
+    const fetchQuotationStats = async () => {
+        try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4900';
+            const response = await fetch(`${backendUrl}/api/quotations`, {
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setQuotationStats({
+                    total: data.length,
+                    pending: data.filter((q: any) => q.status === 'pending').length,
+                    reviewed: data.filter((q: any) => q.status === 'reviewed').length,
+                    quoted: data.filter((q: any) => q.status === 'quoted').length,
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch quotation stats:', error);
+        }
+    };
+
     const stats = [
-        { label: 'Total Sales', value: '$24,560', change: '+12%', icon: DollarSign, trend: 'up' },
-        { label: 'Active Orders', value: '45', change: '+5%', icon: ShoppingBag, trend: 'up' },
-        { label: 'New Customers', value: '128', change: '-2%', icon: Users, trend: 'down' },
-        { label: 'Pending Requests', value: '12', change: '+8%', icon: Activity, trend: 'up' },
+        { label: 'Quotation Requests', value: quotationStats.total.toString(), change: '+12%', icon: FileText, trend: 'up' },
+        { label: 'Pending Requests', value: quotationStats.pending.toString(), change: '+5%', icon: Activity, trend: 'up' },
+        { label: 'Quoted', value: quotationStats.quoted.toString(), change: '+8%', icon: ShoppingBag, trend: 'up' },
+        { label: 'Under Review', value: quotationStats.reviewed.toString(), change: '-2%', icon: Users, trend: 'down' },
     ];
 
     const orders = [
@@ -51,7 +96,9 @@ export default function AdminDashboard() {
                     <p className="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button>Download Report</Button>
+                    <Link href="/admin/quotations">
+                        <Button>View Quotations</Button>
+                    </Link>
                 </div>
             </div>
 

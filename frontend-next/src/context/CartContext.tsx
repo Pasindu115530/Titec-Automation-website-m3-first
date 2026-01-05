@@ -9,6 +9,18 @@ export type CartItem = {
     image?: string;
     quantity: number;
     category?: string;
+    description?: string;
+};
+
+export type QuotationRequest = {
+    id: string;
+    customerId?: string;
+    customerName?: string;
+    customerEmail?: string;
+    items: CartItem[];
+    status: 'pending' | 'reviewed' | 'quoted' | 'rejected';
+    submittedAt: string;
+    notes?: string;
 };
 
 interface CartContextType {
@@ -20,6 +32,7 @@ interface CartContextType {
     updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
     totalItems: number;
+    submitQuotationRequest: (customerInfo?: { name: string; email: string }) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -31,20 +44,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         setIsMounted(true);
-        // Load from local storage if needed
-        const saved = localStorage.getItem('cart');
+        // Load from local storage if needed - using 'quotationCart' key instead of 'cart'
+        const saved = localStorage.getItem('quotationCart');
         if (saved) {
             try {
                 setItems(JSON.parse(saved));
             } catch (e) {
-                console.error("Failed to parse cart", e);
+                console.error("Failed to parse quotation cart", e);
             }
         }
     }, []);
 
     useEffect(() => {
         if (isMounted) {
-            localStorage.setItem('cart', JSON.stringify(items));
+            localStorage.setItem('quotationCart', JSON.stringify(items));
         }
     }, [items, isMounted]);
 
@@ -80,6 +93,58 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(false);
     };
 
+    const submitQuotationRequest = async (customerInfo?: { name: string; email: string }) => {
+        try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+            
+            // Get user from localStorage if logged in
+            const savedUser = localStorage.getItem('user');
+            let token = null;
+            let userId = null;
+            
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                token = user.token;
+                userId = user.id;
+            }
+
+            const quotationRequest = {
+                customerId: userId,
+                customerName: customerInfo?.name,
+                customerEmail: customerInfo?.email,
+                items: items,
+                status: 'pending',
+                submittedAt: new Date().toISOString(),
+            };
+
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`${backendUrl}/api/quotations`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(quotationRequest),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit quotation request');
+            }
+
+            // Clear cart after successful submission
+            clearCart();
+            
+            return;
+        } catch (error) {
+            console.error('Error submitting quotation request:', error);
+            throw error;
+        }
+    };
+
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
@@ -91,7 +156,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             removeItem,
             updateQuantity,
             clearCart,
-            totalItems
+            totalItems,
+            submitQuotationRequest,
         }}>
             {children}
         </CartContext.Provider>

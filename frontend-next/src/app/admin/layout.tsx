@@ -1,7 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -11,10 +11,12 @@ import {
     LogOut,
     Menu,
     X,
-    Package
+    Package,
+    FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming you have utils
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AdminLayout({
     children,
@@ -23,11 +25,21 @@ export default function AdminLayout({
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, logout, isAdmin } = useAuth();
+
+    useEffect(() => {
+        // Redirect to admin login if not authenticated, except when already on login page
+        if (!isAdmin && pathname !== '/admin/login') {
+            router.push('/admin/login');
+        }
+    }, [isAdmin, pathname, router]);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
+        { name: 'Quotation Requests', icon: FileText, href: '/admin/quotations' },
         { name: 'Add Project', icon: FolderPlus, href: '/admin/projects/add' },
         { name: 'Add Product', icon: Package, href: '/admin/products/add' },
         { name: 'Add Customer', icon: Users, href: '/admin/customers/add' },
@@ -95,7 +107,10 @@ export default function AdminLayout({
                 </nav>
 
                 <div className="p-4 border-t border-gray-100 min-w-[16rem]">
-                    <button className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                    <button 
+                        onClick={logout}
+                        className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
                         <LogOut className="h-5 w-5" />
                         Sign Out
                     </button>
@@ -110,8 +125,10 @@ export default function AdminLayout({
                         <Menu className="h-6 w-6" />
                     </Button>
                     <div className="flex items-center gap-4">
-                        <span className="text-sm text-gray-500">Admin User</span>
-                        <div className="h-8 w-8 rounded-full bg-gray-200" />
+                        <span className="text-sm text-gray-500">{user?.firstName} {user?.lastName}</span>
+                        <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold">
+                            {user?.firstName?.[0]}{user?.lastName?.[0]}
+                        </div>
                     </div>
                 </header>
 

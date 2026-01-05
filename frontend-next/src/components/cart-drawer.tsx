@@ -1,18 +1,45 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ShoppingBag, Send } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function CartDrawer() {
-    const { isOpen, setIsOpen, items, removeItem, updateQuantity, clearCart } = useCart();
+    const { isOpen, setIsOpen, items, removeItem, updateQuantity, clearCart, submitQuotationRequest } = useCart();
+    const { user, isCustomer } = useAuth();
+    const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleCheckout = () => {
-        // Implement actual checkout/quotation logic here
-        alert('Listing your items and requesting a quotation...');
-        // clearCart(); // Optional: clear after request
+    const handleCheckout = async () => {
+        if (!user) {
+            // Redirect to login if not authenticated
+            setIsOpen(false);
+            router.push('/login');
+            return;
+        }
+
+        if (!isCustomer) {
+            alert('Only customers can submit quotation requests');
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            await submitQuotationRequest({
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+            });
+            alert('Quotation request submitted successfully! We will contact you soon.');
+            setIsOpen(false);
+        } catch (error) {
+            alert('Failed to submit quotation request. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -95,9 +122,13 @@ export default function CartDrawer() {
                         {items.length > 0 && (
                             <div className="p-5 border-t border-gray-100 bg-gray-50/50">
                                 <p className="text-xs text-gray-500 mb-4 text-center">Prices are available upon request. Submit this list to receive a formal quotation.</p>
-                                <Button className="w-full gap-2 text-lg h-12 shadow-lg shadow-indigo-500/20" onClick={handleCheckout}>
+                                <Button 
+                                    className="w-full gap-2 text-lg h-12 shadow-lg shadow-indigo-500/20" 
+                                    onClick={handleCheckout}
+                                    disabled={isSubmitting}
+                                >
                                     <Send className="h-5 w-5" />
-                                    Get Quotation
+                                    {isSubmitting ? 'Submitting...' : 'Request Quotation'}
                                 </Button>
                             </div>
                         )}

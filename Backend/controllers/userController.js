@@ -12,6 +12,14 @@ export async function createUser(req, res) {
     try {
         const data = req.body;
 
+        // IMPORTANT: Prevent admin registration from frontend
+        // Only customers can register through the API
+        if (data.role && data.role === 'admin') {
+            return res.status(403).json({ 
+                message: "Admin registration is not allowed through this endpoint. Admins must be created directly in the database." 
+            });
+        }
+
         // check if email exists
         const existingUser = await User.findOne({ email: data.email });
         if (existingUser) {
@@ -25,7 +33,7 @@ export async function createUser(req, res) {
             firstName: data.firstName,
             lastName: data.lastName,
             password: hashedPassword,
-            role: data.role,
+            role: data.role || "customer", // Default to customer if not specified
         });
 
         await user.save();
@@ -55,6 +63,7 @@ export async function loginUser(req, res) {
         }
 
         const payload = {
+            id: user._id.toString(),
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -70,6 +79,7 @@ export async function loginUser(req, res) {
         res.json({
             message: "Login successful",
             token,
+            user: payload, // Send user data with response
         });
 
     } catch (err) {
