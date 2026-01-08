@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/footer';
+import { api } from '@/lib/api'; // Import your API instance
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -30,6 +31,25 @@ export default function RegisterPage() {
         });
     };
 
+    const handleRegister = async (data: { name: string; email: string; password: string; password_confirmation: string; }) => {
+        try {
+            // Get CSRF cookie first
+            await api.get('/sanctum/csrf-cookie');
+            
+            // Then submit registration
+            const response = await api.post('/api/register', data);
+            return response.data;
+        } catch (error: unknown) {
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as Record<string, any>;
+                if (axiosError.response && axiosError.response.data) {
+                    throw axiosError.response.data;
+                }
+            }
+            throw error;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -48,31 +68,34 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
-            const response = await fetch(`${backendUrl}/api/users/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    role: 'customer', // Always register as customer
-                }),
-            });
+            const name = `${formData.firstName} ${formData.lastName}`.trim();
+            const payload = {
+                name,
+                email: formData.email,
+                password: formData.password,
+                password_confirmation: formData.confirmPassword,
+                role: 'customer', // Set role as customer
+            };
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Registration failed');
-            }
+            const data = await handleRegister(payload);
 
             // Success - redirect to login
             alert('Registration successful! Please login with your credentials.');
             router.push('/login');
-        } catch (err: any) {
-            setError(err.message || 'Registration failed. Please try again.');
+        } catch (err: unknown) {
+            // Laravel often returns validation errors under `errors` key
+            if (err && typeof err === 'object' && 'errors' in err) {
+                // Flatten the first validation error message
+                const errors = (err as Record<string, unknown>).errors as Record<string, any[]>;
+                const firstKey = Object.keys(errors)[0];
+                setError(errors[firstKey][0]);
+            } else if (err && typeof err === 'object' && 'message' in err) {
+                setError((err as Record<string, any>).message);
+            } else if (typeof err === 'string') {
+                setError(err);
+            } else {
+                setError('Registration failed. Please try again.');
+            }
         } finally {
             setIsLoading(false);
         }
