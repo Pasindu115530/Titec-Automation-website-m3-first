@@ -124,13 +124,13 @@ export default function Homepage() {
         </div>
 
         {/* Live System Widgets */}
-        <div className="absolute top-24 right-6 hidden md:flex flex-col items-end z-20 opacity-60 pointer-events-none">
-          <div className="font-mono text-xs text-red-500 font-bold tracking-widest mb-1 flex items-center">
-            <span className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
+        <div className="absolute top-34 right-6 hidden md:flex flex-col items-end z-20 opacity-40 pointer-events-none">
+          <div className="font-mono text-xs text-orange-500 font-bold tracking-widest mb-1 flex items-center">
+            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
             LIVE SYSTEM
           </div>
           <div className="font-mono text-xs text-gray-400">
-            SYS.STATUS: <span className="text-gray-600">ONLINE</span>
+            SYS.STATUS: <span className="text-blue-600">ONLINE</span>
           </div>
           <div className="font-mono text-xs text-gray-400 mt-1">
             COORDS: <span className="text-gray-600">34.05N, 118.24W</span>
@@ -150,12 +150,12 @@ export default function Homepage() {
 
         {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
         <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
-          <div className="w-8 h-[2px] bg-gray-400"></div>
-          <div className="w-3 h-[2px] bg-gray-300"></div>
-          <div className="w-6 h-[2px] bg-gray-300"></div>
-          <div className="w-4 h-[2px] bg-gray-800"></div>
-          <div className="w-10 h-[3px] bg-gray-300"></div>
-          <div className="w-4 h-[2px] bg-gray-300"></div>
+          <div className="w-8 h-[2px] bg-blue-400"></div>
+          <div className="w-3 h-[2px] bg-blue-500"></div>
+          <div className="w-6 h-[2px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
+          <div className="w-10 h-[3px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
           <div className="w-6 h-[2px] bg-gray-400"></div>
         </div>
 
