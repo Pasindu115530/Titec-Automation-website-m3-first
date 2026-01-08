@@ -5,13 +5,39 @@ import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
 import heroRobotArm from "../assets/hero_robot_arm_1767856086813.png";
 
+// Custom Hook for Scroll Detection
+function useInView(threshold = 0) {
+  const [isInView, setIsInView] = useState(false);
+  const [element, setElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [element, threshold]);
+
+  return { ref: setElement, isInView };
+}
+
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
 
+  // Refs for Scroll Animations
+  const { ref: contentRef, isInView: contentInView } = useInView(0);
+  const { ref: imageRef, isInView: imageInView } = useInView(0);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setStatus("success");
-    }, 2000); // 2 seconds
+      setStatus("complete");
+    }, 2000); // Simulate loading duration
 
     return () => clearTimeout(timer);
   }, []);
@@ -21,11 +47,12 @@ export default function Homepage() {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
       {/* Main Content starts after 3 seconds */}
       <style>
         {`
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&family=Michroma&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
           .font-inter { font-family: 'Inter', sans-serif; }
           .font-orbitron { font-family: 'Orbitron', sans-serif; }
           .font-michroma { font-family: 'Michroma', sans-serif; }
@@ -48,6 +75,23 @@ export default function Homepage() {
           }
           .animate-float { animation: float 6s ease-in-out infinite; }
           .animate-float-delay { animation: float 8s ease-in-out infinite; animation-delay: 2s; }
+          
+          /* Entry Animations */
+          @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          .animate-slide-in-left { animation: slideInLeft 1s ease-out forwards; opacity: 0; }
+          .animate-slide-in-right { animation: slideInRight 1s ease-out forwards; opacity: 0; }
+          
+          .delay-100 { animation-delay: 0.1s; }
+          .delay-200 { animation-delay: 0.2s; }
+          .delay-300 { animation-delay: 0.3s; }
+          .delay-500 { animation-delay: 0.5s; }
         `}
       </style>
       <section
@@ -79,19 +123,33 @@ export default function Homepage() {
           <div className="absolute bottom-20 left-10 text-gray-200 text-8xl opacity-10 font-michroma font-bold select-none">01</div>
         </div>
 
+        {/* Live System Widgets */}
+        <div className="absolute top-24 right-6 hidden md:flex flex-col items-end z-20 opacity-60 pointer-events-none">
+          <div className="font-mono text-xs text-red-500 font-bold tracking-widest mb-1 flex items-center">
+            <span className="w-2 h-2 bg-red-500 rounded-full mr-2 animate-pulse"></span>
+            LIVE SYSTEM
+          </div>
+          <div className="font-mono text-xs text-gray-400">
+            SYS.STATUS: <span className="text-gray-600">ONLINE</span>
+          </div>
+          <div className="font-mono text-xs text-gray-400 mt-1">
+            COORDS: <span className="text-gray-600">34.05N, 118.24W</span>
+          </div>
+        </div>
+
         {/* Decorative Vertical Ruler/Dash Pattern (Left Side) */}
         <div className="absolute left-6 top-1/3 flex flex-col gap-2 opacity-50 z-0 hidden md:flex">
           <div className="w-6 h-[2px] bg-gray-500"></div>
           <div className="w-4 h-[2px] bg-gray-600"></div>
-          <div className="w-12 h-[3px] bg-gray-900"></div>
+          <div className="w-12 h-[3px] bg-black-900"></div>
           <div className="w-4 h-[2px] bg-gray-600"></div>
           <div className="w-6 h-[2px] bg-gray-600"></div>
-          <div className="w-3 h-[2px] bg-gray-700"></div>
+          <div className="w-3 h-[2px] bg-gray-600"></div>
           <div className="w-8 h-[2px] bg-gray-600"></div>
         </div>
 
         {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
-        <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-50 z-0 hidden md:flex">
+        <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
           <div className="w-8 h-[2px] bg-gray-400"></div>
           <div className="w-3 h-[2px] bg-gray-300"></div>
           <div className="w-6 h-[2px] bg-gray-300"></div>
@@ -154,44 +212,48 @@ export default function Homepage() {
         <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full flex flex-col md:flex-row items-center justify-between pt-14">
 
           {/* Left: Content Area */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center items-start text-left mb-16 md:mb-0 z-20 md:pl-37">
+          <div
+            ref={contentRef}
+            className="w-full md:w-1/2 flex flex-col justify-center items-start text-left mb-16 md:mb-0 z-20 md:pl-37"
+          >
 
             {/* Badge (Welcome) */}
-            <div className="inline-flex items-center mb-8">
-              <span className="h-[2px] w-8 bg-gray-800 mr-4"></span>
-              <span className="text-sm font-bold text-gray-800 tracking-[0.2em] uppercase font-orbitron">WELCOME TO TITEC</span>
+            <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <span className="w-2 h-2 rounded-full bg-red-500 mr-3 animate-pulse"></span>
+              <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC AUTOMATION SYSTEMS</span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 leading-none font-michroma tracking-tighter drop-shadow-sm">
+            <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 leading-none font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
               FUTURE
             </h1>
-            <p className="text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.4em] mb-10 pl-2 font-michroma">
+            <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
               IS NEAR
             </p>
 
             {/* Subtext */}
-            <div className="max-w-[800px] hidden md:block">
+            <div className={`max-w-[800px] hidden md:block transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
               <p className="text-sm text-gray-600 mb-8 leading-relaxed font-mono">
                 We are a <strong className="text-gray-900">Sri Lankan</strong> industrial automation company delivering advanced solutions that streamline production, minimize downtime, and significantly enhance product quality.
               </p>
             </div>
 
-
             {/* Buttons */}
-            <div className="flex flex-wrap gap-5 items-center mt-6">
-              <a href="/contact" className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all shadow-lg hover:shadow-blue-500/30">
-                Get Quote
+            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <a href="#quote" className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm">
+                GET QUOTE
               </a>
-
-              <a href="/store" className="px-8 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold rounded-full transition-all">
-                Visit Store
+              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm">
+                VISIT STORE
               </a>
             </div>
           </div>
 
           {/* Right: Image Area */}
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end relative items-center">
+          <div
+            ref={imageRef}
+            className={`w-full md:w-1/2 flex justify-center md:justify-end relative items-center transition-all duration-700 ease-in delay-200 ${imageInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-24'}`}
+          >
             <div className="relative z-10 w-full max-w-lg transform md:-translate-x-24">
               <img
                 src={heroRobotArm}
@@ -316,6 +378,6 @@ export default function Homepage() {
 
       {/* Footer */}
       <Footer />
-    </>
+    </div>
   );
 }
