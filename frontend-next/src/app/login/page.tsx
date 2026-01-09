@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +11,34 @@ import { motion } from 'framer-motion';
 import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/footer';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const router = useRouter();
+
+    const handleLogin = async (data: { email: string; password: string }) => {
+        try {
+            // Get CSRF cookie first
+            await api.get('/sanctum/csrf-cookie');
+            
+            // Then submit login
+            const response = await api.post('/api/login', data);
+            return response.data;
+        } catch (error: unknown) {
+            if (error && typeof error === 'object' && 'response' in error) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const axiosError = error as Record<string, any>;
+                if (axiosError.response && axiosError.response.data) {
+                    throw axiosError.response.data;
+                }
+            }
+            throw error;
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,9 +46,38 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            await login(email, password, 'customer');
-        } catch (err: any) {
-            setError(err.message || 'Login failed. Please check your credentials.');
+            const payload = {
+                email,
+                password,
+            };
+
+            const data = await handleLogin(payload);
+
+            // Store token if provided
+            if (data.token) {
+                localStorage.setItem('token', data.token);
+            }
+
+            // Store user data
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+
+            // Success - redirect to dashboard
+            router.push('/customer-dashboard');
+        } catch (err: unknown) {
+            // Laravel often returns validation errors under `errors` key
+            if (err && typeof err === 'object' && 'errors' in err) {
+                const errors = (err as Record<string, unknown>).errors as Record<string, any[]>;
+                const firstKey = Object.keys(errors)[0];
+                setError(errors[firstKey][0]);
+            } else if (err && typeof err === 'object' && 'message' in err) {
+                setError((err as Record<string, any>).message);
+            } else if (typeof err === 'string') {
+                setError(err);
+            } else {
+                setError('Login failed. Please check your credentials.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -98,7 +149,7 @@ export default function LoginPage() {
                             </form>
 
                             <div className="mt-6 text-center text-sm">
-                                <span className="text-gray-600">Don't have an account? </span>
+                                <span className="text-gray-600">Don&apos;t have an account? </span>
                                 <Link href="/register" className="text-blue-600 hover:underline font-medium">
                                     Register here
                                 </Link>
