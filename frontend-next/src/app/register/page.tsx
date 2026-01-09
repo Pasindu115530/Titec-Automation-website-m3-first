@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
@@ -86,6 +87,7 @@ export default function RegisterPage() {
             // Laravel often returns validation errors under `errors` key
             if (err && typeof err === 'object' && 'errors' in err) {
                 // Flatten the first validation error message
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const errors = (err as Record<string, unknown>).errors as Record<string, any[]>;
                 const firstKey = Object.keys(errors)[0];
                 setError(errors[firstKey][0]);
