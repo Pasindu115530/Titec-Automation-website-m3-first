@@ -28,6 +28,11 @@ export default function Header() {
           <ul className="flex gap-10 items-center text-gray-600 font-medium">
             <li><Link className="nav-link" style={pathname === '/' ? { color: '#0C2340' } : {}} href="/">Home</Link></li>
             <li><Link className="nav-link" style={pathname === '/store' ? { color: '#0C2340' } : {}} href="/store">Store</Link></li>
+            {user && !isAdmin && (
+              <li>
+                <Link className="nav-link" style={pathname === '/customer-dashboard' ? { color: '#0C2340' } : {}} href="/customer-dashboard">Dashboard</Link>
+              </li>
+            )}
             <li><Link className="nav-link" style={pathname === '/about' ? { color: '#0C2340' } : {}} href="/about">About</Link></li>
             <li><Link className="nav-link" style={pathname === '/contact' ? { color: '#0C2340' } : {}} href="/contact">Contact</Link></li>
             <li><Link className="nav-link" style={pathname === '/faq' ? { color: '#0C2340' } : {}} href="/faq">FAQ</Link></li>
@@ -54,7 +59,7 @@ export default function Header() {
               )}
               <div className="hidden md:flex items-center gap-2">
                 <User className="w-4 h-4" />
-                <span className="text-sm">{user.firstName}</span>
+                <span className="text-sm">{user.firstName || user.lastName || (user as any).name || user.email}</span>
               </div>
               <Button variant="outline" size="sm" onClick={logout} className="gap-2">
                 <LogOut className="w-4 h-4" />

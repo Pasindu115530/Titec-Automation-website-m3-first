@@ -1,11 +1,19 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export async function fetchFromApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            credentials: 'include',
+        });
 
-    if (!response.ok) {
-        throw new Error(`API call failed: ${response.statusText}`);
+        if (!response.ok) {
+            throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error(`Fetch error for ${endpoint}:`, error);
+        throw error;
     }
-
-    return response.json();
 }

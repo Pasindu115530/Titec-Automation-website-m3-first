@@ -21,6 +21,8 @@ interface AuthContextType {
     logout: () => void;
     isAdmin: boolean;
     isCustomer: boolean;
+    // Allows external flows (e.g., Laravel login page) to update auth state immediately
+    setUserExternal: (payload: Partial<User> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -97,6 +99,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push('/');
     };
 
+    const setUserExternal: AuthContextType['setUserExternal'] = (payload) => {
+        const id = payload.id !== undefined ? String(payload.id) : user?.id ?? '';
+        const email = payload.email ?? user?.email ?? '';
+        const name = (payload as { name?: string }).name;
+        const firstName = payload.firstName ?? (name ? name.split(' ')[0] : user?.firstName ?? '');
+        const lastName = payload.lastName ?? (name ? name.split(' ').slice(1).join(' ') : user?.lastName ?? '');
+        const role = payload.role ?? (user?.role ?? 'customer');
+        const token = payload.token ?? (typeof window !== 'undefined' ? localStorage.getItem('token') ?? '' : '');
+
+        const normalized: User = { id, email, firstName, lastName, role, token };
+        setUser(normalized);
+        try {
+            localStorage.setItem('user', JSON.stringify(normalized));
+        } catch {
+            // ignore storage errors
+        }
+    };
+
     const isAdmin = user?.role === 'admin';
     const isCustomer = user?.role === 'customer';
 
@@ -108,6 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             logout,
             isAdmin,
             isCustomer,
+            setUserExternal,
         }}>
             {children}
         </AuthContext.Provider>

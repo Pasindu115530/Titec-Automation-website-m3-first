@@ -1,10 +1,13 @@
 export interface Project {
-    id: string; // slug
+    id: number;
     title: string;
-    clientName: string;
-    description: string;
-    details: string;
-    image: string;
+    client?: string;
+    description?: string;
+    completion_date?: string;
+    status?: string;
+    thumbnail_path?: string;
+    created_at?: string;
+    updated_at?: string;
 }
 
 export interface Product {

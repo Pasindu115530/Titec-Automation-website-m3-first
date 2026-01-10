@@ -149,28 +149,51 @@ export default async function Homepage() {
           />
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* We will slice to show only first 3 projects */}
-            {projects.slice(0, 3).map((project) => (
-              <a
-                key={project.id}
-                href={`/projects/${project.id}`}
-                className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition block"
-              >
-                <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400 relative">
-                  {project.image ? (
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <span>Project Image</span>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold">{project.title}</h3>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {project.description}
-                  </p>
-                </div>
-              </a>
-            ))}
+            {/* Display all projects from database */}
+            {projects.length > 0 ? (
+              projects.map((project) => {
+                // Construct image URL for thumbnail
+                const imageUrl = project.thumbnail_path 
+                  ? `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}`
+                  : '';
+                
+                return (
+                  <a
+                    key={project.id}
+                    href={`/projects/${project.id}`}
+                    className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition block"
+                  >
+                    <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400 relative">
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={project.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>No Image</span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold">{project.title}</h3>
+                      {project.client && (
+                        <p className="text-xs text-blue-600 mt-1">{project.client}</p>
+                      )}
+                      <p className="text-sm text-gray-600 mt-2">
+                        {project.description || 'No description'}
+                      </p>
+                      {project.status && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <span className="inline-block px-2 py-1 text-xs bg-indigo-50 text-indigo-700 rounded">
+                            {project.status}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No projects available yet.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
