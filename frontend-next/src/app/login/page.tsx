@@ -12,6 +12,7 @@ import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/footer';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -19,6 +20,7 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const { setUserExternal } = useAuth();
 
     const handleLogin = async (data: { email: string; password: string }) => {
         try {
@@ -53,14 +55,35 @@ export default function LoginPage() {
 
             const data = await handleLogin(payload);
 
-            // Store token if provided
-            if (data.token) {
-                localStorage.setItem('token', data.token);
+            // Store token (supports both 'token' and 'access_token' keys)
+            const token = (data as Record<string, unknown>).token as string | undefined ?? (data as Record<string, unknown>).access_token as string | undefined;
+            if (token) {
+                localStorage.setItem('token', token);
+                try {
+                    // Optionally set default Authorization header for subsequent requests
+                    // Lazy import to avoid SSR issues
+                    const { api } = await import('@/lib/api');
+                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                } catch {
+                    // no-op if import fails; requests will still read token via interceptor
+                }
             }
 
             // Store user data
             if (data.user) {
                 localStorage.setItem('user', JSON.stringify(data.user));
+                // Immediately update AuthContext so header reflects login without refresh
+                try {
+                    setUserExternal({
+                        id: (data.user as Record<string, unknown>).id as string | number,
+                        email: (data.user as Record<string, unknown>).email as string,
+                        name: (data.user as Record<string, unknown>).name as string,
+                        role: (data.user as Record<string, unknown>).role as any,
+                        token,
+                    });
+                } catch {
+                    // no-op
+                }
             }
 
             // Success - redirect to dashboard
