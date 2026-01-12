@@ -17,7 +17,6 @@ export default function Header() {
   return (
     <header
       className={`site-header ${pathname === '/' ? 'absolute top-6 left-1/2 z-50 -translate-x-1/2' : 'relative my-4 mx-auto'}`}
-      style={{ fontFamily: 'Poppins, sans-serif', maxWidth: '95%', width: '1200px' }}
     >
       <div className="bg-white rounded-full shadow-lg px-8 py-3 flex items-center justify-between w-full">
 

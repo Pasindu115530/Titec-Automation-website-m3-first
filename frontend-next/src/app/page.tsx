@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Loader from "../components/loader";
 import Footer from "../components/footer";
@@ -52,51 +52,7 @@ export default function Homepage() {
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
       {/* Main Content starts after 3 seconds */}
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
-        
-          .font-orbitron { font-family: 'Orbitron', sans-serif; }
-          .font-michroma { font-family: 'Michroma', sans-serif; }
-           .glass-panel {
-            background: rgba(0, 0, 0, 0.03);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-          }
-          @keyframes splash {
-            0% { transform: scale(0.5); opacity: 0.4; }
-            50% { opacity: 0.2; }
-            100% { transform: scale(3); opacity: 0; }
-          }
-          .animate-splash {
-            animation: splash 4s infinite ease-out;
-          }
-          @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-          }
-          .animate-float { animation: float 6s ease-in-out infinite; }
-          .animate-float-delay { animation: float 8s ease-in-out infinite; animation-delay: 2s; }
-          
-          /* Entry Animations */
-          @keyframes slideInLeft {
-            from { transform: translateX(-100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-          }
-          @keyframes slideInRight {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-          }
-          .animate-slide-in-left { animation: slideInLeft 1s ease-out forwards; opacity: 0; }
-          .animate-slide-in-right { animation: slideInRight 1s ease-out forwards; opacity: 0; }
-          
-          .delay-100 { animation-delay: 0.1s; }
-          .delay-200 { animation-delay: 0.2s; }
-          .delay-300 { animation-delay: 0.3s; }
-          .delay-500 { animation-delay: 0.5s; }
-        `}
-      </style>
+
       <section
         className="relative min-h-screen flex items-center bg-gray-50 overflow-hidden font-inter text-gray-900"
         onMouseMove={(e) => {
@@ -341,41 +297,85 @@ export default function Homepage() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Conveyor Line Modernization</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Reduced downtime by 35% after automation and controls upgrade.
-                </p>
+
+            {/* Project 1: Conveyor Line Modernization */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 01</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Conveyor Line Modernization</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Conveyor Line Modernization</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    Reduced downtime by 35% after automation and controls upgrade. Implemented advanced sensory feedback loops.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Automated Sorting System</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  High-precision sorting for mixed SKU production.
-                </p>
+            {/* Project 2: Automated Sorting System */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 02</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Automated Sorting System</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Automated Sorting System</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    High-precision sorting for mixed SKU production using AI-driven computer vision systems.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition">
-              <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
-                Project Image
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold">Robotic Palletizing</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  Increased throughput and ergonomic safety improvements.
-                </p>
+            {/* Project 3: Robotic Palletizing */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 03</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Robotic Palletizing</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Robotic Palletizing</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    Increased throughput and ergonomic safety improvements with heavy-payload cobots.
+                  </p>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
