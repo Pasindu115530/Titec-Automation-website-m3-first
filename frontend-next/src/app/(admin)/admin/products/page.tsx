@@ -1,16 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3 } from 'lucide-react';
+import { Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
+import ProductsTable from '@/components/admin/products-table';
 
 export default function AddProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [products, setProducts] = useState([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -18,8 +24,20 @@ export default function AddProductPage() {
     category: '',
     stock: '',
     sku: '',
-    image: '',
   });
+
+  const fetchProducts = async () => {
+    try {
+      const response = await api.get('/api/products');
+      setProducts(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch products', error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -29,6 +47,14 @@ export default function AddProductPage() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,26 +69,38 @@ export default function AddProductPage() {
         return;
       }
 
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          stock: parseInt(formData.stock),
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add product');
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('price', formData.price);
+      data.append('category', formData.category);
+      data.append('stock', formData.stock);
+      data.append('sku', formData.sku);
+      if (imageFile) {
+        data.append('image', imageFile);
       }
 
-      router.push('/admin/products');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      await api.post('/api/products', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      router.refresh();
+      setFormData({
+        name: '',
+        description: '',
+        price: '',
+        category: '',
+        stock: '',
+        sku: '',
+      });
+      setImageFile(null);
+      setImagePreview(null);
+      fetchProducts(); // Refresh table
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -210,22 +248,37 @@ export default function AddProductPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Image URL</label>
-              <div className="relative">
-                <ImageIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                <Input
-                  className="pl-9"
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/image.jpg"
+              <label className="text-sm font-medium">Product Image</label>
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
+                <div className="flex flex-col items-center justify-center gap-2">
+                  {imagePreview ? (
+                    <div className="relative w-full h-32">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
+                      <span className="text-xs text-gray-500 mt-1">Click to change</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="h-8 w-8 text-gray-400" />
+                      <span className="text-sm text-gray-600">Click to upload image</span>
+                      <span className="text-xs text-gray-400">JPG, PNG, GIF up to 5MB</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </form>
+
+      <div className="mt-8">
+        <ProductsTable products={products} onRefresh={fetchProducts} />
+      </div>
     </div>
   );
 }

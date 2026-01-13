@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Save, X, Calendar, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,6 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import ProjectsTable from '@/components/admin/projects-table';
+
+interface Project {
+    id: number;
+    title: string;
+    client: string;
+    description: string;
+    completion_date: string;
+    status: string;
+    thumbnail_path?: string;
+}
 
 export default function AddProjectPage() {
     const router = useRouter();
@@ -24,6 +35,21 @@ export default function AddProjectPage() {
         completion_date: '',
         status: 'In Progress',
     });
+
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    const fetchProjects = async () => {
+        try {
+            const response = await api.get('/api/projects');
+            setProjects(response.data.data);
+        } catch (error) {
+            console.error('Failed to fetch projects', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProjects();
+    }, []);
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -72,12 +98,30 @@ export default function AddProjectPage() {
 
             setSuccess('Project added successfully!');
             setTimeout(() => {
-                router.push('/admin/projects');
-            }, 1500);
+                router.push('/admin/projects'); // Optional: still redirect or stay to add more?
+                // For now, let's refresh the list and clear form effectively if they want to stay, 
+                // but the original code redirected. 
+                // The user request implies managing projects ON this page ("Under form i need table").
+                // So maybe we shouldn't redirect?
+                // User said: "Under form i need table can show all details about projects and add Actions row"
+                // If I redirect, they can't see the table update.
+                // I will Comment out the redirect and just clear form + refresh list.
+                // router.push('/admin/projects'); 
+                fetchProjects();
+                setFormData({
+                    title: '',
+                    client: '',
+                    description: '',
+                    completion_date: '',
+                    status: 'In Progress',
+                });
+                setThumbnail(null);
+                setThumbnailPreview('');
+            }, 1000);
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || 
-                               err.message || 
-                               'Failed to add project';
+            const errorMessage = err.response?.data?.message ||
+                err.message ||
+                'Failed to add project';
             setError(errorMessage);
         } finally {
             setIsLoading(false);
@@ -138,9 +182,9 @@ export default function AddProjectPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Project Title *</label>
-                                    <Input 
+                                    <Input
                                         name="title"
-                                        placeholder="e.g. Factory Automation System" 
+                                        placeholder="e.g. Factory Automation System"
                                         value={formData.title}
                                         onChange={handleInputChange}
                                         required
@@ -150,9 +194,9 @@ export default function AddProjectPage() {
                                     <label className="text-sm font-medium">Client / Customer</label>
                                     <div className="relative">
                                         <User className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                        <Input 
+                                        <Input
                                             name="client"
-                                            className="pl-9" 
+                                            className="pl-9"
                                             placeholder="Select or type client name"
                                             value={formData.client}
                                             onChange={handleInputChange}
@@ -185,9 +229,9 @@ export default function AddProjectPage() {
                                     <label className="text-sm font-medium">Completion Date</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                        <Input 
+                                        <Input
                                             name="completion_date"
-                                            type="date" 
+                                            type="date"
                                             className="pl-9"
                                             value={formData.completion_date}
                                             onChange={handleInputChange}
@@ -196,7 +240,7 @@ export default function AddProjectPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Status</label>
-                                    <select 
+                                    <select
                                         name="status"
                                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         value={formData.status}
@@ -219,14 +263,14 @@ export default function AddProjectPage() {
                             <CardTitle>Project Thumbnail</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div 
+                            <div
                                 className="border-2 border-dashed border-gray-200 rounded-xl h-48 flex flex-col items-center justify-center text-center hover:bg-gray-50/50 hover:border-indigo-500 transition-all cursor-pointer group"
                                 onClick={() => document.getElementById('thumbnail-input')?.click()}
                             >
                                 {thumbnailPreview ? (
-                                    <img 
-                                        src={thumbnailPreview} 
-                                        alt="Preview" 
+                                    <img
+                                        src={thumbnailPreview}
+                                        alt="Preview"
                                         className="h-full w-full object-cover rounded-lg"
                                     />
                                 ) : (
@@ -239,9 +283,9 @@ export default function AddProjectPage() {
                                     </>
                                 )}
                             </div>
-                            <input 
+                            <input
                                 id="thumbnail-input"
-                                type="file" 
+                                type="file"
                                 accept="image/*"
                                 onChange={handleThumbnailChange}
                                 className="hidden"
@@ -249,6 +293,11 @@ export default function AddProjectPage() {
                         </CardContent>
                     </Card>
                 </div>
+            </div>
+
+            {/* Existing Projects Table */}
+            <div className="mt-12">
+                <ProjectsTable projects={projects} onRefresh={fetchProjects} />
             </div>
         </div>
     );

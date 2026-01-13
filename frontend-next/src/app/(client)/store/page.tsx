@@ -1,7 +1,7 @@
 "use client"
 
 import Loader from "@/components/loader";
-import Footer from "../../components/footer";
+import Footer from "@/components/footer";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
