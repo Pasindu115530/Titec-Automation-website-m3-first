@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import logo from '../assets/titec-logo.svg';
 import { useAuth } from '@/context/AuthContext';
@@ -15,67 +16,73 @@ export default function Header() {
 
   return (
     <header
-      className={`site-header glass-effect ${pathname === '/' ? 'absolute top-0 left-1/2 z-50 m-4 -translate-x-1/2' : 'shadow-sm relative'}`}
-      style={{ fontFamily: 'Poppins, sans-serif', maxWidth: 'calc(100% - 2rem)' }}
+      className={`site-header ${pathname === '/' ? 'absolute top-6 left-1/2 z-50 -translate-x-1/2' : 'relative my-4 mx-auto'}`}
     >
-      <div className="mx-auto px-45 py-4 flex items-center w-full gap-25">
-        <img src={logo.src} className="logo-img" alt="TiTEC-Automation-Solutions-logo" width="64" height="64" style={{ transform: 'scale(2.8)' }} />
-        <div className="flex items-center gap-12">
+      <div className="bg-white rounded-full shadow-lg px-8 py-3 flex items-center justify-between w-full">
+
+        {/* Logo */}
+        <div className="flex-shrink-0">
+          <Link href="/">
+            <Image src={logo} alt="TiTEC Automation" width={200} height={80} className="object-contain h-14 w-auto" priority />
+          </Link>
         </div>
 
         {/* Navigation - desktop */}
-        <nav className="hidden md:flex ml-14 flex-1">
-          <ul className="flex gap-10 items-center text-gray-600 font-medium">
-            <li><Link className="nav-link" style={pathname === '/' ? { color: '#0C2340' } : {}} href="/">Home</Link></li>
-            <li><Link className="nav-link" style={pathname === '/store' ? { color: '#0C2340' } : {}} href="/store">Store</Link></li>
-            {user && !isAdmin && (
-              <li>
-                <Link className="nav-link" style={pathname === '/customer-dashboard' ? { color: '#0C2340' } : {}} href="/customer-dashboard">Dashboard</Link>
-              </li>
-            )}
-            <li><Link className="nav-link" style={pathname === '/about' ? { color: '#0C2340' } : {}} href="/about">About</Link></li>
-            <li><Link className="nav-link" style={pathname === '/contact' ? { color: '#0C2340' } : {}} href="/contact">Contact</Link></li>
-            <li><Link className="nav-link" style={pathname === '/faq' ? { color: '#0C2340' } : {}} href="/faq">FAQ</Link></li>
+        <nav className="hidden md:flex flex-1 justify-center ml-8">
+          <ul className="flex gap-8 items-center text-gray-600 font-medium text-sm">
+            <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/' ? 'text-blue-900 font-semibold' : ''}`} href="/">Home</Link></li>
+            <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/store' ? 'text-blue-900 font-semibold' : ''}`} href="/store">Store</Link></li>
+            <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/about' ? 'text-blue-900 font-semibold' : ''}`} href="/about">About</Link></li>
+            <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/contact' ? 'text-blue-900 font-semibold' : ''}`} href="/contact">Contact</Link></li>
+            <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/faq' ? 'text-blue-900 font-semibold' : ''}`} href="/faq">FAQ</Link></li>
           </ul>
         </nav>
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex items-center gap-4">
           {user ? (
             <>
               {!isAdmin && (
                 <button
                   onClick={() => setIsOpen(true)}
-                  className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="relative p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
                   aria-label="Quotation Cart"
                 >
-                  <ShoppingBag className="w-6 h-6" />
+                  <ShoppingBag className="w-5 h-5" />
                   {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                       {totalItems}
                     </span>
                   )}
                 </button>
               )}
-              <div className="hidden md:flex items-center gap-2">
+              <div className="hidden md:flex items-center gap-2 text-gray-700">
                 <User className="w-4 h-4" />
-                <span className="text-sm">{user.firstName || user.lastName || (user as any).name || user.email}</span>
+                <span className="text-sm font-medium">{user.firstName}</span>
               </div>
-              <Button variant="outline" size="sm" onClick={logout} className="gap-2">
+              <Button variant="ghost" size="sm" onClick={logout} className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full">
                 <LogOut className="w-4 h-4" />
-                Logout
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </>
           ) : (
-            <>
-              <Link href="/login" className="button-1">Login</Link>
-              <Link href="/register" className="hidden md:block px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Register</Link>
-            </>
+            <div className="flex items-center gap-3">
+              <Link href="/register">
+                <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 rounded-full w-28">
+                  Sign Up
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-28">
+                  Login
+                </Button>
+              </Link>
+            </div>
           )}
 
-          {/* Mobile hamburger (visual only) */}
-          <button aria-label="menu" className="md:hidden p-2 rounded-md bg-gray-100">
-            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          {/* Mobile hamburger */}
+          <button aria-label="menu" className="md:hidden p-2 rounded-md hover:bg-gray-100 text-gray-600">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
           </button>
         </div>
       </div>

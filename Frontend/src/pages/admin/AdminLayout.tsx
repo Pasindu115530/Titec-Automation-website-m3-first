@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
 
 // Simple mock auth - in a real app this would be a Context
@@ -8,25 +8,22 @@ const checkAuth = () => {
 
 const AdminLayout = () => {
     const navigate = useNavigate();
+    const isAuth = checkAuth();
     const location = useLocation();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
-        const isAuth = checkAuth();
         if (!isAuth) {
             navigate('/admin/login');
-        } else {
-            setIsAuthenticated(true);
         }
-    }, [navigate, location]);
+    }, [navigate, location, isAuth]);
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
         navigate('/admin/login');
     };
 
-    if (!isAuthenticated) return null;
+    if (!isAuth) return null;
 
     const navItems = [
         { label: 'Orders', path: '/admin/orders', icon: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /> },
@@ -43,7 +40,7 @@ const AdminLayout = () => {
             >
                 <div className="h-16 flex items-center justify-between px-4 border-b border-slate-700/50">
                     {isSidebarOpen && <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">TITEC Admin</span>}
-                    <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-slate-800 rounded-lg">
+                    <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-slate-800 rounded-lg" aria-label="Toggle sidebar">
                         <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                     </button>
                 </div>
@@ -54,8 +51,8 @@ const AdminLayout = () => {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group ${location.pathname === item.path
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
-                                    : 'text-gray-400 hover:bg-slate-800 hover:text-white'
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
+                                : 'text-gray-400 hover:bg-slate-800 hover:text-white'
                                 }`}
                         >
                             <svg className={`w-6 h-6 ${isSidebarOpen ? 'mr-3' : 'mx-auto'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
@@ -70,6 +67,7 @@ const AdminLayout = () => {
                     <button
                         onClick={handleLogout}
                         className={`flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-lg transition-colors ${!isSidebarOpen && 'justify-center'}`}
+                        aria-label="Logout"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                         {isSidebarOpen && <span className="ml-3">Logout</span>}
