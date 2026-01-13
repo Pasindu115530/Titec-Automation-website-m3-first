@@ -1,0 +1,45 @@
+﻿src/app/about/page.tsx(4,50): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/customers/add/page.tsx(4,63): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/layout.tsx(16,8): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/login/page.tsx(11,51): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/login/page.tsx(82,25): error TS2322: Type 'string | number' is not assignable to type 'string | undefined'.
+  Type 'number' is not assignable to type 'string'.
+src/app/admin/page.tsx(15,8): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/products/add/page.tsx(4,87): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/projects/add/page.tsx(5,49): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/quotations/page.tsx(16,8): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/admin/settings/page.tsx(4,74): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/clients/[slug]/page.tsx(83,50): error TS2339: Property 'image' does not exist on type 'Project'.
+src/app/clients/[slug]/page.tsx(84,63): error TS2339: Property 'image' does not exist on type 'Project'.
+src/app/customer-dashboard/page.tsx(22,8): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/login/page.tsx(11,28): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/login/page.tsx(78,25): error TS2322: Type 'string | number' is not assignable to type 'string | undefined'.
+  Type 'number' is not assignable to type 'string'.
+src/app/projects/[slug]/page.tsx(40,34): error TS2339: Property 'clientName' does not exist on type 'Project'.
+src/app/projects/[slug]/page.tsx(54,34): error TS2339: Property 'image' does not exist on type 'Project'.
+src/app/projects/[slug]/page.tsx(55,47): error TS2339: Property 'image' does not exist on type 'Project'.
+src/app/projects/[slug]/page.tsx(67,42): error TS2339: Property 'details' does not exist on type 'Project'.
+src/app/projects/[slug]/page.tsx(70,71): error TS2339: Property 'clientName' does not exist on type 'Project'.
+src/app/projects/page.tsx(5,68): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/register/page.tsx(11,28): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/app/store/page.tsx(9,29): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/components/cart-drawer.tsx(5,46): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/components/header.tsx(9,43): error TS7016: Could not find a declaration file for module 'lucide-react'. 'E:/Projects/Client/Titec-Automation-website-m3-first/frontend-next/node_modules/lucide-react/dist/cjs/lucide-react.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lucide-react` if it exists or add a new declaration (.d.ts) file containing `declare module 'lucide-react';`
+src/lib/api.ts(17,13): error TS2322: Type '{ Authorization: string; Accept?: AxiosHeaderValue | undefined; "Content-Length"?: AxiosHeaderValue | undefined; "User-Agent"?: AxiosHeaderValue | undefined; "Content-Encoding"?: AxiosHeaderValue | undefined; 'Content-Type'?: ContentType | undefined; }' is not assignable to type 'AxiosRequestHeaders'.
+  Type '{ Authorization: string; Accept?: AxiosHeaderValue | undefined; "Content-Length"?: AxiosHeaderValue | undefined; "User-Agent"?: AxiosHeaderValue | undefined; "Content-Encoding"?: AxiosHeaderValue | undefined; 'Content-Type'?: ContentType | undefined; }' is missing the following properties from type 'AxiosHeaders': set, get, has, delete, and 24 more.
