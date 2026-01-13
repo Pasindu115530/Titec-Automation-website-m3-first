@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "../../components/footer";
+import Footer from "@/components/footer";
 import { Target, Eye, Heart, CheckCircle2 } from "lucide-react";
 import * as motion from "framer-motion/client";
 import Link from "next/link";

@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
+import ProductsTable from '@/components/admin/products-table';
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -20,6 +22,20 @@ export default function AddProductPage() {
     sku: '',
     image: '',
   });
+  const [products, setProducts] = useState([]);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await api.get('/api/products');
+      setProducts(response.data.data || []);
+    } catch (error) {
+      console.error('Failed to fetch products', error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -60,7 +76,17 @@ export default function AddProductPage() {
         throw new Error(errorData.message || 'Failed to add product');
       }
 
-      router.push('/admin/products');
+      router.refresh();
+      setFormData({
+        name: '',
+        description: '',
+        price: '',
+        category: '',
+        stock: '',
+        sku: '',
+        image: '',
+      });
+      fetchProducts(); // Refresh table
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -226,6 +252,10 @@ export default function AddProductPage() {
           </CardContent>
         </Card>
       </form>
+
+      <div className="mt-8">
+        <ProductsTable products={products} onRefresh={fetchProducts} />
+      </div>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import React, { type JSX } from 'react'
-import Footer from "../../components/footer";
-import ContactForm from '../../components/contact-form';
-import MapSection from '../../components/map-section';
-import SectionHeader from '../../components/section-header';
-import { contacts } from '../../assets/clients/Contacts';
+import Footer from "@/components/footer";
+import ContactForm from '@/components/contact-form';
+import MapSection from '@/components/map-section';
+import SectionHeader from '@/components/section-header';
+import { contacts } from '@/assets/clients/Contacts';
 
 import { FaFacebook, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
 

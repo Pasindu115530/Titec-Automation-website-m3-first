@@ -40,9 +40,9 @@ export default function AdminLayout({
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
         { name: 'Quotation Requests', icon: FileText, href: '/admin/quotations' },
-        { name: 'Add Project', icon: FolderPlus, href: '/admin/projects/add' },
-        { name: 'Add Product', icon: Package, href: '/admin/products/add' },
-        { name: 'Add Customer', icon: Users, href: '/admin/customers/add' },
+        { name: 'Projects Management', icon: FolderPlus, href: '/admin/projects' },
+        { name: 'Products Management', icon: Package, href: '/admin/products' },
+        { name: 'Customers Management', icon: Users, href: '/admin/customers' },
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
     ];
 
