@@ -34,4 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
+    // Quotation routes (admin only)
+    Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
+    Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
+    Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
 });

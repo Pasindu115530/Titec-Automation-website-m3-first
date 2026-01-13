@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3 } from 'lucide-react';
+import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -27,6 +27,9 @@ interface EditProductModalProps {
 export default function EditProductModal({ isOpen, onClose, product, onSuccess }: EditProductModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -34,7 +37,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         category: '',
         stock: '',
         sku: '',
-        image: '',
     });
 
     useEffect(() => {
@@ -46,8 +48,9 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 category: product.category || '',
                 stock: product.stock || '',
                 sku: product.sku || '',
-                image: product.image || '',
             });
+            setImagePreview(product.image || null);
+            setImageFile(null); // Reset file input
         }
     }, [product]);
 
@@ -61,6 +64,14 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!product) return;
@@ -69,10 +80,26 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         setIsLoading(true);
 
         try {
-            await api.put(`/api/products/${product.id}`, {
-                ...formData,
-                price: parseFloat(formData.price),
-                stock: parseInt(formData.stock),
+            const data = new FormData();
+            data.append('name', formData.name);
+            data.append('description', formData.description);
+            data.append('price', formData.price);
+            data.append('category', formData.category);
+            data.append('stock', formData.stock);
+            data.append('sku', formData.sku);
+            // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
+            // Standard workaround is sending POST with _method=PUT
+            data.append('_method', 'PUT');
+
+            if (imageFile) {
+                data.append('image', imageFile);
+            }
+
+            // Using POST with _method=PUT
+            await api.post(`/api/products/${product.id}`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
             onSuccess();
@@ -201,15 +228,27 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Image URL</label>
-                                <div className="relative">
-                                    <ImageIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        name="image"
-                                        value={formData.image}
-                                        onChange={handleInputChange}
-                                        className="pl-9"
+                                <label className="text-sm font-medium">Product Image</label>
+                                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     />
+                                    <div className="flex flex-col items-center justify-center gap-2">
+                                        {imagePreview ? (
+                                            <div className="relative w-full h-32">
+                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
+                                                <span className="text-xs text-gray-500 mt-1">Click to change</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-8 w-8 text-gray-400" />
+                                                <span className="text-sm text-gray-600">Click to upload image</span>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
