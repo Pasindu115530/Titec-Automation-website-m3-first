@@ -5,7 +5,7 @@ export default function Header() {
 
   return (
     <header
-      className={`site-header glass-effect ${location.pathname === '/' ? 'absolute top-0 left-1/2 z-50 m-4 -translate-x-1/2' : 'shadow-sm relative'}`}
+      className={`${location.pathname === '/' ? 'absolute top-0 left-1/2 z-50 m-4 -translate-x-1/2 bg-transparent' : 'site-header glass-effect shadow-sm relative'}`}
       style={{ fontFamily: 'Poppins, sans-serif', maxWidth: 'calc(100% - 2rem)' }}
     >
       <div className="mx-auto px-45 py-4 flex items-center w-full gap-25">
@@ -22,10 +22,10 @@ export default function Header() {
         <nav className="hidden md:flex ml-14 flex-1">
           <ul className="flex gap-10 items-center text-gray-600 font-medium">
             <li><Link className="nav-link" style={location.pathname === '/' ? { color: '#0C2340' } : {}} to="/">Home</Link></li>
-            <li><Link className="nav-link" style={location.pathname === '/store' ? { color: '#0C2340' } : {}} to="/store">Store</Link></li>
-            <li><Link className="nav-link" style={location.pathname === '/about' ? { color: '#0C2340' } : {}} to="/about">About</Link></li>
-            <li><Link className="nav-link" style={location.pathname === '/contact' ? { color: '#0C2340' } : {}} to="/contact">Contact</Link></li>
-            <li><Link className="nav-link" style={location.pathname === '/faq' ? { color: '#0C2340' } : {}} to="/faq">FAQ</Link></li>
+            <li><Link className="nav-link" style={location.pathname === '/' ? { color: '#0C2340' } : (location.pathname === '/store' ? { color: '#0C2340' } : {})} to="/store">Store</Link></li>
+            <li><Link className="nav-link" style={location.pathname === '/' ? { color: '#0C2340' } : (location.pathname === '/about' ? { color: '#0C2340' } : {})} to="/about">About</Link></li>
+            <li><Link className="nav-link" style={location.pathname === '/' ? { color: '#0C2340' } : (location.pathname === '/contact' ? { color: '#0C2340' } : {})} to="/contact">Contact</Link></li>
+            <li><Link className="nav-link" style={location.pathname === '/' ? { color: '#0C2340' } : (location.pathname === '/faq' ? { color: '#0C2340' } : {})} to="/faq">FAQ</Link></li>
           </ul>
         </nav>
 

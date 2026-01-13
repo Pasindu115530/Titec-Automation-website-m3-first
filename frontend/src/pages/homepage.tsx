@@ -3,14 +3,41 @@ import Loader from "../components/loader";
 import Footer from "../components/footer";
 import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
+import heroRobotArm from "../assets/hero_robot_arm_1767856086813.png";
+
+// Custom Hook for Scroll Detection
+function useInView(threshold = 0) {
+  const [isInView, setIsInView] = useState(false);
+  const [element, setElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [element, threshold]);
+
+  return { ref: setElement, isInView };
+}
 
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
 
+  // Refs for Scroll Animations
+  const { ref: contentRef, isInView: contentInView } = useInView(0);
+  const { ref: imageRef, isInView: imageInView } = useInView(0);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setStatus("success");
-    }, 2000); // 2 seconds
+      setStatus("complete");
+    }, 2000); // Simulate loading duration
 
     return () => clearTimeout(timer);
   }, []);
@@ -20,46 +47,226 @@ export default function Homepage() {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
       {/* Main Content starts after 3 seconds */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+          .font-inter { font-family: 'Inter', sans-serif; }
+          .font-orbitron { font-family: 'Orbitron', sans-serif; }
+          .font-michroma { font-family: 'Michroma', sans-serif; }
+           .glass-panel {
+            background: rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+          }
+          @keyframes splash {
+            0% { transform: scale(0.5); opacity: 0.4; }
+            50% { opacity: 0.2; }
+            100% { transform: scale(3); opacity: 0; }
+          }
+          .animate-splash {
+            animation: splash 4s infinite ease-out;
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+          }
+          .animate-float { animation: float 6s ease-in-out infinite; }
+          .animate-float-delay { animation: float 8s ease-in-out infinite; animation-delay: 2s; }
+          
+          /* Entry Animations */
+          @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+          }
+          .animate-slide-in-left { animation: slideInLeft 1s ease-out forwards; opacity: 0; }
+          .animate-slide-in-right { animation: slideInRight 1s ease-out forwards; opacity: 0; }
+          
+          .delay-100 { animation-delay: 0.1s; }
+          .delay-200 { animation-delay: 0.2s; }
+          .delay-300 { animation-delay: 0.3s; }
+          .delay-500 { animation-delay: 0.5s; }
+        `}
+      </style>
       <section
-        className="relative min-h-[50vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
+        className="relative min-h-screen flex items-center bg-gray-50 overflow-hidden font-inter text-gray-900"
+        onMouseMove={(e) => {
+          const x = (window.innerWidth - e.pageX * 2) / 100;
+          const y = (window.innerHeight - e.pageY * 2) / 100;
+          document.documentElement.style.setProperty('--mouse-x', `${x}px`);
+          document.documentElement.style.setProperty('--mouse-y', `${y}px`);
+        }}
       >
-        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/src/assets/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
-        <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
-          <div className="text-center">
-            <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME !</h3>
-            <h1 className="text-4xl md:text-6xl font-semibold text-(--blue-hover) leading-tight tracking-tight">
-              Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--secondary-blue)">Smarter. Faster. Reliable</span>
+        {/* Background Grid Pattern (Parallax Layer 1) */}
+        <div className="absolute inset-0 z-0 opacity-[0.4]" style={{
+          backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+          transform: 'translate(var(--mouse-x), var(--mouse-y))',
+          transition: 'transform 0.1s ease-out'
+        }}></div>
+
+        {/* Floating Tech Particles (Parallax Layer 2 - Faster) */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          transform: 'translate(calc(var(--mouse-x) * -2), calc(var(--mouse-y) * -2))',
+          transition: 'transform 0.1s ease-out'
+        }}>
+          <div className="absolute top-1/4 left-1/4 w-4 h-4 border-2 border-gray-300 rounded-full animate-float opacity-60"></div>
+          <div className="absolute top-1/3 right-1/4 w-6 h-6 border border-blue-200 rotate-45 animate-float-delay opacity-50"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-red-400 rounded-full animate-float opacity-40"></div>
+          <div className="absolute top-10 right-10 text-gray-200 text-6xl opacity-20 font-orbitron font-bold select-none">+</div>
+          <div className="absolute bottom-20 left-10 text-gray-200 text-8xl opacity-10 font-michroma font-bold select-none">01</div>
+        </div>
+
+        {/* Live System Widgets */}
+        <div className="absolute top-34 right-6 hidden md:flex flex-col items-end z-20 opacity-40 pointer-events-none">
+          <div className="font-mono text-xs text-orange-500 font-bold tracking-widest mb-1 flex items-center">
+            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
+            LIVE SYSTEM
+          </div>
+          <div className="font-mono text-xs text-gray-400">
+            SYS.STATUS: <span className="text-blue-600">ONLINE</span>
+          </div>
+          <div className="font-mono text-xs text-gray-400 mt-1">
+            COORDS: <span className="text-gray-600">34.05N, 118.24W</span>
+          </div>
+        </div>
+
+        {/* Decorative Vertical Ruler/Dash Pattern (Left Side) */}
+        <div className="absolute left-6 top-1/3 flex flex-col gap-2 opacity-50 z-0 hidden md:flex">
+          <div className="w-6 h-[2px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-gray-600"></div>
+          <div className="w-12 h-[3px] bg-black-900"></div>
+          <div className="w-4 h-[2px] bg-gray-600"></div>
+          <div className="w-6 h-[2px] bg-gray-600"></div>
+          <div className="w-3 h-[2px] bg-gray-600"></div>
+          <div className="w-8 h-[2px] bg-gray-600"></div>
+        </div>
+
+        {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
+        <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
+          <div className="w-8 h-[2px] bg-blue-400"></div>
+          <div className="w-3 h-[2px] bg-blue-500"></div>
+          <div className="w-6 h-[2px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
+          <div className="w-10 h-[3px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
+          <div className="w-6 h-[2px] bg-gray-400"></div>
+        </div>
+
+        {/* Decorative Horizontal Scale (Bottom Left) */}
+        <div className="absolute bottom-12 left-20 flex gap-4 opacity-40 z-0 hidden md:flex items-end">
+          <div className="h-4 w-px bg-gray-400"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-3 w-px bg-gray-400"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-4 w-px bg-gray-800"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+        </div>
+
+        {/* Decorative Horizontal Barcode (Top Right) */}
+        <div className="absolute top-28 right-20 flex gap-2 opacity-30 z-0 hidden md:flex">
+          <div className="w-12 h-1 bg-gray-400"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-6 h-1 bg-gray-800"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-8 h-1 bg-gray-400"></div>
+        </div>
+
+        {/* Soft Ambient Glows */}
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-gray-200/50 rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
+
+        {/* Tech Decor: Circuit Paths */}
+        <div className="absolute inset-x-0 top-1/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-20"></div>
+        <div className="absolute inset-y-0 right-1/3 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent opacity-20"></div>
+
+        {/* Tech Decor: Small Data Points */}
+        <div className="absolute top-[22%] left-[15%] font-mono text-[10px] text-blue-400 opacity-60 tracking-widest uppercase">
+          sys_opt :: <span className="text-gray-400">active</span>
+        </div>
+        <div className="absolute bottom-[35%] right-[20%] font-mono text-[10px] text-gray-400 opacity-60 tracking-widest hidden md:block">
+          {'>>'} <span className="text-red-400">init_sequence</span>
+        </div>
+        <div className="absolute top-[40%] right-[5%] font-mono text-[10px] text-gray-300 opacity-40 -rotate-90 origin-bottom-right hidden lg:block">
+          EST_CONN_SECURE
+        </div>
+
+        {/* Tech Decor: Corner Accents */}
+        <div className="absolute top-40 left-8 w-6 h-6 border-l-2 border-t-2 border-red-500/30"></div>
+        <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-blue-500/30"></div>
+        <div className="absolute top-1/2 left-4 w-1 h-8 bg-gray-200 rounded-full"></div>
+
+        {/* Ambient Light Overlay */}
+        <div className="absolute inset-0 bg-white/60 pointer-events-none z-0"></div>
+
+        <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full flex flex-col md:flex-row items-center justify-between pt-14">
+
+          {/* Left: Content Area */}
+          <div
+            ref={contentRef}
+            className="w-full md:w-1/2 flex flex-col justify-center items-start text-left mb-16 md:mb-0 z-20 md:pl-37"
+          >
+
+            {/* Badge (Welcome) */}
+            <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <span className="w-2 h-2 rounded-full bg-red-500 mr-3 animate-pulse"></span>
+              <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC AUTOMATION SYSTEMS</span>
+            </div>
+
+            {/* Headline */}
+            <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 leading-none font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
+              FUTURE
             </h1>
-            <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
-              We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
-              enhance product quality. <strong>With years of expertise and successful collaborations</strong> with leading global brands, we provide fast, reliable,
-              and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
+            <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              IS NEAR
             </p>
 
-            <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
-              <a
-                className="button-1"
-                href="/contact"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"></path>
-                </svg>
-                Get Quote
+            {/* Subtext */}
+            <div className={`max-w-[800px] hidden md:block transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <p className="text-sm text-gray-600 mb-8 leading-relaxed font-mono">
+                We are a <strong className="text-gray-900">Sri Lankan</strong> industrial automation company delivering advanced solutions that streamline production, minimize downtime, and significantly enhance product quality.
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <a href="#quote" className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm">
+                GET QUOTE
               </a>
-              <a
-                className="button-2"
-                href="/store"
-              >
-                Visit Store
+              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm">
+                VISIT STORE
               </a>
+            </div>
+          </div>
+
+          {/* Right: Image Area */}
+          <div
+            ref={imageRef}
+            className={`w-full md:w-1/2 flex justify-center md:justify-end relative items-center transition-all duration-700 ease-in delay-200 ${imageInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-24'}`}
+          >
+            <div className="relative z-10 w-full max-w-lg transform md:-translate-x-24">
+              <img
+                src={heroRobotArm}
+                alt="Industrial Robot Arm"
+                className="w-full h-auto object-contain mix-blend-multiply"
+                style={{
+                  filter: 'contrast(1.05) brightness(1.02)',
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+                  maskComposite: 'intersect',
+                  WebkitMaskComposite: 'source-in'
+                }}
+              />
             </div>
           </div>
         </div>
@@ -171,6 +378,6 @@ export default function Homepage() {
 
       {/* Footer */}
       <Footer />
-    </>
+    </div>
   );
 }

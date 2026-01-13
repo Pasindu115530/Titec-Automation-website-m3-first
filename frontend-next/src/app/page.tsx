@@ -1,66 +1,232 @@
-// "use client" removed to make this a Server Component
-// import { useState, useEffect } from "react"; // Removed
-// import Loader from "../components/loader"; // Removed
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Loader from "../components/loader";
 import Footer from "../components/footer";
-import SectionHeader from "../components/section-header";
 import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
-import { projectService } from "../services/projectService";
-import { Project } from "../types";
+import heroRobotArm from "../assets/hero_robot_arm_1767856086813.png";
 
-export default async function Homepage() {
-  // Fetch projects from API
-  let projects: Project[] = [];
-  try {
-    projects = await projectService.getProjects();
-  } catch (error) {
-    console.error("Failed to fetch projects:", error);
-    // Optionally handle error state or show empty list
+// Custom Hook for Scroll Detection
+function useInView(threshold = 0) {
+  const [isInView, setIsInView] = useState(false);
+  const [element, setElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [element, threshold]);
+
+  return { ref: setElement, isInView };
+}
+
+export default function Homepage() {
+  const [status, setStatus] = useState("loading");
+
+  // Refs for Scroll Animations
+  const { ref: contentRef, isInView: contentInView } = useInView(0);
+  const { ref: imageRef, isInView: imageInView } = useInView(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStatus("complete");
+    }, 2000); // Simulate loading duration
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (status === "loading") {
+    return <Loader />;
   }
 
-
   return (
-    <>
+    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
       {/* Main Content starts after 3 seconds */}
+
       <section
-        className="relative min-h-[50vh] flex items-center font-sans bg-linear-to-b from-(--hero-gradient-start) to-(--hero-gradient-end)"
+        className="relative min-h-screen flex items-center bg-gray-50 overflow-hidden font-inter text-gray-900"
+        onMouseMove={(e) => {
+          const x = (window.innerWidth - e.pageX * 2) / 100;
+          const y = (window.innerHeight - e.pageY * 2) / 100;
+          document.documentElement.style.setProperty('--mouse-x', `${x}px`);
+          document.documentElement.style.setProperty('--mouse-y', `${y}px`);
+        }}
       >
-        {/* Updated background path to public asset */}
-        <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
-        <div className="relative z-10 max-w-7xl pt-40 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-1 gap-18 items-center">
-          <div className="text-center">
-            <h3 className="text-lg font-bold text-(--primary-blue)">WELCOME !</h3>
-            <h1 className="text-4xl md:text-6xl font-semibold text-(--blue-hover) leading-tight tracking-tight">
-              Transform Your Workflow with <br /> Next-Level Precision Robotics <br /> <span className="text-(--secondary-blue)">Smarter. Faster. Reliable</span>
+        {/* Background Grid Pattern (Parallax Layer 1) */}
+        <div className="absolute inset-0 z-0 opacity-[0.4]" style={{
+          backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+          transform: 'translate(var(--mouse-x), var(--mouse-y))',
+          transition: 'transform 0.1s ease-out'
+        }}></div>
+
+        {/* Floating Tech Particles (Parallax Layer 2 - Faster) */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          transform: 'translate(calc(var(--mouse-x) * -2), calc(var(--mouse-y) * -2))',
+          transition: 'transform 0.1s ease-out'
+        }}>
+          <div className="absolute top-1/4 left-1/4 w-4 h-4 border-2 border-gray-300 rounded-full animate-float opacity-60"></div>
+          <div className="absolute top-1/3 right-1/4 w-6 h-6 border border-blue-200 rotate-45 animate-float-delay opacity-50"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-red-400 rounded-full animate-float opacity-40"></div>
+          <div className="absolute top-10 right-10 text-gray-200 text-6xl opacity-20 font-orbitron font-bold select-none">+</div>
+          <div className="absolute bottom-20 left-10 text-gray-200 text-8xl opacity-10 font-michroma font-bold select-none">01</div>
+        </div>
+
+        {/* Live System Widgets */}
+        <div className="absolute top-34 right-6 hidden md:flex flex-col items-end z-20 opacity-40 pointer-events-none">
+          <div className="font-mono text-xs text-orange-500 font-bold tracking-widest mb-1 flex items-center">
+            <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
+            LIVE SYSTEM
+          </div>
+          <div className="font-mono text-xs text-gray-400">
+            SYS.STATUS: <span className="text-blue-600">ONLINE</span>
+          </div>
+          <div className="font-mono text-xs text-gray-400 mt-1">
+            COORDS: <span className="text-gray-600">34.05N, 118.24W</span>
+          </div>
+        </div>
+
+        {/* Decorative Vertical Ruler/Dash Pattern (Left Side) */}
+        <div className="absolute left-6 top-1/3 flex flex-col gap-2 opacity-50 z-0 hidden md:flex">
+          <div className="w-6 h-[2px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-gray-600"></div>
+          <div className="w-12 h-[3px] bg-black-900"></div>
+          <div className="w-4 h-[2px] bg-gray-600"></div>
+          <div className="w-6 h-[2px] bg-gray-600"></div>
+          <div className="w-3 h-[2px] bg-gray-600"></div>
+          <div className="w-8 h-[2px] bg-gray-600"></div>
+        </div>
+
+        {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
+        <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
+          <div className="w-8 h-[2px] bg-blue-400"></div>
+          <div className="w-3 h-[2px] bg-blue-500"></div>
+          <div className="w-6 h-[2px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
+          <div className="w-10 h-[3px] bg-gray-500"></div>
+          <div className="w-4 h-[2px] bg-blue-500"></div>
+          <div className="w-6 h-[2px] bg-gray-400"></div>
+        </div>
+
+        {/* Decorative Horizontal Scale (Bottom Left) */}
+        <div className="absolute bottom-12 left-20 flex gap-4 opacity-40 z-0 hidden md:flex items-end">
+          <div className="h-4 w-px bg-gray-400"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-3 w-px bg-gray-400"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+          <div className="h-4 w-px bg-gray-800"></div>
+          <div className="h-2 w-px bg-gray-300"></div>
+        </div>
+
+        {/* Decorative Horizontal Barcode (Top Right) */}
+        <div className="absolute top-28 right-20 flex gap-2 opacity-30 z-0 hidden md:flex">
+          <div className="w-12 h-1 bg-gray-400"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-6 h-1 bg-gray-800"></div>
+          <div className="w-2 h-1 bg-gray-300"></div>
+          <div className="w-8 h-1 bg-gray-400"></div>
+        </div>
+
+        {/* Soft Ambient Glows */}
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-gray-200/50 rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
+
+        {/* Tech Decor: Circuit Paths */}
+        <div className="absolute inset-x-0 top-1/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-20"></div>
+        <div className="absolute inset-y-0 right-1/3 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent opacity-20"></div>
+
+        {/* Tech Decor: Small Data Points */}
+        <div className="absolute top-[22%] left-[15%] font-mono text-[10px] text-blue-400 opacity-60 tracking-widest uppercase">
+          sys_opt :: <span className="text-gray-400">active</span>
+        </div>
+        <div className="absolute bottom-[35%] right-[20%] font-mono text-[10px] text-gray-400 opacity-60 tracking-widest hidden md:block">
+          {'>>'} <span className="text-red-400">init_sequence</span>
+        </div>
+        <div className="absolute top-[40%] right-[5%] font-mono text-[10px] text-gray-300 opacity-40 -rotate-90 origin-bottom-right hidden lg:block">
+          EST_CONN_SECURE
+        </div>
+
+        {/* Tech Decor: Corner Accents */}
+        <div className="absolute top-40 left-8 w-6 h-6 border-l-2 border-t-2 border-red-500/30"></div>
+        <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-blue-500/30"></div>
+        <div className="absolute top-1/2 left-4 w-1 h-8 bg-gray-200 rounded-full"></div>
+
+        {/* Ambient Light Overlay */}
+        <div className="absolute inset-0 bg-white/60 pointer-events-none z-0"></div>
+
+        <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full flex flex-col md:flex-row items-center justify-between pt-14">
+
+          {/* Left: Content Area */}
+          <div
+            ref={contentRef}
+            className="w-full md:w-1/2 flex flex-col justify-center items-start text-left mb-16 md:mb-0 z-20 md:pl-37"
+          >
+
+            {/* Badge (Welcome) */}
+            <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <span className="w-2 h-2 rounded-full bg-red-500 mr-3 animate-pulse"></span>
+              <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC AUTOMATION SYSTEMS</span>
+            </div>
+
+            {/* Headline */}
+            <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 leading-none font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
+              FUTURE
             </h1>
-            <p className="mt-8 text-lg text-gray-700 max-w-5xl mx-auto">
-              We are a <strong>Sri Lankan</strong> industrial automation company delivering <strong>advanced solutions</strong> that streamline production, minimize downtime, and significantly
-              enhance product quality. <strong>With years of expertise and successful collaborations</strong> with leading global brands, we provide fast, reliable,
-              and high-precision automation systems that help businesses <strong>operate smarter and more efficiently.</strong>
+            <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              IS NEAR
             </p>
 
-            <div className="mt-12 flex flex-col sm:flex-row gap-5 justify-center">
-              <a
-                className="button-1"
-                href="/contact"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"></path>
-                </svg>
-                Get Quote
+            {/* Subtext */}
+            <div className={`max-w-[800px] hidden md:block transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <p className="text-sm text-gray-600 mb-8 leading-relaxed font-mono">
+                We are a <strong className="text-gray-900">Sri Lankan</strong> industrial automation company delivering advanced solutions that streamline production, minimize downtime, and significantly enhance product quality.
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+              <a href="#quote" className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm">
+                GET QUOTE
               </a>
-              <a
-                className="button-2"
-                href="/store"
-              >
-                Visit Store
+              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm">
+                VISIT STORE
               </a>
+            </div>
+          </div>
+
+          {/* Right: Image Area */}
+          <div
+            ref={imageRef}
+            className={`w-full md:w-1/2 flex justify-center md:justify-end relative items-center transition-all duration-700 ease-in delay-200 ${imageInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-24'}`}
+          >
+            <div className="relative z-10 w-full max-w-lg transform md:-translate-x-24">
+              <Image
+                src={heroRobotArm}
+                alt="Industrial Robot Arm"
+                className="w-full h-auto object-contain mix-blend-multiply"
+                priority
+                style={{
+                  filter: 'contrast(1.05) brightness(1.02)',
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+                  maskComposite: 'intersect',
+                  WebkitMaskComposite: 'source-in'
+                }}
+              />
             </div>
           </div>
         </div>
@@ -69,43 +235,27 @@ export default async function Homepage() {
       {/* Our Clients Section */}
       <section className="w-full bg-white py-12">
         <div className="w-full">
-          <SectionHeader
-            title="Our"
-            highlightedText="CLIENTS"
-            subtitle="Trusted by industry leaders."
-          />
-          <div className="text-center mb-10 hidden"></div>
+          <div className="text-center mb-10">
+            <h1 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">CLIENTS</span></h1>
+            <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
+          </div>
 
           <div className="clients-scroll-container">
             <div className="clients-scroll-track">
-              {clients.map((client: Client, index) => {
-                // Inline slugify logic or import it. Since this is a client component potentially (or server), 
-                // and we want avoid importing utility if not needed or simple enough.
-                // Let's import create a slug here or import the utility. 
-                // Since I cannot easily add top-level imports with replace_file_content effectively if they are far away, 
-                // I will settle for a local helper or simple replacement for now, OR I will duplicate the slug logic briefly 
-                // or best: use the utility if I added the import. 
-
-                // Wait, I should add the import first or just use a simple regex here if I don't want to mess up imports.
-                // Actually, I can use multi_replace to add import and change this.
-                // But for now, let's just use a simple transform since I am in a ReplaceBlock.
-                const slug = client.name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-
-                return (
-                  <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
-                    <img
-                      src={typeof client.logo === 'string' ? client.logo : client.logo.src}
-                      alt={client.name}
-                      className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <a href={`/clients/${slug}`} className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
-                        View Projects
-                      </a>
-                    </div>
+              {clients.map((client: Client, index) => (
+                <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
+                  <Image
+                    src={client.logo}
+                    alt={client.name}
+                    className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
+                      View Project
+                    </a>
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -115,12 +265,10 @@ export default async function Homepage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
-            <SectionHeader
-              title="We Do"
-              highlightedText="WHAT"
-              highlightPosition="prefix"
-              subtitle="Designing and deploying tailored automation systems — from concept to commissioning."
-            />
+            <h2 className="text-4xl font-bold text-gray-800 section-title"><span className="text-(--secondary-blue)">WHAT</span> We Do</h2>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Designing and deploying tailored automation systems — from concept to commissioning.
+            </p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -140,66 +288,100 @@ export default async function Homepage() {
         </div>
       </section>
 
+      {/* Projects Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader
-            title="Our"
-            highlightedText="PROJECTS"
-            subtitle="Selected deployments and case studies."
-          />
+          <div className="text-center">
+            <h2 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">PROJECTS</span></h2>
+            <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
+          </div>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Display all projects from database */}
-            {projects.length > 0 ? (
-              projects.map((project) => {
-                // Construct image URL for thumbnail
-                const imageUrl = project.thumbnail_path 
-                  ? `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}`
-                  : '';
-                
-                return (
-                  <a
-                    key={project.id}
-                    href={`/projects/${project.id}`}
-                    className="rounded-lg overflow-hidden bg-white shadow hover:scale-[1.01] transition block"
-                  >
-                    <div className="h-40 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400 relative">
-                      {imageUrl ? (
-                        <img src={imageUrl} alt={project.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <span>No Image</span>
-                      )}
+
+            {/* Project 1: Conveyor Line Modernization */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 01</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Conveyor Line Modernization</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold">{project.title}</h3>
-                      {project.client && (
-                        <p className="text-xs text-blue-600 mt-1">{project.client}</p>
-                      )}
-                      <p className="text-sm text-gray-600 mt-2">
-                        {project.description || 'No description'}
-                      </p>
-                      {project.status && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <span className="inline-block px-2 py-1 text-xs bg-indigo-50 text-indigo-700 rounded">
-                            {project.status}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </a>
-                );
-              })
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500">No projects available yet.</p>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Conveyor Line Modernization</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    Reduced downtime by 35% after automation and controls upgrade. Implemented advanced sensory feedback loops.
+                  </p>
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* Project 2: Automated Sorting System */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 02</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Automated Sorting System</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Automated Sorting System</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    High-precision sorting for mixed SKU production using AI-driven computer vision systems.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Project 3: Robotic Palletizing */}
+            <div className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
+              <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
+                {/* Front Face */}
+                <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400">
+                    <span className="font-semibold text-lg">PROJECT 03</span>
+                  </div>
+                  <div className="p-6 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">Robotic Palletizing</h3>
+                      <div className="w-12 h-1 bg-red-500 mt-2"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Face */}
+                <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
+                  <h3 className="text-2xl font-bold mb-4">Robotic Palletizing</h3>
+                  <p className="text-base leading-relaxed text-gray-100">
+                    Increased throughput and ergonomic safety improvements with heavy-payload cobots.
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <Footer />
-    </>
+    </div>
   );
 }

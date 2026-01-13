@@ -36,7 +36,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <div className="w-full min-h-screen flex flex-col">
-              <div className="fixed bottom-25 right-25 bg-red-500 rounded-full p-5 z-999 cursor-pointer hover:scale-105 transition-transform">
+              <div className="fixed bottom-25 right-25 bg-[#0C2340] rounded-full p-5 z-999 cursor-pointer hover:scale-105 transition-transform shadow-lg">
                 <div className="flex flex-row items-center justify-center">
 
                   <div className="rotate-20"><IoCallSharp color="white" size={40} /></div>
