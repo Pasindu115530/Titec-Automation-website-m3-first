@@ -1,12 +1,12 @@
 
-import { clients } from '../../../assets/clients/clients';
-import { projectService } from '../../../services/projectService';
-import { slugify } from '../../../utils/slugify';
-import SectionHeader from '../../../components/section-header';
-import Footer from '../../../components/footer';
+import { clients } from '@/assets/clients/clients';
+import { projectService } from '@/services/projectService';
+import { slugify } from '@/utils/slugify';
+import SectionHeader from '@/components/section-header';
+import Footer from '@/components/footer';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Project } from '../../../types';
+import { Project } from '@/types';
 
 interface PageProps {
     params: { slug: string };

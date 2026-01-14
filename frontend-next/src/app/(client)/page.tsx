@@ -1,6 +1,6 @@
-import { projectService } from "../services/projectService";
-import { Project } from "../types";
-import HomePageContent from "../components/home-page-content";
+import { projectService } from "@/services/projectService";
+import { Project } from "@/types";
+import HomePageContent from "@/components/home-page-content";
 
 export default async function Homepage() {
   // Fetch projects from API

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, type JSX } from 'react'
-import Footer from "../../components/footer";
-import { FAQs } from "../../assets/FAQ";
-import type { FAQ } from "../../assets/FAQ";
-import SectionHeader from '../../components/section-header';
+import Footer from "@/components/footer";
+import { FAQs } from "@/assets/FAQ";
+import type { FAQ } from "@/assets/FAQ";
+import SectionHeader from '@/components/section-header';
 
 
 export default function Faq(): JSX.Element {
