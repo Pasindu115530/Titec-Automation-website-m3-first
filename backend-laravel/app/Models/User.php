@@ -47,4 +47,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function quotationRequests() 
+    {
+        return $this->hasMany(QuotationRequest::class);
+    }
+
+    public function quotationsCreated() 
+    {
+        // Useful for admins to see quotes they generated
+        return $this->hasMany(Quotation::class, 'admin_id');
+    }
 }
