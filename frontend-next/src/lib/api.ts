@@ -14,10 +14,9 @@ api.interceptors.request.use((config) => {
     try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         if (token) {
-            config.headers = {
-                ...(config.headers || {}),
-                Authorization: `Bearer ${token}`,
-            };
+            if (config.headers) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
         }
     } catch {
         // Safe no-op if localStorage is inaccessible
