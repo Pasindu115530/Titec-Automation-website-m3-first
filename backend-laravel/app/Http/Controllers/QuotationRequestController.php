@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class QuotationRequestController extends Controller
 {
+    public function index()
+    {
+        return \App\Models\QuotationRequest::with(['user', 'products'])->latest()->get();
+    }
+
     public function store(Request $request)
     {
         // 1. Create the Request "Header"

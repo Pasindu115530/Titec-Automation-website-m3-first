@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string, role: UserRole) => {
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
             const response = await fetch(`${backendUrl}/api/users/login`, {
                 method: 'POST',
                 headers: {
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             const data = await response.json();
-            
+
             // Verify the role matches what's expected
             if (data.user.role !== role) {
                 throw new Error(`Invalid credentials for ${role} login`);

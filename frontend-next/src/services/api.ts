@@ -6,6 +6,11 @@ export async function fetchFromApi<T>(endpoint: string, options?: RequestInit): 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...options?.headers,
+            },
             credentials: 'include',
         });
 

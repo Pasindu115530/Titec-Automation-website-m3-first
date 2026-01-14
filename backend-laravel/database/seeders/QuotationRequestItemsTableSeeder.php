@@ -9,18 +9,13 @@ class QuotationRequestItemsTableSeeder extends Seeder
 {
     public function run()
     {
-        // Items for Request #1 (John Engineering)
+        // Items for Request #1
         $itemsRequest1 = [
             [
                 'quotation_request_id' => 1,
-                'product_id' => 1, // Siemens PLC
+                'product_id' => \App\Models\Product::first()->id ?? 1, // Dynamic ID or fallback
                 'quantity' => 5,
             ],
-            [
-                'quotation_request_id' => 1,
-                'product_id' => 3, // Omron Relay
-                'quantity' => 50,
-            ]
         ];
 
         foreach ($itemsRequest1 as $item) {
@@ -33,11 +28,11 @@ class QuotationRequestItemsTableSeeder extends Seeder
             );
         }
 
-        // Items for Request #2 (AutoMakers)
+        // Items for Request #2
         $itemsRequest2 = [
             [
                 'quotation_request_id' => 2,
-                'product_id' => 2, // Mitsubishi Inverter
+                'product_id' => \App\Models\Product::count() > 1 ? \App\Models\Product::all()->skip(1)->first()->id : 1,
                 'quantity' => 2,
             ]
         ];
