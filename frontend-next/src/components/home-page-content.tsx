@@ -8,6 +8,8 @@ import { clients } from "../assets/clients/clients";
 import type { Client } from "../assets/clients/clients";
 import heroRobotArm from "../assets/hero_robot_arm_1767856086813.png";
 import { Project } from "../types";
+import { SERVICES } from "../data/services";
+import Link from "next/link";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -276,19 +278,35 @@ export default function HomePageContent({ projects }: HomePageContentProps) {
                         </p>
                     </div>
 
-                    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
-                            <div className="text-red-500 mb-3">Packaging Automation</div>
-                            <p className="text-gray-600">Automated packaging lines for speed and consistency.</p>
-                        </div>
-                        <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
-                            <div className="text-red-500 mb-3">Sorting Automation</div>
-                            <p className="text-gray-600">High-throughput sorting systems optimized for accuracy.</p>
-                        </div>
-                        <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
-                            <div className="text-red-500 mb-3">Authorized PLC Sellers</div>
-                            <p className="text-gray-600">Genuine PLC hardware and fast delivery.</p>
-                        </div>
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {SERVICES.map((service) => (
+                            <Link href={`/services/${service.slug}`} key={service.id} className="group relative block h-80 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+                                <Image
+                                    src={service.image}
+                                    alt={service.title}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                                <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end h-full">
+                                    <h3 className="text-xl font-bold text-white mb-2 font-orbitron tracking-wide group-hover:text-blue-400 transition-colors">
+                                        {service.title}
+                                    </h3>
+                                    <p className="text-gray-300 text-sm mb-4 line-clamp-2 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">
+                                        {service.description}
+                                    </p>
+                                    <div className="flex items-center text-blue-400 font-bold text-sm tracking-wider uppercase opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                        Explore <span className="ml-2 text-lg">→</span>
+                                    </div>
+                                    <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </section>
