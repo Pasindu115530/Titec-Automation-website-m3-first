@@ -20,6 +20,7 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+// Route::group([], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -39,4 +40,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
     Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
     Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
+    
+    // Quotation Requests
+    Route::get('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'index']);
 });
+
+// Public store route for requests (can also be auth protected if needed, but currently public for simplicity or user/guest mix)
+// If you want it protected, move inside, but "store" often needs to be accessible. Re-check logic. 
+// Plan said: POST /quotation-requests (Public/Auth). Let's put it outside middleware for now or keep inside if user mandatory. 
+// Store page says "Login if prompted", implying Auth. Let's put inside auth group for "User" requests, 
+// OR allow guest. Controller has `auth()->id()`. If guest, it's null.
+Route::post('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'store']);

@@ -41,6 +41,17 @@ export default function Store() {
         });
     };
 
+    const getImageUrl = (imagePath?: string) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+        // Handle storage paths if seeded with 'products/' vs public path
+        // Seeder saved as 'products/filename.jpg' or '/products/filename.jpg'
+        // If it starts with /, append to backendUrl. If not, maybe append /
+        const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+        return `${backendUrl}${path}`;
+    };
+
     if (loading) {
         return <Loader />;
     }
@@ -48,25 +59,12 @@ export default function Store() {
     return (
         <>
             <main className="max-w-6xl mx-auto px-6 py-12">
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold">Product Catalog</h1>
-                    <p className="text-gray-600">Browse our products. Request a quotation for pricing.</p>
-                </div>
-
-                {isAdmin && (
-                    <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-sm text-yellow-800">
-                            <strong>Admin View:</strong> Prices are hidden from customers. Customers can only add items to quotation requests.
-                        </p>
-                    </div>
-                )}
-
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {products.map(p => (
                         <div key={p.id} className="border rounded-lg p-4 bg-white hover:shadow-lg transition-shadow">
                             <div className="h-40 bg-gradient-to-br from-gray-100 to-gray-200 rounded mb-4 flex items-center justify-center relative overflow-hidden">
                                 {p.image ? (
-                                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                    <img src={getImageUrl(p.image)} alt={p.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <ShoppingBag className="w-16 h-16 text-gray-400" />
                                 )}
