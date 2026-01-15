@@ -15,19 +15,20 @@ export default function Contact(): JSX.Element {
                 <div className="mt-5">
                     <ContactForm />
                 </div>
+                <div className="mt-12">
+                    <SocialLinksGrid />
+                </div>
+
+                <div className='flex flex-col gap-5 mt-12'>
+                    <SectionHeader
+                        title="Our"
+                        highlightedText='Office'
+                        subtitle=""
+                    />
+                    <MapSection />
+                </div>
             </main>
 
-
-            <SocialLinksGrid />
-
-            <div className='flex flex-col gap-5'>
-                <SectionHeader
-                    title="Our"
-                    highlightedText='Office'
-                    subtitle=""
-                />
-                <MapSection />
-            </div>
 
             <Footer />
         </>

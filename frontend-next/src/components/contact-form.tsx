@@ -20,10 +20,6 @@ export default function ContactForm() {
 
     return (
         <div className="w-full bg-[#5D5076] text-white rounded-3xl p-8 md:p-12 overflow-hidden relative shadow-xl">
-            {/* Background Gradients - Adjusted for Purple Theme */}
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-            <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start relative z-10">
                 {/* Left Side: Info Content */}
                 <div className="space-y-6 pt-10">
