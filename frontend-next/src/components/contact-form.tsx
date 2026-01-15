@@ -70,14 +70,14 @@ export default function ContactForm() {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
-                                    placeholder="email@domain.com"
+                                    placeholder="email@titecautomation.com"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-slate-700">Phone Number</label>
                                 <input
                                     className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
-                                    placeholder="+1 (555) 000-0000"
+                                    placeholder="+94 70 222 3333"
                                 />
                             </div>
                         </div>
