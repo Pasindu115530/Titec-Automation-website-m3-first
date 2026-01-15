@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { quotationService } from '@/services/quotationService';
 
 // Define types
 export type CartItem = {
@@ -93,54 +94,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(false);
     };
 
-    const submitQuotationRequest = async (customerInfo?: { name: string; email: string }) => {
+    const submitQuotationRequest = async (customerData: any) => {
+        // Map cart items to backend format: { product_id, quantity }
+        const formattedItems = items.map(item => ({
+            product_id: parseInt(item.id), // Ensure ID is number for backend if needed, or keep string if backend supports UUID
+            quantity: item.quantity
+        }));
+
+        const payload = {
+            message: "Request from website cart",
+            items: formattedItems
+        };
+
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
-            
-            // Get user from localStorage if logged in
-            const savedUser = localStorage.getItem('user');
-            let token = null;
-            let userId = null;
-            
-            if (savedUser) {
-                const user = JSON.parse(savedUser);
-                token = user.token;
-                userId = user.id;
-            }
-
-            const quotationRequest = {
-                customerId: userId,
-                customerName: customerInfo?.name,
-                customerEmail: customerInfo?.email,
-                items: items,
-                status: 'pending',
-                submittedAt: new Date().toISOString(),
-            };
-
-            const headers: HeadersInit = {
-                'Content-Type': 'application/json',
-            };
-
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
-            const response = await fetch(`${backendUrl}/api/quotations`, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(quotationRequest),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to submit quotation request');
-            }
-
-            // Clear cart after successful submission
+            await quotationService.createQuotationRequest(payload);
             clearCart();
-            
-            return;
         } catch (error) {
-            console.error('Error submitting quotation request:', error);
+            console.error("Submission failed", error);
             throw error;
         }
     };

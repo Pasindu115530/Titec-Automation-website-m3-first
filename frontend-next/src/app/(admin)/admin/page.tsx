@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { quotationService } from '@/services/quotationService';
 import { motion } from 'framer-motion';
 import {
     Users,
@@ -41,22 +42,13 @@ export default function AdminDashboard() {
 
     const fetchQuotationStats = async () => {
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4900';
-            const response = await fetch(`${backendUrl}/api/quotations`, {
-                headers: {
-                    'Authorization': `Bearer ${user?.token}`,
-                },
+            const data = await quotationService.getQuotationRequests();
+            setQuotationStats({
+                total: data.length,
+                pending: data.filter((q: any) => q.status === 'pending').length,
+                reviewed: data.filter((q: any) => q.status === 'reviewed').length,
+                quoted: data.filter((q: any) => q.status === 'quoted').length,
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                setQuotationStats({
-                    total: data.length,
-                    pending: data.filter((q: any) => q.status === 'pending').length,
-                    reviewed: data.filter((q: any) => q.status === 'reviewed').length,
-                    quoted: data.filter((q: any) => q.status === 'quoted').length,
-                });
-            }
         } catch (error) {
             console.error('Failed to fetch quotation stats:', error);
         }

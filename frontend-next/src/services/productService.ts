@@ -3,10 +3,12 @@ import { Product } from '../types';
 
 export const productService = {
     async getProducts(): Promise<Product[]> {
-        return fetchFromApi<Product[]>('/api/products');
+        const response = await fetchFromApi<{ data: Product[] }>('/api/products');
+        return response.data;
     },
 
     async getProductById(id: string): Promise<Product> {
-        return fetchFromApi<Product>(`/api/products/${id}`);
+        const response = await fetchFromApi<{ data: Product }>(`/api/products/${id}`);
+        return response.data;
     }
 };
