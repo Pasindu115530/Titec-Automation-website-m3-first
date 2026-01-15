@@ -10,15 +10,27 @@ class Quotation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'items',
-        'status',
-        'total_amount',
+        'quotation_request_id',
+        'admin_id',
+        'grand_total',
+        'pdf_path',
+        'valid_until',
+        'remarks'
     ];
 
     protected $casts = [
-        'items' => 'array',
+        'valid_until' => 'date', // Casts to Carbon date object
     ];
+
+    // Link back to the original request
+    public function request()
+    {
+        return $this->belongsTo(QuotationRequest::class, 'quotation_request_id');
+    }
+
+    // Which admin created this?
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id');
+    }
 }
