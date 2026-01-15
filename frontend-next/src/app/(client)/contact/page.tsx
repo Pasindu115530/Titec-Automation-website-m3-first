@@ -10,13 +10,8 @@ import { FaFacebook, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
 export default function Contact(): JSX.Element {
     return (
         <>
-            <main className="max-w-3xl h-100vh mx-auto px-3 py-12">
-                <SectionHeader
-                    title="Us"
-                    highlightedText='Contact'
-                    highlightPosition='prefix'
-                    subtitle="Have a question or need a quote? Send us a message and we will respond shortly."
-                />
+            <main className="max-w-7xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
 
                 <div className="mt-5">
                     <ContactForm />
@@ -26,12 +21,12 @@ export default function Contact(): JSX.Element {
 
             <section className="mt-10 mb-20 bg-black/10">
                 <div className='p-5'>
-                <SectionHeader
-                    title="Us On"
-                    highlightedText='View'
-                    highlightPosition='prefix'
-                    subtitle=""
-                />
+                    <SectionHeader
+                        title="Us On"
+                        highlightedText='View'
+                        highlightPosition='prefix'
+                        subtitle=""
+                    />
                 </div>
                 <div className="flex flex-wrap justify-center gap-20 pb-5">
                     <a href={contacts[0].facebook} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group transition-transform hover:-translate-y-1">
