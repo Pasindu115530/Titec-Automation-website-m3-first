@@ -27,6 +27,8 @@ export default function AddProjectPage() {
     const [success, setSuccess] = useState('');
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+    const [galleryImages, setGalleryImages] = useState<File[]>([]);
+    const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -73,6 +75,21 @@ export default function AddProjectPage() {
         }
     };
 
+    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setGalleryImages(prev => [...prev, ...files]);
+
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setGalleryPreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeGalleryImage = (index: number) => {
+        setGalleryImages(prev => prev.filter((_, i) => i !== index));
+        setGalleryPreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -89,6 +106,9 @@ export default function AddProjectPage() {
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
             }
+            galleryImages.forEach((image, index) => {
+                submitData.append(`project_images[${index}]`, image);
+            });
 
             const response = await api.post('/api/projects', submitData, {
                 headers: {
@@ -117,6 +137,8 @@ export default function AddProjectPage() {
                 });
                 setThumbnail(null);
                 setThumbnailPreview('');
+                setGalleryImages([]);
+                setGalleryPreviews([]);
             }, 1000);
         } catch (err: any) {
             const errorMessage = err.response?.data?.message ||

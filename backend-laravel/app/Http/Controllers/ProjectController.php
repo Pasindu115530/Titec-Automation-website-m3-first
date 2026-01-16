@@ -23,6 +23,9 @@ class ProjectController extends Controller
     /**
      * Store a newly created project in storage.
      */
+    /**
+     * Store a newly created project in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -32,6 +35,7 @@ class ProjectController extends Controller
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
+            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $thumbnailPath = null;
@@ -41,6 +45,13 @@ class ProjectController extends Controller
             $thumbnailPath = $path;
         }
 
+        $galleryPaths = [];
+        if ($request->hasFile('project_images')) {
+            foreach ($request->file('project_images') as $image) {
+                $galleryPaths[] = $image->store('projects/gallery', 'public');
+            }
+        }
+
         $project = Project::create([
             'title' => $validated['title'],
             'client' => $validated['client'] ?? null,
@@ -48,6 +59,7 @@ class ProjectController extends Controller
             'completion_date' => $validated['completion_date'] ?? null,
             'status' => $validated['status'] ?? 'In Progress',
             'thumbnail_path' => $thumbnailPath,
+            'project_image_urls' => $galleryPaths, // Casted to array in model
         ]);
 
         return response()->json([
@@ -79,6 +91,9 @@ class ProjectController extends Controller
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'deleted_images' => 'nullable|array',
+            'deleted_images.*' => 'string',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -91,6 +106,29 @@ class ProjectController extends Controller
             $path = $file->store('projects', 'public');
             $validated['thumbnail_path'] = $path;
         }
+
+        // Handle Gallery Images
+        $currentImages = $project->project_image_urls ?? [];
+
+        // 1. Remove deleted images
+        if ($request->has('deleted_images')) {
+            $deletedImages = $request->input('deleted_images');
+            foreach ($deletedImages as $delImg) {
+                if (in_array($delImg, $currentImages)) {
+                    Storage::disk('public')->delete($delImg);
+                    $currentImages = array_values(array_diff($currentImages, [$delImg]));
+                }
+            }
+        }
+
+        // 2. Add new images
+        if ($request->hasFile('project_images')) {
+            foreach ($request->file('project_images') as $image) {
+                $currentImages[] = $image->store('projects/gallery', 'public');
+            }
+        }
+
+        $validated['project_image_urls'] = $currentImages;
 
         $project->update($validated);
 
@@ -108,6 +146,13 @@ class ProjectController extends Controller
         // Delete thumbnail if exists
         if ($project->thumbnail_path) {
             Storage::disk('public')->delete($project->thumbnail_path);
+        }
+
+        // Delete gallery images
+        if ($project->project_image_urls) {
+            foreach ($project->project_image_urls as $imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
         }
 
         $project->delete();
