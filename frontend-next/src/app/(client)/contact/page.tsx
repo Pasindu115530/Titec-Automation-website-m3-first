@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react'
 import Footer from "@/components/footer";
 import ContactForm from '@/components/contact-form';
-import SocialLinksGrid from '@/components/social-links-grid';
+
 import MapSection from '@/components/map-section';
 import SectionHeader from '@/components/section-header';
 
@@ -15,9 +15,7 @@ export default function Contact(): JSX.Element {
                 <div className="mt-5">
                     <ContactForm />
                 </div>
-                <div className="mt-12">
-                    <SocialLinksGrid />
-                </div>
+
 
                 <div className='flex flex-col gap-5 mt-12'>
                     <SectionHeader
