@@ -73,65 +73,116 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {service.items.map((item, index) => (
-                            <div key={index} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                        {service.items.map((item, index) => {
+                            const pIndex = index % 5;
 
-                                {/* Decorative Background Element */}
-                                <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03] group-hover:opacity-10 transition-opacity duration-300">
-                                    {index % 3 === 0 && (
-                                        <svg viewBox="0 0 100 100" className="w-full h-full text-blue-900 fill-current">
-                                            <path d="M0 100 Q 50 50 100 100 T 200 100 V 100 H 0 Z" transform="scale(1, -1) translate(0, -100)" />
-                                            <path d="M0 80 Q 50 30 100 80 T 200 80" fill="none" stroke="currentColor" strokeWidth="4" />
-                                            <path d="M0 60 Q 50 10 100 60 T 200 60" fill="none" stroke="currentColor" strokeWidth="4" />
-                                        </svg>
-                                    )}
-                                    {index % 3 === 1 && (
-                                        <svg viewBox="0 0 100 100" className="w-full h-full text-blue-900 fill-current">
-                                            <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                                                <circle cx="2" cy="2" r="2" />
-                                            </pattern>
-                                            <rect width="100" height="100" fill="url(#dots)" />
-                                        </svg>
-                                    )}
-                                    {index % 3 === 2 && (
-                                        <svg viewBox="0 0 100 100" className="w-full h-full text-blue-900">
-                                            <path d="M0 100 L100 0" stroke="currentColor" strokeWidth="8" />
-                                            <path d="M20 100 L100 20" stroke="currentColor" strokeWidth="8" />
-                                            <path d="M40 100 L100 40" stroke="currentColor" strokeWidth="8" />
-                                            <path d="M60 100 L100 60" stroke="currentColor" strokeWidth="8" />
-                                        </svg>
-                                    )}
-                                </div>
+                            return (
+                                <div key={index} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
 
-                                {/* Top Row: Number + Icon */}
-                                <div className="flex justify-between items-start mb-6 relative z-10">
-                                    {/* Index (Top Left) */}
-                                    <span className="text-4xl font-black text-gray-200 group-hover:text-blue-600 transition-colors duration-300 font-orbitron">
-                                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
-                                    </span>
+                                    {/* Abstract Decorative Backgrounds (Targeted from user screenshots) */}
+                                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                                        {pIndex === 0 && ( /* Purple-Blue Waves */
+                                            <svg viewBox="0 0 200 200" className="absolute bottom-0 right-0 w-full h-full p-4 opacity-40 translate-x-1/4 translate-y-1/4">
+                                                <defs>
+                                                    <linearGradient id="purpleBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                        <stop offset="0%" stopColor="#bfdbfe" stopOpacity="0" />
+                                                        <stop offset="100%" stopColor="#8b5cf6" />
+                                                    </linearGradient>
+                                                </defs>
+                                                {[...Array(12)].map((_, i) => (
+                                                    <path
+                                                        key={i}
+                                                        d={`M ${-20 + i * 10} 200 Q ${50 + i * 10} ${100 - i * 5} ${150 + i * 10} 0`}
+                                                        fill="none"
+                                                        stroke="url(#purpleBlueGrad)"
+                                                        strokeWidth="2"
+                                                        opacity={0.3 + i * 0.05}
+                                                    />
+                                                ))}
+                                                <path d="M 0 200 Q 100 100 200 0" fill="none" stroke="#3b82f6" strokeWidth="2" strokeDasharray="5,5" />
+                                            </svg>
+                                        )}
+                                        {pIndex === 1 && ( /* Yellow Diagonal Stripes */
+                                            <svg viewBox="0 0 200 200" className="absolute bottom-0 right-0 w-3/4 h-3/4 opacity-40 translate-x-1/3 translate-y-1/3">
+                                                <path d="M 0 200 Q 40 80 120 40 T 200 0 L 200 200 Z" fill="#eab308" opacity="0.1" />
+                                                {[...Array(15)].map((_, i) => (
+                                                    <line
+                                                        key={i}
+                                                        x1={50 + i * 8} y1="200" x2={150 + i * 8} y2="0"
+                                                        stroke="#eab308"
+                                                        strokeWidth="5"
+                                                        opacity={0.4 + (i / 20)}
+                                                    />
+                                                ))}
+                                            </svg>
+                                        )}
+                                        {pIndex === 2 && ( /* Red Sprinkles */
+                                            <svg viewBox="0 0 200 200" className="absolute bottom-4 -right-12 w-1/2 h-1/2 opacity-30 translate-x-4">
+                                                {[...Array(20)].map((_, i) => (
+                                                    <line
+                                                        key={i}
+                                                        x1={Math.random() * 200} y1={Math.random() * 200}
+                                                        x2={Math.random() * 200} y2={Math.random() * 200}
+                                                        stroke="#ef4444"
+                                                        strokeWidth="4"
+                                                        strokeLinecap="round"
+                                                        opacity={0.8}
+                                                    />
+                                                ))}
+                                            </svg>
+                                        )}
+                                        {pIndex === 3 && ( /* Colorful Dotted Waves */
+                                            <svg viewBox="0 0 200 200" className="absolute bottom-0 right-0 w-full h-full p-4 opacity-40 translate-x-1/3 translate-y-1/4">
+                                                {[...Array(60)].map((_, i) => {
+                                                    const x = 50 + Math.sin(i * 0.2) * 50 + (i % 5) * 10;
+                                                    const y = 200 - i * 3;
+                                                    const colors = ["#3b82f6", "#eab308", "#22c55e", "#ef4444", "#a855f7"];
+                                                    return (
+                                                        <circle
+                                                            key={i}
+                                                            cx={x} cy={y}
+                                                            r={1.5 + (i % 3)}
+                                                            fill={colors[i % colors.length]}
+                                                            opacity={0.6}
+                                                        />
+                                                    );
+                                                })}
+                                            </svg>
+                                        )}
+                                        {pIndex === 4 && ( /* Green Dots Cluster */
+                                            <svg viewBox="0 0 200 200" className="absolute bottom-0 right-0 w-3/4 h-3/4 opacity-30 translate-x-1/4 translate-y-1/4">
+                                                {[...Array(35)].map((_, i) => (
+                                                    <circle
+                                                        key={i}
+                                                        cx={50 + Math.random() * 150}
+                                                        cy={50 + Math.random() * 150}
+                                                        r={2 + Math.random() * 8}
+                                                        fill="#22c55e"
+                                                    />
+                                                ))}
+                                            </svg>
+                                        )}
+                                    </div>
 
-                                    {/* Icon / Image Box (Top Right) */}
-                                    <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-sm bg-gray-50 border border-gray-100">
-                                        <Image
-                                            src={item.image || service.image}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover"
-                                        />
+                                    {/* Top Row: Number Only (Neutral) */}
+                                    <div className="flex justify-between items-start mb-6 relative z-10">
+                                        <span className="text-2xl font-bold text-gray-200 group-hover:text-gray-300 transition-colors duration-300 font-orbitron">
+                                            {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                                        </span>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="relative z-10 mt-2">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 font-orbitron group-hover:text-blue-900 transition-colors">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-gray-500 text-sm leading-relaxed mb-4 font-inter">
+                                            {item.description}
+                                        </p>
                                     </div>
                                 </div>
-
-                                {/* Content */}
-                                <div className="relative z-10 mt-2">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 font-orbitron group-hover:text-blue-900 transition-colors">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed mb-4 group-hover:text-gray-600 transition-colors">
-                                        {item.description}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </section>
