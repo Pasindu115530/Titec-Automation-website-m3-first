@@ -90,6 +90,11 @@
 		background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
 		background-size: 32px 32px;
 	}
+
+	.mask-gradient-to-top {
+		-webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
+		mask-image: linear-gradient(to top, black 40%, transparent 100%);
+	}
 }
 
 @keyframes splash {

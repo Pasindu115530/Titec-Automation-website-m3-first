@@ -6,9 +6,24 @@ import renewableEnergyImg from "../assets/services/renewable_energy.png";
 import homeAutomationImg from "../assets/services/home_automation.png";
 import emergencySupportImg from "../assets/services/emergency_support.png";
 
+// Item Images
+import completeAutomationItemImg from "../assets/services/items/complete_automation.png";
+import machineFabricationItemImg from "../assets/services/items/machine_fabrication.png";
+import electricalPanelItemImg from "../assets/services/items/electrical_panel.png";
+import machineInstallationItemImg from "../assets/services/items/machine_installation.png";
+import plcProgrammingItemImg from "../assets/services/items/plc_programming.png";
+import hmiScadaItemImg from "../assets/services/items/hmi_scada.png";
+import vfdServoItemImg from "../assets/services/items/vfd_servo.png";
+import robotArmItemImg from "../assets/services/items/robot_arm.png";
+import motorControlPanelItemImg from "../assets/services/items/motor_control_panel.png";
+import troubleshootingItemImg from "../assets/services/items/troubleshooting.png";
+import dataMonitoringItemImg from "../assets/services/items/data_monitoring.png";
+import visionSystemItemImg from "../assets/services/items/vision_system.png";
+
 export interface ServiceItem {
     title: string;
     description: string;
+    image?: StaticImageData;
 }
 
 export interface ServiceCategory {
@@ -30,47 +45,58 @@ export const SERVICES: ServiceCategory[] = [
         items: [
             {
                 title: "Complete Automation Systems",
-                description: "Upgrade your facility with fully integrated automation systems designed for reliability, efficiency, and long-term performance."
+                description: "Upgrade your facility with fully integrated automation systems designed for reliability, efficiency, and long-term performance.",
+                image: completeAutomationItemImg
             },
             {
                 title: "Machines fabrication",
-                description: "Custom-made machine fabrication tailored to your operational needs—built for durability, efficiency, and seamless integration into your production line."
+                description: "Custom-made machine fabrication tailored to your operational needs—built for durability, efficiency, and seamless integration into your production line.",
+                image: machineFabricationItemImg
             },
             {
                 title: "Machine Installations",
-                description: "Complete installation and commissioning of industrial machines with precise alignment, safety compliance, and reliable performance from day one."
+                description: "Complete installation and commissioning of industrial machines with precise alignment, safety compliance, and reliable performance from day one.",
+                image: machineInstallationItemImg
             },
             {
                 title: "PLC Programming",
-                description: "Custom PLC solutions that keep your machines running smoothly, safely, and with precise control."
+                description: "Custom PLC solutions that keep your machines running smoothly, safely, and with precise control.",
+                image: plcProgrammingItemImg
             },
             {
                 title: "HMI & SCADA Designing and Programming",
-                description: "Interactive, real-time monitoring and control interfaces for seamless plant operation."
+                description: "Interactive, real-time monitoring and control interfaces for seamless plant operation.",
+                image: hmiScadaItemImg
             },
             {
                 title: "VFD, Servo, Stepper & DC Drive Programming",
-                description: "Optimize motor performance with expert drive tuning and programming for any application."
+                description: "Optimize motor performance with expert drive tuning and programming for any application.",
+                image: vfdServoItemImg
             },
             {
                 title: "Robot Arm Configuration and Programming",
-                description: "Professional setup, calibration, and programming of robotic arms for automated workflows."
+                description: "Professional setup, calibration, and programming of robotic arms for automated workflows.",
+                image: robotArmItemImg
             },
             {
                 title: "Motor Control Panels",
-                description: "Robust, safety-compliant control panels designed to deliver consistent motor performance."
+                description: "Robust, safety-compliant control panels designed to deliver consistent motor performance.",
+                image: motorControlPanelItemImg
             },
             {
                 title: "Troubleshooting, Upgrades & Modifications",
-                description: "Fast fault diagnosis, repairs, and performance improvements for existing systems."
+                description: "Fast fault diagnosis, repairs, and performance improvements for existing systems.",
+                image: troubleshootingItemImg
             },
             {
                 title: "Data Monitoring, Recording & Analytics Systems",
-                description: "Smart data logging and analysis solutions for better decision-making and efficiency tracking."
+                description: "Smart data logging and analysis solutions for better decision-making and efficiency tracking.",
+                image: dataMonitoringItemImg
             },
             {
                 title: "Vision System Integration",
-                description: "Machine vision setups for accurate detection, quality inspection, and automation of visual tasks."
+                description: "Machine vision setups for accurate detection, quality inspection, and automation of visual tasks.",
+                image: visionSystemItemImg
             }
         ]
     },
@@ -83,7 +109,8 @@ export const SERVICES: ServiceCategory[] = [
         items: [
             {
                 title: "Electrical Power Panel Designing & Fabrication",
-                description: "Custom-built panels engineered to meet your power requirements and industry standards."
+                description: "Custom-built panels engineered to meet your power requirements and industry standards.",
+                image: electricalPanelItemImg
             },
             {
                 title: "Electrical Distribution Panels",
