@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
             QuotationRequestsTableSeeder::class,
             QuotationsTableSeeder::class,
             QuotationRequestItemsTableSeeder::class,
+            ProjectSeeder::class,
         ]);
     }
 }

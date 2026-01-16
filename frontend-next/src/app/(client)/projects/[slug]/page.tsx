@@ -1,7 +1,7 @@
 
-import { projectService } from '../../../services/projectService';
-import SectionHeader from '../../../components/section-header';
-import Footer from '../../../components/footer';
+import { projectService } from '../../../../services/projectService';
+import SectionHeader from '../../../../components/section-header';
+import Footer from '../../../../components/footer';
 import Link from 'next/link';
 
 interface PageProps {
@@ -13,7 +13,7 @@ interface PageProps {
 // We can use default behavior (dynamic rendering)
 
 export default async function ProjectPage({ params }: PageProps) {
-    const { slug } = params;
+    const { slug } = await params;
 
     let project = null;
     try {
@@ -22,6 +22,7 @@ export default async function ProjectPage({ params }: PageProps) {
         console.error("Failed to fetch project:", error);
     }
 
+    console.log(project)
     if (!project) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -37,7 +38,7 @@ export default async function ProjectPage({ params }: PageProps) {
                 <div className="hero-bg-overlay absolute inset-0 z-0 bg-[url('/hero-bg1.png')] bg-no-repeat bg-center opacity-100 pointer-events-none" />
                 <div className="relative z-10 max-w-7xl pt-32 mx-auto px-6 py-12">
                     <div className="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-4">
-                        {project.clientName}
+                        {project.client}
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold text-(--blue-hover) leading-tight tracking-tight mb-6">
                         {project.title}
@@ -51,8 +52,12 @@ export default async function ProjectPage({ params }: PageProps) {
             <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                     <div className="rounded-2xl overflow-hidden shadow-xl bg-gray-100 aspect-video flex items-center justify-center relative">
-                        {project.image ? (
-                            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                        {project.thumbnail_path ? (
+                            <img
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}`}
+                                alt={project.title}
+                                className="w-full h-full object-cover"
+                            />
                         ) : (
                             <div className="absolute inset-0 bg-linear-to-tr from-gray-200 to-gray-50 flex items-center justify-center">
                                 <span className="text-gray-400 font-medium text-lg">Project Details Image</span>
@@ -64,10 +69,10 @@ export default async function ProjectPage({ params }: PageProps) {
                         <h2 className="text-3xl font-bold text-gray-900 mb-6">Project Overview</h2>
                         <div className="prose prose-lg text-gray-600">
                             <p className="mb-4">
-                                {project.details}
+                                {project.description}
                             </p>
                             <p>
-                                Our team worked closely with {project.clientName} to deliver a solution that met their specific operational goals. The result was improved efficiency, reduced error rates, and a safer working environment.
+                                Our team worked closely with {project.client} to deliver a solution that met their specific operational goals. The result was improved efficiency, reduced error rates, and a safer working environment.
                             </p>
                         </div>
 

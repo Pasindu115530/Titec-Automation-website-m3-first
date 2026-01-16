@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import { IoCallSharp } from "react-icons/io5";
+import { MdHomeRepairService } from "react-icons/md";
+import { ShoppingBag } from 'lucide-react';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -36,12 +37,15 @@ export default function ClientRootLayout({
                 <AuthProvider>
                     <CartProvider>
                         <div className="w-full min-h-screen flex flex-col">
-                            <div className="fixed bottom-20 right-20 bg-(--cta-hover-red) rounded-full p-4 z-99 cursor-pointer hover:scale-105 transition-transform shadow-lg">
-                                <div className="flex flex-row items-center justify-center">
-
-                                    <div className="rotate-20"><IoCallSharp color="white" size={30} /></div>
-                                    <h1 className="text-white text-1xl font-bold ml-2 hidden sm:block">Call Us</h1>
-                                </div>
+                            <div className="fixed bottom-10 right-10 z-99">
+                                <div className="flex flex-col gap-1.5 items-center justify-center">
+                                    <div className="bg-(--secondary-blue) rounded-full p-4 cursor-pointer hover:scale-105 transition-transform shadow-lg">
+                                        <ShoppingBag color="white" size={30}/>
+                                    </div>
+                                    <div className="bg-(--cta-hover-red) rounded-full p-4  cursor-pointer hover:scale-105 transition-transform shadow-lg">
+                                            <MdHomeRepairService color="white" size={30} />
+                                        </div>
+                                    </div>
                             </div>
                             <Header />
                             <div className="w-full grow bg-white text-black">
