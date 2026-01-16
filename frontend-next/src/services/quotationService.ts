@@ -29,7 +29,7 @@ export const quotationService = {
         });
     },
 
-    async createQuotationRequest(data: { message: string, items: { product_id: number, quantity: number }[] }): Promise<any> {
+    async createQuotationRequest(data: { name: string, email: string, phone: string, message: string, items: { product_id: number, quantity: number }[] }): Promise<any> {
         return fetchFromApi<any>('/api/quotation-requests', {
             method: 'POST',
             body: JSON.stringify(data),

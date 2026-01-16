@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import { productService } from "@/services/productService";
 import { Product } from "@/types";
+import { Forum } from "next/font/google";
 
 export default function Store() {
     const [loading, setLoading] = useState(true);

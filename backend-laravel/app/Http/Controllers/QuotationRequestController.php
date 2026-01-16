@@ -13,10 +13,17 @@ class QuotationRequestController extends Controller
 
     public function store(Request $request)
     {
+        // Concatenate contact info with the message
+        $contactInfo = "Name: " . ($request->name ?? 'N/A') . "\n";
+        $contactInfo .= "Email: " . ($request->email ?? 'N/A') . "\n";
+        $contactInfo .= "Phone: " . ($request->phone ?? 'N/A') . "\n\n";
+        
+        $fullMessage = $contactInfo . "Message: " . ($request->message ?? '');
+
         // 1. Create the Request "Header"
         $quoteRequest = QuotationRequest::create([
             'user_id' => auth()->id(), // or null if guest
-            'customer_notes' => $request->message,
+            'customer_notes' => $fullMessage,
             'status' => 'pending'
         ]);
 

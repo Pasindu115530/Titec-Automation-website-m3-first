@@ -27,4 +27,12 @@ class Product extends Model
         'images' => 'array',
         'price' => 'decimal:2',
     ];
+
+    // Relationship: A product can belong to many quotation requests
+    public function quotationRequests()
+    {
+        return $this->belongsToMany(QuotationRequest::class, 'quotation_request_items')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
+    }
 }

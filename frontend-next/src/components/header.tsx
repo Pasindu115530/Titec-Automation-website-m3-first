@@ -40,22 +40,25 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          {user ? (
-            <>
-              {!isAdmin && (
-                <button
-                  onClick={() => setIsOpen(true)}
-                  className="relative p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
-                  aria-label="Quotation Cart"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                      {totalItems}
-                    </span>
-                  )}
-                </button>
+          {/* Cart - visible to guests and non-admins */}
+          {!isAdmin && (
+            <button
+              onClick={() => setIsOpen(true)}
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+              aria-label="Quotation Cart"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  {totalItems}
+                </span>
               )}
+            </button>
+          )}
+
+          {/* Admin User Menu */}
+          {user && (
+            <>
               <div className="hidden md:flex items-center gap-2 text-gray-700">
                 <User className="w-4 h-4" />
                 <span className="text-sm font-medium">{user.firstName}</span>
@@ -65,19 +68,6 @@ export default function Header() {
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             </>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link href="/register">
-                <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 rounded-full w-28">
-                  Sign Up
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-28">
-                  Login
-                </Button>
-              </Link>
-            </div>
           )}
 
           {/* Mobile hamburger */}

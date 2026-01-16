@@ -36,11 +36,11 @@ export default function ClientRootLayout({
                 <AuthProvider>
                     <CartProvider>
                         <div className="w-full min-h-screen flex flex-col">
-                            <div className="fixed bottom-25 right-25 bg-[#400c0c] rounded-full p-5 z-99 cursor-pointer hover:scale-105 transition-transform shadow-lg">
+                            <div className="fixed bottom-20 right-20 bg-(--cta-hover-red) rounded-full p-4 z-99 cursor-pointer hover:scale-105 transition-transform shadow-lg">
                                 <div className="flex flex-row items-center justify-center">
 
-                                    <div className="rotate-20"><IoCallSharp color="white" size={40} /></div>
-                                    <h1 className="text-white text-2xl font-bold ml-2 hidden sm:block">Call Us</h1>
+                                    <div className="rotate-20"><IoCallSharp color="white" size={30} /></div>
+                                    <h1 className="text-white text-1xl font-bold ml-2 hidden sm:block">Call Us</h1>
                                 </div>
                             </div>
                             <Header />
