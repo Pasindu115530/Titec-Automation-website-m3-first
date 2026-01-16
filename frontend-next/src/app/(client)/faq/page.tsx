@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import { FAQs } from "@/assets/FAQ";
 import type { FAQ } from "@/assets/FAQ";
 import SectionHeader from '@/components/section-header';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 
 
 export default function Faq(): JSX.Element {
@@ -95,40 +96,60 @@ export default function Faq(): JSX.Element {
         ]
     }
 
-    const [openIndex, setOpenIndex] = useState<number | null>(0)
+    const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <>
-            <main className="max-w-4xl mx-auto px-6 py-12">
+        <div className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed font-sans text-slate-800" style={{
+            backgroundImage: "url('/assets/faq-bg.jpg')"
+        }}>
+            <main className="max-w-5xl mx-auto px-6 py-12 relative">
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
                 />
                 <SectionHeader
-                                    title="Frequently Asked"
-                                    highlightedText='Questions'
-                                    subtitle=""
-                                />
+                    title="Frequently Asked"
+                    highlightedText='Questions'
+                    subtitle=""
+                />
 
-                <div className="space-y-4">
-                    {FAQs.map((FAQ: FAQ, i) => (
-                        <div key={i} className="border rounded-lg overflow-hidden">
-                            <button
-                                className="w-full text-left px-4 py-3 flex justify-between items-center bg-white"
-                                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                            >
-                                <span className="font-medium">{FAQ.question}</span>
-                                <span className="text-gray-500">{openIndex === i ? '−' : '+'}</span>
-                            </button>
+                <div className="space-y-6 mt-12">
+                    {FAQs.map((FAQ: FAQ, i) => {
+                        const isOpen = openIndex === i;
+                        return (
+                            <div key={i} className="flex gap-4 items-start group">
+                                {/* Toggle Button */}
+                                <button
+                                    className="w-12 h-12 flex-shrink-0 rounded-full bg-[#091E99] text-white flex items-center justify-center text-xl shadow-md transition-transform duration-200 hover:scale-105 active:scale-95"
+                                    onClick={() => setOpenIndex(isOpen ? null : i)}
+                                    aria-label={isOpen ? "Close question" : "Open question"}
+                                >
+                                    {isOpen ? <FaMinus /> : <FaPlus />}
+                                </button>
 
-                            {openIndex === i && (
-                                <div className="px-4 py-3 bg-gray-50 text-gray-700">{FAQ.answer}</div>
-                            )}
-                        </div>
-                    ))}
+                                {/* Question/Answer Bubble */}
+                                <div
+                                    className={`flex-1 bg-[#091E99] text-white shadow-md transition-all duration-300 ease-in-out cursor-pointer ${isOpen ? 'rounded-3xl p-6' : 'rounded-[2rem] px-6 py-3 flex items-center min-h-[48px]'
+                                        }`}
+                                    onClick={() => setOpenIndex(isOpen ? null : i)}
+                                >
+                                    <div className="w-full">
+                                        <h3 className={`font-medium text-lg leading-snug ${isOpen ? 'mb-4' : 'm-0'}`}>
+                                            {FAQ.question}
+                                        </h3>
+                                        {isOpen && (
+                                            <div className="text-white/90 leading-relaxed border-t border-white/20 pt-4 animate-in fade-in slide-in-from-top-1 duration-300">
+                                                {FAQ.answer}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </main>
             <Footer />
-        </>
+        </div>
     )
 }

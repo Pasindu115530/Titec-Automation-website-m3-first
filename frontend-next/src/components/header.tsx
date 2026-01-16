@@ -18,7 +18,7 @@ export default function Header() {
     <header
       className={`site-header ${pathname === '/' ? 'absolute top-6 left-1/2 z-50 -translate-x-1/2' : 'relative my-4 mx-auto'}`}
     >
-      <div className="bg-white rounded-full shadow-lg px-8 py-3 flex items-center justify-between w-full">
+      <div className={`${pathname === '/faq' ? 'bg-transparent shadow-none' : 'bg-white shadow-lg'} rounded-full px-8 py-3 flex items-center justify-between w-full`}>
 
         {/* Logo */}
         <div className="flex-shrink-0">
@@ -86,6 +86,6 @@ export default function Header() {
           </button>
         </div>
       </div>
-    </header>
+    </header >
   )
 }
