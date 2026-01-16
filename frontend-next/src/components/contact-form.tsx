@@ -21,7 +21,7 @@ export default function ContactForm() {
     }
 
     return (
-        <div className="w-full bg-[#3F6BFC] text-white rounded-3xl p-8 md:p-12 overflow-hidden relative shadow-xl">
+        <div className="w-full bg-[#314E91] text-white rounded-3xl p-8 md:p-12 overflow-hidden relative shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start relative z-10">
                 {/* Left Side: Info Content */}
                 <div className="space-y-6 pt-10">

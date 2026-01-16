@@ -96,10 +96,7 @@ export default function Faq(): JSX.Element {
         <div className="min-h-screen font-sans text-slate-800 bg-slate-50 flex flex-col">
             <div className="relative flex-1 overflow-hidden">
                 {/* Creative Background Elements */}
-                <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{
-                    backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
-                    backgroundSize: '32px 32px'
-                }}></div>
+                <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-radial-dot-slate"></div>
 
                 {/* Blobs - concentrated at bottom */}
                 <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-3xl pointer-events-none animate-float"></div>
@@ -111,8 +108,7 @@ export default function Faq(): JSX.Element {
                 <FaServer className="absolute bottom-20 left-20 text-slate-200/40 w-40 h-40 pointer-events-none z-0 opacity-50 hidden lg:block" />
                 <FaNetworkWired className="absolute bottom-10 -right-12 text-blue-100/40 w-56 h-56 rotate-45 pointer-events-none z-0 opacity-50" />
 
-                {/* Tech Decoration - Bottom only */}
-                <div className="absolute bottom-40 left-10 w-20 h-20 border-b-2 border-l-2 border-indigo-400/20 rounded-bl-3xl hidden md:block"></div>
+
 
                 <main className="max-w-3xl mx-auto px-6 pt-32 pb-12 relative z-10">
                     <script

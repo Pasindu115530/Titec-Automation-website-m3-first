@@ -85,6 +85,11 @@
 		background-image: radial-gradient(#ffffff 1px, transparent 1px);
 		background-size: 30px 30px;
 	}
+
+	.bg-radial-dot-slate {
+		background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+		background-size: 32px 32px;
+	}
 }
 
 @keyframes splash {
@@ -161,7 +166,6 @@
 
 	/* Header background uses variable so the theme can be changed easily */
 	.site-header {
-		background: var(--background);
 		font-family: 'Poppins', sans-serif;
 		max-width: 95%;
 		width: 1200px;
