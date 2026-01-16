@@ -1,12 +1,8 @@
-"use client";
-
-import { useState, type JSX } from 'react'
+import type { JSX } from 'react'
 import Footer from "@/components/footer";
-import { FAQs } from "@/assets/FAQ";
-import type { FAQ } from "@/assets/FAQ";
 import SectionHeader from '@/components/section-header';
-import { FaPlus, FaMinus } from 'react-icons/fa';
-
+import FaqAccordion from '@/components/faq-accordion';
+import { FaCog, FaMicrochip, FaNetworkWired, FaServer } from 'react-icons/fa';
 
 export default function Faq(): JSX.Element {
     const faqSchema = {
@@ -96,59 +92,42 @@ export default function Faq(): JSX.Element {
         ]
     }
 
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
-
     return (
-        <div className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed font-sans text-slate-800" style={{
-            backgroundImage: "url('/assets/faq-bg.jpg')"
-        }}>
-            <main className="max-w-5xl mx-auto px-6 py-12 relative">
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-                />
-                <SectionHeader
-                    title="Frequently Asked"
-                    highlightedText='Questions'
-                    subtitle=""
-                />
+        <div className="min-h-screen font-sans text-slate-800 bg-slate-50 flex flex-col">
+            <div className="relative flex-1 overflow-hidden">
+                {/* Creative Background Elements */}
+                <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{
+                    backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
+                    backgroundSize: '32px 32px'
+                }}></div>
 
-                <div className="space-y-6 mt-12">
-                    {FAQs.map((FAQ: FAQ, i) => {
-                        const isOpen = openIndex === i;
-                        return (
-                            <div key={i} className="flex gap-4 items-start group">
-                                {/* Toggle Button */}
-                                <button
-                                    className="w-12 h-12 flex-shrink-0 rounded-full bg-[#091E99] text-white flex items-center justify-center text-xl shadow-md transition-transform duration-200 hover:scale-105 active:scale-95"
-                                    onClick={() => setOpenIndex(isOpen ? null : i)}
-                                    aria-label={isOpen ? "Close question" : "Open question"}
-                                >
-                                    {isOpen ? <FaMinus /> : <FaPlus />}
-                                </button>
+                {/* Blobs - concentrated at bottom */}
+                <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-3xl pointer-events-none animate-float"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-100/60 rounded-full blur-3xl pointer-events-none animate-float-delay"></div>
 
-                                {/* Question/Answer Bubble */}
-                                <div
-                                    className={`flex-1 bg-[#091E99] text-white shadow-md transition-all duration-300 ease-in-out cursor-pointer ${isOpen ? 'rounded-3xl p-6' : 'rounded-[2rem] px-6 py-3 flex items-center min-h-[48px]'
-                                        }`}
-                                    onClick={() => setOpenIndex(isOpen ? null : i)}
-                                >
-                                    <div className="w-full">
-                                        <h3 className={`font-medium text-lg leading-snug ${isOpen ? 'mb-4' : 'm-0'}`}>
-                                            {FAQ.question}
-                                        </h3>
-                                        {isOpen && (
-                                            <div className="text-white/90 leading-relaxed border-t border-white/20 pt-4 animate-in fade-in slide-in-from-top-1 duration-300">
-                                                {FAQ.answer}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </main>
+                {/* Automation Icons Background - All at bottom */}
+                <FaCog className="absolute bottom-[-50px] -left-16 text-blue-200/30 w-64 h-64 animate-[spin_20s_linear_infinite] pointer-events-none z-0" />
+                <FaMicrochip className="absolute bottom-60 right-10 text-indigo-200/30 w-48 h-48 -rotate-12 pointer-events-none z-0 opacity-50" />
+                <FaServer className="absolute bottom-20 left-20 text-slate-200/40 w-40 h-40 pointer-events-none z-0 opacity-50 hidden lg:block" />
+                <FaNetworkWired className="absolute bottom-10 -right-12 text-blue-100/40 w-56 h-56 rotate-45 pointer-events-none z-0 opacity-50" />
+
+                {/* Tech Decoration - Bottom only */}
+                <div className="absolute bottom-40 left-10 w-20 h-20 border-b-2 border-l-2 border-indigo-400/20 rounded-bl-3xl hidden md:block"></div>
+
+                <main className="max-w-3xl mx-auto px-6 pt-32 pb-12 relative z-10">
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+                    />
+                    <SectionHeader
+                        title="Frequently Asked"
+                        highlightedText='Questions'
+                        subtitle=""
+                    />
+
+                    <FaqAccordion />
+                </main>
+            </div>
             <Footer />
         </div>
     )
