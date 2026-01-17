@@ -224,7 +224,7 @@ export default function Homepage() {
               >
                 GET QUOTE
               </button>
-              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center">
+              <a href="/store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center">
                 VISIT STORE
               </a>
             </div>
