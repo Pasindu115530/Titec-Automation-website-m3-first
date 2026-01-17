@@ -43,6 +43,16 @@ class QuotationRequestController extends Controller
             }
         }
 
+        // 3. Send System Notification Email
+        // We load the products relationship so the email view can display them
+        try {
+            Mail::to($quoteRequest->email)
+                ->send(new \App\Mail\QuotationRequestNotification($quoteRequest->load('products')));
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Illuminate\Support\Facades\Log::error('Failed to send quotation notification: ' . $e->getMessage());
+        }
+
         return response()->json(['message' => 'Request sent successfully!'], 201);
     }
 
