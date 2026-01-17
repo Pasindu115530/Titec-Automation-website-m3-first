@@ -4,13 +4,18 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0
 
 export async function fetchFromApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
     try {
+        const headers: HeadersInit = {
+            'Accept': 'application/json',
+            ...options?.headers,
+        };
+
+        if (!(options?.body instanceof FormData)) {
+            (headers as any)['Content-Type'] = 'application/json';
+        }
+
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...options?.headers,
-            },
+            headers,
             credentials: 'include',
         });
 

@@ -37,6 +37,7 @@ export const quotationService = {
     },
 
     async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
+        console.log('Service replyToRequest Data:', data);
         let body;
         let headers = {};
 

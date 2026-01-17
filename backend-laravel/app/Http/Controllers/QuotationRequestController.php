@@ -96,23 +96,16 @@ class QuotationRequestController extends Controller
                 // Read the uploaded file
                 $file = $request->file('file');
                 if (!$file) {
-                     \Illuminate\Support\Facades\Log::error('Reply: File input not present.');
                      return response()->json(['message' => 'File not found.'], 400);
                 }
-                \Illuminate\Support\Facades\Log::info('Reply: File details.', [
-                    'original_name' => $file->getClientOriginalName(),
-                    'mime' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                    'path' => $file->getRealPath()
-                ]);
-
-                $pdfContent = file_get_contents($file->getRealPath());
                 
-                if ($pdfContent === false) {
-                     \Illuminate\Support\Facades\Log::error('Reply: file_get_contents returned false.');
-                } else {
-                     \Illuminate\Support\Facades\Log::info('Reply: Read bytes: ' . strlen($pdfContent));
-                }
+                // Store file in public storage
+                $path = $file->store('quotations', 'public');
+                
+                \Illuminate\Support\Facades\Log::info('Reply: PDF uploaded at: ' . $path);
+
+                // Read content from the stored file
+                $pdfContent = file_get_contents(storage_path('app/public/' . $path));
             } else {
                 // Generate PDF from items
                 $pdf = Pdf::loadView('pdfs.quotation', [

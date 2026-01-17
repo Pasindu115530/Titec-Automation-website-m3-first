@@ -60,6 +60,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                     setIsSending(false);
                     return;
                 }
+                console.log('Sending Reply - Mode: Create', { items, message });
                 await onSend({ items, message, mode: 'create' });
             } else {
                 if (!pdfFile) {
@@ -68,6 +69,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                     return;
                 }
                 // Send file
+                console.log('Sending Reply - Mode: Upload', { file: pdfFile, message });
                 await onSend({ file: pdfFile, message, mode: 'upload' });
             }
 

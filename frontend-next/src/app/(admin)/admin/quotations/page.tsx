@@ -42,6 +42,7 @@ export default function AdminQuotationsPage() {
     };
 
     const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }) => {
+        console.log('Page handleSendReply Data:', data);
         if (!selectedRequest) return;
         const toastId = toast.loading('Sending reply...');
         try {
