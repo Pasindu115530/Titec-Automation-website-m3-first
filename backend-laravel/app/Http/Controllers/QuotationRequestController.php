@@ -43,11 +43,27 @@ class QuotationRequestController extends Controller
             }
         }
 
-        // 3. Send System Notification Email
+        // 3. Send System Notification Emails
         // We load the products relationship so the email view can display them
+        $quoteRequest->load('products');
+        
         try {
+            // Email to Customer
             Mail::to($quoteRequest->email)
-                ->send(new \App\Mail\QuotationRequestNotification($quoteRequest->load('products')));
+                ->send(new \App\Mail\QuotationRequestNotification($quoteRequest));
+            
+            // Email to Admin/Sales
+            $salesEmail = config('mail.sales.address');
+            if ($salesEmail) {
+                Mail::to($salesEmail)
+                    ->send(new \App\Mail\AdminQuotationNotification($quoteRequest));
+            } else {
+                 // Fallback or log warning if no sales email configured, maybe send to "from" address
+                 // For now, let's try sending to a default if not set, or just skip.
+                 // Ideally user should configure MAIL_SALES_ADDRESS
+                 \Illuminate\Support\Facades\Log::warning('MAIL_SALES_ADDRESS not configured, admin notification skipped.');
+            }
+
         } catch (\Exception $e) {
             // Log error but don't fail the request
             \Illuminate\Support\Facades\Log::error('Failed to send quotation notification: ' . $e->getMessage());
