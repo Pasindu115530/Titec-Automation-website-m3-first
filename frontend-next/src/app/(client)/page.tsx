@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Loader from "../../components/loader";
-import Footer from "../../components/footer";
-import { clients } from "../../assets/clients/clients";
-import type { Client } from "../../assets/clients/clients";
-import heroRobotArm from "../../assets/hero_robot_arm_1767856086813.png";
-import { Project } from "../../types";
-import { SERVICES } from "../../data/services";
-import { projectService } from "../../services/projectService";
+import Loader from "@/components/loader";
+import Footer from "@/components/footer";
+import { clients } from "@/assets/clients/clients";
+import type { Client } from "@/assets/clients/clients";
+import heroRobotArm from "@/assets/hero_robot_arm_1767856086813.png";
+import { Project } from "@/types";
+import { SERVICES } from "@/data/serviceData";
+import { projectService } from "@/services/projectService";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -114,7 +114,7 @@ export default function Homepage() {
         </div>
 
         {/* Decorative Vertical Ruler/Dash Pattern (Left Side) */}
-        <div className="absolute left-6 top-1/3 flex flex-col gap-2 opacity-50 z-0 hidden md:flex">
+        <div className="absolute left-6 top-1/3 flex-col gap-2 opacity-50 z-0 hidden md:flex">
           <div className="w-6 h-[2px] bg-gray-500"></div>
           <div className="w-4 h-[2px] bg-gray-600"></div>
           <div className="w-12 h-[3px] bg-black-900"></div>
@@ -125,7 +125,7 @@ export default function Homepage() {
         </div>
 
         {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
-        <div className="absolute right-6 bottom-1/3 flex flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
+        <div className="absolute right-6 bottom-1/3 flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
           <div className="w-8 h-[2px] bg-blue-400"></div>
           <div className="w-3 h-[2px] bg-blue-500"></div>
           <div className="w-6 h-[2px] bg-gray-500"></div>
@@ -136,7 +136,7 @@ export default function Homepage() {
         </div>
 
         {/* Decorative Horizontal Scale (Bottom Left) */}
-        <div className="absolute bottom-12 left-20 flex gap-4 opacity-40 z-0 hidden md:flex items-end">
+        <div className="absolute bottom-12 left-20 gap-4 opacity-40 z-0 hidden md:flex items-end">
           <div className="h-4 w-px bg-gray-400"></div>
           <div className="h-2 w-px bg-gray-300"></div>
           <div className="h-2 w-px bg-gray-300"></div>
@@ -149,7 +149,7 @@ export default function Homepage() {
         </div>
 
         {/* Decorative Horizontal Barcode (Top Right) */}
-        <div className="absolute top-28 right-20 flex gap-2 opacity-30 z-0 hidden md:flex">
+        <div className="absolute top-28 right-20 gap-2 opacity-30 z-0 hidden md:flex">
           <div className="w-12 h-1 bg-gray-400"></div>
           <div className="w-2 h-1 bg-gray-300"></div>
           <div className="w-2 h-1 bg-gray-300"></div>
@@ -163,8 +163,8 @@ export default function Homepage() {
         <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-linear-to-b from-gray-200/50 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
 
         {/* Tech Decor: Circuit Paths */}
-        <div className="absolute inset-x-0 top-1/4 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-20"></div>
-        <div className="absolute inset-y-0 right-1/3 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent opacity-20"></div>
+        <div className="absolute inset-x-0 top-1/4 h-px bg-linear-to-r from-transparent via-gray-300 to-transparent opacity-20"></div>
+        <div className="absolute inset-y-0 right-1/3 w-px bg-linear-to-b from-transparent via-gray-300 to-transparent opacity-20"></div>
 
         {/* Tech Decor: Small Data Points */}
         <div className="absolute top-[22%] left-[15%] font-mono text-[10px] text-blue-400 opacity-60 tracking-widest uppercase">
