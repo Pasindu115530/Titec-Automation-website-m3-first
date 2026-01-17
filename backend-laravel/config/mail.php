@@ -115,4 +115,9 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'sales' => [
+        'address' => env('MAIL_SALES_ADDRESS'),
+        'name' => env('MAIL_SALES_NAME'),
+    ],
+
 ];
