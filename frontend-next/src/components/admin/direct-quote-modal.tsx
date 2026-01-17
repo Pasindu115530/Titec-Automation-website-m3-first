@@ -46,6 +46,7 @@ export default function DirectQuoteModal({ isOpen, onClose, onSend }: DirectQuot
         setIsSending(true);
         try {
             await onSend({ name, email, phone, items, message });
+            toast.success('Direct quotation sent successfully');
             onClose();
             // Reset
             setItems([{ name: '', quantity: 1, price: 0 }]);

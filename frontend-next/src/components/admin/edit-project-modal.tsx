@@ -4,6 +4,7 @@ import { Upload, Save, X, Calendar, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Project {
     id: number;
@@ -139,6 +140,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 },
             });
 
+            toast.success('Project updated successfully');
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -146,6 +148,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 err.message ||
                 'Failed to update project';
             setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

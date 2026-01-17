@@ -5,6 +5,7 @@ import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Product {
     id: number;
@@ -102,6 +103,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 },
             });
 
+            toast.success('Product updated successfully');
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -109,6 +111,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 err.message ||
                 'Failed to update product';
             setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

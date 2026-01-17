@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Quotation, QuotationItem } from '@/types/quotation';
 import { quotationService } from '@/services/quotationService';
 
+import { toast } from 'sonner';
+
 interface QuotationDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -43,11 +45,12 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
                 total_amount: calculateTotal(),
                 status: 'sent'
             });
+            toast.success('Quotation sent successfully');
             onSuccess();
             onClose();
         } catch (error) {
             console.error('Failed to send quotation', error);
-            alert('Failed to send quotation');
+            toast.error('Failed to send quotation');
         } finally {
             setLoading(false);
         }
@@ -62,11 +65,12 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
             await quotationService.updateQuotation(quotation.id, {
                 status: 'rejected'
             });
+            toast.success('Quotation rejected');
             onSuccess();
             onClose();
         } catch (error) {
             console.error('Failed to reject quotation', error);
-            alert('Failed to reject quotation');
+            toast.error('Failed to reject quotation');
         } finally {
             setLoading(false);
         }

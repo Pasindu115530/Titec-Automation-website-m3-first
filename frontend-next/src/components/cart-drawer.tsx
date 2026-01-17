@@ -8,6 +8,8 @@ import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
+import { toast } from 'sonner';
+
 export default function CartDrawer() {
     const { isOpen, setIsOpen, items, removeItem, updateQuantity, submitQuotationRequest } = useCart();
     const router = useRouter();
@@ -34,12 +36,13 @@ export default function CartDrawer() {
         try {
             setIsSubmitting(true);
             await submitQuotationRequest(formData);
-            alert('Quotation request submitted successfully!');
+            toast.success('Quotation request submitted successfully!');
             setIsOpen(false);
             // Reset form (optional, since modal closes)
             setFormData({ name: '', email: '', phone: '', message: '' });
         } catch (error) {
-            alert('Failed to submit request. Please try again.');
+            console.error('Submission error:', error);
+            toast.error('Failed to submit request. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
