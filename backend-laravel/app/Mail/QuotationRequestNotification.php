@@ -9,18 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class QuotationReplyMail extends Mailable
+class QuotationRequestNotification extends Mailable
 {
-    public $pdfContent;
-    public $adminMessage;
+    use Queueable, SerializesModels;
+
+    public $requestData;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($pdfContent, $adminMessage)
+    public function __construct($requestData)
     {
-        $this->pdfContent = $pdfContent;
-        $this->adminMessage = $adminMessage;
+        $this->requestData = $requestData;
     }
 
     /**
@@ -29,11 +29,7 @@ class QuotationReplyMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new \Illuminate\Mail\Mailables\Address(
-                config('mail.sales.address'), 
-                config('mail.sales.name')
-            ),
-            subject: 'Quotation for your Request - Titec Automation',
+            subject: 'Quotation Request Received',
         );
     }
 
@@ -43,8 +39,8 @@ class QuotationReplyMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.quotation_reply',
-            with: ['adminMessage' => $this->adminMessage],
+            view: 'emails.notification',
+            with: ['requestData' => $this->requestData],
         );
     }
 
@@ -55,9 +51,6 @@ class QuotationReplyMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            \Illuminate\Mail\Mailables\Attachment::fromData(fn () => $this->pdfContent, 'Quotation.pdf')
-                ->withMime('application/pdf'),
-        ];
+        return [];
     }
 }
