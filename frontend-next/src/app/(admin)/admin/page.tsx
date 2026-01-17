@@ -22,63 +22,63 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
-    const [quotationStats, setQuotationStats] = useState({
+    const [statsData, setStatsData] = useState({
         total: 0,
         pending: 0,
         reviewed: 0,
         quoted: 0
     });
-    const { user, isAdmin } = useAuth();
+    const [recentRequests, setRecentRequests] = useState<any[]>([]);
+    const { user, isAdmin, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
+        if (isLoading) return;
+
         // Redirect to admin login if not authenticated as admin
         if (!isAdmin) {
             router.push('/admin/login');
             return;
         }
-        fetchQuotationStats();
-    }, [isAdmin, router]);
+        fetchDashboardData();
+    }, [isAdmin, isLoading, router]);
 
-    const fetchQuotationStats = async () => {
+    if (isLoading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
+
+    const fetchDashboardData = async () => {
         try {
-            const data = await quotationService.getQuotationRequests();
-            setQuotationStats({
-                total: data.length,
-                pending: data.filter((q: any) => q.status === 'pending').length,
-                reviewed: data.filter((q: any) => q.status === 'reviewed').length,
-                quoted: data.filter((q: any) => q.status === 'quoted').length,
-            });
+            // Import dynamically to avoid circular deps if any, or just standard import
+            const { dashboardService } = await import('@/services/dashboardService');
+            const data = await dashboardService.getStats();
+            setStatsData(data.stats);
+            setRecentRequests(data.recent_requests);
         } catch (error) {
-            console.error('Failed to fetch quotation stats:', error);
+            console.error('Failed to fetch dashboard stats:', error);
         }
     };
 
     const stats = [
-        { label: 'Quotation Requests', value: quotationStats.total.toString(), change: '+12%', icon: FileText, trend: 'up' },
-        { label: 'Pending Requests', value: quotationStats.pending.toString(), change: '+5%', icon: Activity, trend: 'up' },
-        { label: 'Quoted', value: quotationStats.quoted.toString(), change: '+8%', icon: ShoppingBag, trend: 'up' },
-        { label: 'Under Review', value: quotationStats.reviewed.toString(), change: '-2%', icon: Users, trend: 'down' },
-    ];
-
-    const orders = [
-        { id: '#ORD-7234', customer: 'John Doe', date: 'Oct 24, 2024', amount: '$1,299.00', status: 'Pending', items: 3 },
-        { id: '#ORD-7235', customer: 'Jane Smith', date: 'Oct 23, 2024', amount: '$549.50', status: 'Completed', items: 1 },
-        { id: '#ORD-7236', customer: 'Robert Johnson', date: 'Oct 23, 2024', amount: '$2,300.00', status: 'Processing', items: 5 },
-        { id: '#ORD-7237', customer: 'Emily Davis', date: 'Oct 22, 2024', amount: '$85.00', status: 'Cancelled', items: 2 },
-        { id: '#ORD-7238', customer: 'Michael Wilson', date: 'Oct 21, 2024', amount: '$450.00', status: 'Completed', items: 1 },
+        { label: 'Quotation Requests', value: statsData.total.toString(), change: '+12%', icon: FileText, trend: 'up' },
+        { label: 'Pending Requests', value: statsData.pending.toString(), change: '+5%', icon: Activity, trend: 'up' },
+        { label: 'Quoted', value: statsData.quoted.toString(), change: '+8%', icon: ShoppingBag, trend: 'up' },
+        { label: 'Under Review', value: statsData.reviewed.toString(), change: '-2%', icon: Users, trend: 'down' },
     ];
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'Completed': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-            case 'Processing': return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 'Quoted': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+            case 'Reviewed': return 'bg-blue-100 text-blue-700 border-blue-200';
             case 'Pending': return 'bg-amber-100 text-amber-700 border-amber-200';
-            case 'Cancelled': return 'bg-red-100 text-red-700 border-red-200';
+            case 'Rejected': return 'bg-red-100 text-red-700 border-red-200';
             default: return 'bg-gray-100 text-gray-700';
         }
     };
-
 
     return (
         <div className="space-y-8">
@@ -126,17 +126,8 @@ export default function AdminDashboard() {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Recent Orders</CardTitle>
-                        <p className="text-sm text-gray-500 mt-1">Manage your latest transactions</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                            <Input placeholder="Search orders..." className="pl-9 w-[200px]" />
-                        </div>
-                        <Button variant="outline" size="icon">
-                            <Filter className="h-4 w-4" />
-                        </Button>
+                        <CardTitle>Recent Quotation Requests</CardTitle>
+                        <p className="text-sm text-gray-500 mt-1">Latest inquiries from customers</p>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -144,7 +135,7 @@ export default function AdminDashboard() {
                         <table className="w-full">
                             <thead className="bg-gray-50/50 border-b border-gray-100">
                                 <tr>
-                                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Order ID</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">ID</th>
                                     <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Customer</th>
                                     <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Date</th>
                                     <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
@@ -153,29 +144,41 @@ export default function AdminDashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {orders.map((order) => (
-                                    <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="py-3 px-4 text-sm font-medium text-indigo-600">{order.id}</td>
+                                {recentRequests.map((req) => (
+                                    <tr key={req.id} className="hover:bg-gray-50/50 transition-colors">
+                                        <td className="py-3 px-4 text-sm font-medium text-indigo-600">#{req.id}</td>
                                         <td className="py-3 px-4 text-sm text-gray-900 flex items-center gap-2">
                                             <div className="h-6 w-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] text-white font-bold">
-                                                {order.customer.charAt(0)}
+                                                {req.customer ? req.customer.charAt(0).toUpperCase() : 'G'}
                                             </div>
-                                            {order.customer}
+                                            <div>
+                                                <div className="font-medium">{req.customer || 'Guest'}</div>
+                                                <div className="text-xs text-gray-500">{req.email}</div>
+                                            </div>
                                         </td>
-                                        <td className="py-3 px-4 text-sm text-gray-500">{order.date}</td>
+                                        <td className="py-3 px-4 text-sm text-gray-500">{req.date}</td>
                                         <td className="py-3 px-4">
-                                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                                                {order.status}
+                                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(req.status)}`}>
+                                                {req.status}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-sm text-gray-900 text-right font-medium">{order.amount}</td>
+                                        <td className="py-3 px-4 text-sm text-gray-900 text-right font-medium">
+                                            {req.amount !== '-' ? `$${req.amount}` : '-'}
+                                        </td>
                                         <td className="py-3 px-4 text-right">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
+                                            <Link href={`/admin/quotations`}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))}
+                                {recentRequests.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="py-8 text-center text-gray-500">No recent activity.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
