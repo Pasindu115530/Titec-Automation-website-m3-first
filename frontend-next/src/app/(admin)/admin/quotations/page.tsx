@@ -41,7 +41,7 @@ export default function AdminQuotationsPage() {
         setIsReplyModalOpen(true);
     };
 
-    const handleSendReply = async (data: { items: any[], message: string }) => {
+    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }) => {
         if (!selectedRequest) return;
         const toastId = toast.loading('Sending reply...');
         try {

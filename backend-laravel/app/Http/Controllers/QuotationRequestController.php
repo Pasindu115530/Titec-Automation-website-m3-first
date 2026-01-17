@@ -77,34 +77,54 @@ class QuotationRequestController extends Controller
         $quoteRequest = QuotationRequest::findOrFail($id);
 
         $validated = $request->validate([
-            'items' => 'required|array',
-            'items.*.name' => 'required|string',
-            'items.*.quantity' => 'required|numeric',
-            'items.*.price' => 'required|numeric',
+            'mode' => 'nullable|string|in:create,upload',
+            'items' => 'required_if:mode,create|array',
+            'items.*.name' => 'required_if:mode,create|string',
+            'items.*.quantity' => 'required_if:mode,create|numeric',
+            'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
+            'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240', // Max 10MB
         ]);
 
-        // 1. Generate PDF
-        $pdf = Pdf::loadView('pdfs.quotation', [
-            'request' => $quoteRequest,
-            'items' => $validated['items'],
-            'message' => $validated['message']
-        ]);
+        $mode = $request->input('mode', 'create');
+        $pdfContent = null;
+
+        if ($mode === 'upload') {
+            // Read the uploaded file
+            $file = $request->file('file');
+            if (!$file) {
+                 return response()->json(['message' => 'File not found.'], 400);
+            }
+            $pdfContent = file_get_contents($file->getRealPath());
+        } else {
+            // Generate PDF from items
+            $pdf = Pdf::loadView('pdfs.quotation', [
+                'request' => $quoteRequest,
+                'items' => $validated['items'] ?? [],
+                'message' => $validated['message']
+            ]);
+            $pdfContent = $pdf->output();
+        }
 
         // 2. Send Email
-        // Determine recipient email (user or embedded in notes if guest)
-        // Ideally should have stored email in 'email' column, but per store logic it's in notes or user relation
+        // Determine recipient email
         $recipientEmail = null;
         if ($quoteRequest->user) {
             $recipientEmail = $quoteRequest->user->email;
-        } else {
-            // Try to extract from notes, or fail/log. For now assuming User exists or we can't easily reply.
-            // Or use a passed 'email' field in reply request if admin manually enters it.
-            // Let's rely on user relation for now.
+        } elseif ($quoteRequest->email) {
+             // Fallback if no user relation but email is on the request record
+             $recipientEmail = $quoteRequest->email;
+        }
+        
+        // As a fallback, try to find email in customer_notes if structured, but safer to rely on Fields.
+        // The original code had logic for user relation. I see the create method saves 'email'.
+        // Let's use that field if user relation is missing, or just prioritize the direct email column.
+        if (!$recipientEmail && $quoteRequest->email) {
+            $recipientEmail = $quoteRequest->email;
         }
 
         if ($recipientEmail) {
-            Mail::to($recipientEmail)->send(new QuotationReplyMail($pdf->output(), $validated['message']));
+            Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $validated['message']));
         }
 
         // 3. Update Status

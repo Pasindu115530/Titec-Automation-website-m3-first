@@ -36,10 +36,26 @@ export const quotationService = {
         });
     },
 
-    async replyToRequest(id: number, data: { items: any[], message: string }): Promise<any> {
+    async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
+        let body;
+        let headers = {};
+
+        if (data.mode === 'upload' && data.file) {
+            const formData = new FormData();
+            formData.append('message', data.message);
+            formData.append('mode', 'upload');
+            formData.append('file', data.file);
+            body = formData;
+            // Content-Type header should not be set manually for FormData, browser sets it with boundary
+        } else {
+            body = JSON.stringify(data);
+            headers = { 'Content-Type': 'application/json' };
+        }
+
         return fetchFromApi<any>(`/api/quotation-requests/${id}/reply`, {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: body,
+            headers: Object.keys(headers).length ? headers : undefined
         });
     },
 
