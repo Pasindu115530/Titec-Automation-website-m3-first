@@ -34,5 +34,19 @@ export const quotationService = {
             method: 'POST',
             body: JSON.stringify(data),
         });
+    },
+
+    async replyToRequest(id: number, data: { items: any[], message: string }): Promise<any> {
+        return fetchFromApi<any>(`/api/quotation-requests/${id}/reply`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    async sendDirectQuote(data: { name: string, email: string, phone: string, items: any[], message: string }): Promise<any> {
+        return fetchFromApi<any>('/api/quotation-requests/direct', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
     }
 };

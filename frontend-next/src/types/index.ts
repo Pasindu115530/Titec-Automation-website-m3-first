@@ -1,5 +1,5 @@
 export interface Project {
-    id: number;
+    id: string;
     title: string;
     client: string;
     description: string;
@@ -12,7 +12,7 @@ export interface Project {
 }
 
 export interface Product {
-    id: number;
+    id: string;
     name: string;
     price: number;
     description: string; // mapped from 'desc' in backend if needed, or 'description'

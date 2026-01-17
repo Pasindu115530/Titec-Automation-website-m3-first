@@ -43,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Quotation Requests
     Route::get('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'index']);
+    Route::post('/quotation-requests/{id}/reply', [App\Http\Controllers\QuotationRequestController::class, 'reply']);
+    Route::post('/quotation-requests/direct', [App\Http\Controllers\QuotationRequestController::class, 'sendDirectQuote']);
 });
 
 // Public store route for requests (can also be auth protected if needed, but currently public for simplicity or user/guest mix)

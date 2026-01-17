@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\QuotationRequest;
+use App\Mail\QuotationReplyMail;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationRequestController extends Controller
 {
@@ -13,28 +17,109 @@ class QuotationRequestController extends Controller
 
     public function store(Request $request)
     {
-        // Concatenate contact info with the message
-        $contactInfo = "Name: " . ($request->name ?? 'N/A') . "\n";
-        $contactInfo .= "Email: " . ($request->email ?? 'N/A') . "\n";
-        $contactInfo .= "Phone: " . ($request->phone ?? 'N/A') . "\n\n";
-        
-        $fullMessage = $contactInfo . "Message: " . ($request->message ?? '');
+        // Concatenate contact info with the message for notes, but also store separately
+        // We keep message in notes for now as per original design or just store message
+        $fullMessage = "Message: " . ($request->message ?? '');
 
         // 1. Create the Request "Header"
         $quoteRequest = QuotationRequest::create([
-            'user_id' => auth()->id(), // or null if guest
-            'customer_notes' => $fullMessage,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'customer_notes' => $fullMessage, // Or just request->message if we want cleaner notes
             'status' => 'pending'
         ]);
 
         // 2. Attach Products (The "Pivot" Magic)
         // Assuming frontend sends: items = [{product_id: 1, quantity: 5}, {product_id: 2, quantity: 1}]
-        foreach ($request->items as $item) {
-            $quoteRequest->products()->attach($item['product_id'], [
-                'quantity' => $item['quantity']
-            ]);
+        if ($request->items) {
+            foreach ($request->items as $item) {
+                // Check if product_id exists if strict, or just use what we have
+                if (isset($item['product_id'])) {
+                    $quoteRequest->products()->attach($item['product_id'], [
+                        'quantity' => $item['quantity']
+                    ]);
+                }
+            }
         }
 
         return response()->json(['message' => 'Request sent successfully!'], 201);
+    }
+
+    public function reply(Request $request, $id)
+    {
+        $quoteRequest = QuotationRequest::findOrFail($id);
+
+        $validated = $request->validate([
+            'items' => 'required|array',
+            'items.*.name' => 'required|string',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.price' => 'required|numeric',
+            'message' => 'nullable|string',
+        ]);
+
+        // 1. Generate PDF
+        $pdf = Pdf::loadView('pdfs.quotation', [
+            'request' => $quoteRequest,
+            'items' => $validated['items'],
+            'message' => $validated['message']
+        ]);
+
+        // 2. Send Email
+        // Determine recipient email (user or embedded in notes if guest)
+        // Ideally should have stored email in 'email' column, but per store logic it's in notes or user relation
+        $recipientEmail = null;
+        if ($quoteRequest->user) {
+            $recipientEmail = $quoteRequest->user->email;
+        } else {
+            // Try to extract from notes, or fail/log. For now assuming User exists or we can't easily reply.
+            // Or use a passed 'email' field in reply request if admin manually enters it.
+            // Let's rely on user relation for now.
+        }
+
+        if ($recipientEmail) {
+            Mail::to($recipientEmail)->send(new QuotationReplyMail($pdf->output(), $validated['message']));
+        }
+
+        // 3. Update Status
+        $quoteRequest->update(['status' => 'quoted']);
+
+        return response()->json(['message' => 'Quotation sent successfully']);
+    }
+
+    public function sendDirectQuote(Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'nullable|string',
+            'items' => 'required|array',
+            'items.*.name' => 'required|string',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.price' => 'required|numeric',
+            'message' => 'nullable|string',
+        ]);
+
+        // Create a dummy request record for tracking or just generate PDF?
+        // Better to create a record so we have a reference number (Quotation #)
+        // We can set status to 'quoted' immediately
+        $quoteRequest = QuotationRequest::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'status' => 'quoted',
+            'customer_notes' => $validated['message'] ?? 'Direct Quote initiated by Admin'
+        ]);
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdfs.quotation', [
+            'request' => $quoteRequest, // pass the model
+            'items' => $validated['items'],
+            'message' => $validated['message']
+        ]);
+
+        // Send Email
+        Mail::to($validated['email'])->send(new QuotationReplyMail($pdf->output(), $validated['message']));
+
+        return response()->json(['message' => 'Direct quotation sent successfully']);
     }
 }

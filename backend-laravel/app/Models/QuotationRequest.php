@@ -10,7 +10,9 @@ class QuotationRequest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
+        'name',
+        'email',
+        'phone',
         'customer_notes', 
         'status' // pending, quoted, closed
     ];
