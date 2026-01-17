@@ -86,51 +86,54 @@ class QuotationRequestController extends Controller
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240', // Max 10MB
         ]);
 
-        $mode = $request->input('mode', 'create');
-        $pdfContent = null;
+        try {
+            $mode = $request->input('mode', 'create');
+            $pdfContent = null;
 
-        if ($mode === 'upload') {
-            // Read the uploaded file
-            $file = $request->file('file');
-            if (!$file) {
-                 return response()->json(['message' => 'File not found.'], 400);
+            if ($mode === 'upload') {
+                // Read the uploaded file
+                $file = $request->file('file');
+                if (!$file) {
+                     return response()->json(['message' => 'File not found.'], 400);
+                }
+                $pdfContent = file_get_contents($file->getRealPath());
+            } else {
+                // Generate PDF from items
+                $pdf = Pdf::loadView('pdfs.quotation', [
+                    'request' => $quoteRequest,
+                    'items' => $validated['items'] ?? [],
+                    'message' => $validated['message']
+                ]);
+                $pdfContent = $pdf->output();
             }
-            $pdfContent = file_get_contents($file->getRealPath());
-        } else {
-            // Generate PDF from items
-            $pdf = Pdf::loadView('pdfs.quotation', [
-                'request' => $quoteRequest,
-                'items' => $validated['items'] ?? [],
-                'message' => $validated['message']
-            ]);
-            $pdfContent = $pdf->output();
-        }
 
-        // 2. Send Email
-        // Determine recipient email
-        $recipientEmail = null;
-        if ($quoteRequest->user) {
-            $recipientEmail = $quoteRequest->user->email;
-        } elseif ($quoteRequest->email) {
-             // Fallback if no user relation but email is on the request record
-             $recipientEmail = $quoteRequest->email;
-        }
-        
-        // As a fallback, try to find email in customer_notes if structured, but safer to rely on Fields.
-        // The original code had logic for user relation. I see the create method saves 'email'.
-        // Let's use that field if user relation is missing, or just prioritize the direct email column.
-        if (!$recipientEmail && $quoteRequest->email) {
-            $recipientEmail = $quoteRequest->email;
-        }
+            // 2. Send Email
+            // Determine recipient email
+            $recipientEmail = null;
+            if ($quoteRequest->user) {
+                $recipientEmail = $quoteRequest->user->email;
+            } elseif ($quoteRequest->email) {
+                 $recipientEmail = $quoteRequest->email;
+            }
+            
+            if (!$recipientEmail && $quoteRequest->email) {
+                $recipientEmail = $quoteRequest->email;
+            }
 
-        if ($recipientEmail) {
-            Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $validated['message']));
+            if ($recipientEmail) {
+                Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $validated['message']));
+            }
+
+            // 3. Update Status
+            $quoteRequest->update(['status' => 'quoted']);
+
+            return response()->json(['message' => 'Quotation sent successfully']);
+
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Reply Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            file_put_contents(storage_path('logs/reply_debug.log'), $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json(['message' => 'Server Error: ' . $e->getMessage()], 500);
         }
-
-        // 3. Update Status
-        $quoteRequest->update(['status' => 'quoted']);
-
-        return response()->json(['message' => 'Quotation sent successfully']);
     }
 
     public function sendDirectQuote(Request $request) {

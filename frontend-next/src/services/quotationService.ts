@@ -52,6 +52,12 @@ export const quotationService = {
             headers = { 'Content-Type': 'application/json' };
         }
 
+        const userStr = localStorage.getItem('user');
+        const token = userStr ? JSON.parse(userStr).token : '';
+        if (token) {
+            headers = { ...headers, 'Authorization': `Bearer ${token}` };
+        }
+
         return fetchFromApi<any>(`/api/quotation-requests/${id}/reply`, {
             method: 'POST',
             body: body,
