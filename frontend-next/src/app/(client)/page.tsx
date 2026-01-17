@@ -11,6 +11,7 @@ import heroRobotArm from "@/assets/hero_robot_arm_1767856086813.png";
 import { Project } from "@/types";
 import { SERVICES } from "@/data/serviceData";
 import { projectService } from "@/services/projectService";
+import { useCart } from "@/context/CartContext";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -37,6 +38,7 @@ function useInView(threshold = 0) {
 export default function Homepage() {
   const [status, setStatus] = useState("loading");
   const [projects, setProjects] = useState<Project[]>([]);
+  const { setIsOpen } = useCart();
 
   // Refs for Scroll Animations
   const { ref: contentRef, isInView: contentInView } = useInView(0);
@@ -216,10 +218,13 @@ export default function Homepage() {
 
             {/* Buttons */}
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-              <a href="#quote" className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm">
+              <button
+                onClick={() => setIsOpen(true)}
+                className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
+              >
                 GET QUOTE
-              </a>
-              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm">
+              </button>
+              <a href="#store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center">
                 VISIT STORE
               </a>
             </div>
