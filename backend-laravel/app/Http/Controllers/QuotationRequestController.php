@@ -87,6 +87,8 @@ class QuotationRequestController extends Controller
         ]);
 
         try {
+            \Illuminate\Support\Facades\Log::info('Reply Request Data:', $request->all());
+            
             $mode = $request->input('mode', 'create');
             $pdfContent = null;
 
@@ -94,15 +96,29 @@ class QuotationRequestController extends Controller
                 // Read the uploaded file
                 $file = $request->file('file');
                 if (!$file) {
+                     \Illuminate\Support\Facades\Log::error('Reply: File input not present.');
                      return response()->json(['message' => 'File not found.'], 400);
                 }
+                \Illuminate\Support\Facades\Log::info('Reply: File details.', [
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'path' => $file->getRealPath()
+                ]);
+
                 $pdfContent = file_get_contents($file->getRealPath());
+                
+                if ($pdfContent === false) {
+                     \Illuminate\Support\Facades\Log::error('Reply: file_get_contents returned false.');
+                } else {
+                     \Illuminate\Support\Facades\Log::info('Reply: Read bytes: ' . strlen($pdfContent));
+                }
             } else {
                 // Generate PDF from items
                 $pdf = Pdf::loadView('pdfs.quotation', [
                     'request' => $quoteRequest,
                     'items' => $validated['items'] ?? [],
-                    'message' => $validated['message']
+                    'message' => $validated['message'] ?? ''
                 ]);
                 $pdfContent = $pdf->output();
             }
@@ -120,8 +136,10 @@ class QuotationRequestController extends Controller
                 $recipientEmail = $quoteRequest->email;
             }
 
+            $messageContent = $request->input('message') ?? ($validated['message'] ?? '');
+
             if ($recipientEmail) {
-                Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $validated['message']));
+                Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $messageContent));
             }
 
             // 3. Update Status
