@@ -3,21 +3,44 @@
 import React, { useState } from 'react';
 import { FaFacebook, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { contacts } from '@/assets/clients/Contacts';
+import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function ContactForm() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [company, setCompany] = useState('');
+    const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        // Placeholder behaviour: in a real app send to backend or email provider
-        // For now we just log and show a user message
-        console.log({ name, email, message });
-        alert('Thanks! Your message has been received (demo only).');
-        setName('');
-        setEmail('');
-        setMessage('');
+        setIsSubmitting(true);
+
+        try {
+            await api.post('/api/contact', {
+                name,
+                company,
+                email,
+                phone,
+                message
+            });
+
+            toast.success('Message sent successfully! We will get back to you shortly.');
+
+            // Reset form
+            setName('');
+            setCompany('');
+            setEmail('');
+            setPhone('');
+            setMessage('');
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to send message. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -94,6 +117,8 @@ export default function ContactForm() {
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-slate-700">Company</label>
                                 <input
+                                    value={company}
+                                    onChange={e => setCompany(e.target.value)}
                                     className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
                                     placeholder="Company Name"
                                 />
@@ -113,6 +138,8 @@ export default function ContactForm() {
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-slate-700">Phone Number</label>
                                 <input
+                                    value={phone}
+                                    onChange={e => setPhone(e.target.value)}
                                     className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
                                     placeholder="+94 000-000-000"
                                 />
@@ -131,9 +158,10 @@ export default function ContactForm() {
 
                         <button
                             type="submit"
-                            className="w-full bg-[#000619] hover:bg-[#021C74] text-white font-medium py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4"
+                            disabled={isSubmitting}
+                            className={`w-full bg-[#000619] hover:bg-[#021C74] text-white font-medium py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            Send Message
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
                         </button>
                     </form>
                 </div>

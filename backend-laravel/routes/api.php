@@ -56,3 +56,4 @@ Route::middleware('auth:sanctum')->group(function () {
 // Store page says "Login if prompted", implying Auth. Let's put inside auth group for "User" requests, 
 // OR allow guest. Controller has `auth()->id()`. If guest, it's null.
 Route::post('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'store']);
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']);
