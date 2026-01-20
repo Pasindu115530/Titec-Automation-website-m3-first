@@ -6,14 +6,14 @@ export interface QuotationItem {
 }
 
 export interface Quotation {
-    id: number;
+    id: string;
     name: string;
     email: string;
     phone?: string;
     customer_notes?: string;
     // Relations
     user?: {
-        id: number;
+        id: string;
         name: string;
         email: string;
     };

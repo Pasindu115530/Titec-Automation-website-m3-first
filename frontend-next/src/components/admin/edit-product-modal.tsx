@@ -7,16 +7,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: string;
-    category: string;
-    stock: string;
-    sku: string;
-    image: string;
-}
+import { Product } from '@/types';
 
 interface EditProductModalProps {
     isOpen: boolean;
@@ -45,9 +36,9 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             setFormData({
                 name: product.name || '',
                 description: product.description || '',
-                price: product.price || '',
+                price: product.price ? String(product.price) : '',
                 category: product.category || '',
-                stock: product.stock || '',
+                stock: product.stock ? String(product.stock) : '',
                 sku: product.sku || '',
             });
             setImagePreview(product.image || null);

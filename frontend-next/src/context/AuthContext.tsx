@@ -22,7 +22,7 @@ interface AuthContextType {
     isAdmin: boolean;
     isCustomer: boolean;
     // Allows external flows (e.g., Laravel login page) to update auth state immediately
-    setUserExternal: (payload: Partial<User> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
+    setUserExternal: (payload: Omit<Partial<User>, 'id'> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

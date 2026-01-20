@@ -17,7 +17,9 @@ export interface Product {
     price: number;
     description: string; // mapped from 'desc' in backend if needed, or 'description'
     category: string;
-    image?: string;
+    image?: string; // Legacy fallback
+    images?: string[]; // New multiple images support
+    datasheet_path?: string;
     stock?: number;
     sku?: string;
 }

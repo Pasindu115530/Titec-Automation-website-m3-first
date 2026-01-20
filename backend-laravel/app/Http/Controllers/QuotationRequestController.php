@@ -10,9 +10,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return \App\Models\QuotationRequest::with(['user', 'products'])->latest()->get();
+        $status = $request->query('status');
+        
+        $query = QuotationRequest::with(['user', 'products'])->latest();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query->paginate(10);
     }
 
     public function store(Request $request)

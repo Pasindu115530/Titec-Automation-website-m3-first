@@ -18,11 +18,17 @@ export const quotationService = {
     },
 
     // New methods for Requests
-    async getQuotationRequests(): Promise<any[]> {
+    async getQuotationRequests(page: number = 1, status?: string): Promise<any> {
         const userStr = localStorage.getItem('user');
         const token = userStr ? JSON.parse(userStr).token : '';
 
-        return fetchFromApi<any[]>('/api/quotation-requests', {
+        const queryParams = new URLSearchParams();
+        queryParams.append('page', page.toString());
+        if (status) {
+            queryParams.append('status', status);
+        }
+
+        return fetchFromApi<any>(`/api/quotation-requests?${queryParams.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
