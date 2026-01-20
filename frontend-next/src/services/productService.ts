@@ -2,8 +2,9 @@ import { fetchFromApi } from './api';
 import { Product } from '../types';
 
 export const productService = {
-    async getProducts(): Promise<Product[]> {
-        const response = await fetchFromApi<{ data: Product[] }>('/api/products');
+    async getProducts(search?: string): Promise<Product[]> {
+        const query = search ? `?search=${encodeURIComponent(search)}` : '';
+        const response = await fetchFromApi<{ data: Product[] }>(`/api/products${query}`);
         return response.data;
     },
 

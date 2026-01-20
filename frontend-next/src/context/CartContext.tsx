@@ -33,7 +33,7 @@ interface CartContextType {
     updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
     totalItems: number;
-    submitQuotationRequest: (customerInfo?: { name: string; email: string }) => Promise<void>;
+    submitQuotationRequest: (data: { name: string; email: string; phone: string; message: string }) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -94,7 +94,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsOpen(false);
     };
 
-    const submitQuotationRequest = async (customerData: any) => {
+    const submitQuotationRequest = async (customerData: { name: string; email: string; phone: string; message: string }) => {
         // Map cart items to backend format: { product_id, quantity }
         const formattedItems = items.map(item => ({
             product_id: parseInt(item.id), // Ensure ID is number for backend if needed, or keep string if backend supports UUID
@@ -102,7 +102,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }));
 
         const payload = {
-            message: "Request from website cart",
+            ...customerData,
             items: formattedItems
         };
 

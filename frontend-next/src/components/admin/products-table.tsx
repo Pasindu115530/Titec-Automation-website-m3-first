@@ -1,20 +1,11 @@
 
 import React, { useState } from 'react';
-import { Edit2, Trash2, Package } from 'lucide-react';
+import { Edit2, Trash2, Package, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProductModal from './edit-product-modal';
-
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: string;
-    category: string;
-    stock: string;
-    sku: string;
-    image: string;
-}
+import { toast } from 'sonner';
+import { Product } from '@/types';
 
 interface ProductsTableProps {
     products: Product[];
@@ -24,37 +15,32 @@ interface ProductsTableProps {
 export default function ProductsTable({ products, onRefresh }: ProductsTableProps) {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-    const handleDelete = async (id: number) => {
-        // Check for admin role in localStorage logic
-        const userStr = localStorage.getItem('user');
-        let isAdmin = false;
-
-        try {
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                if (user.role === 'admin' || user.is_admin) {
-                    isAdmin = true;
-                }
-            } else {
-                if (localStorage.getItem('token')) {
-                    // Fallback check
-                }
-            }
-        } catch (e) {
-            console.error('Error parsing user data', e);
-        }
-
+    const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to permanently delete this product?')) {
             return;
         }
 
         try {
             await api.delete(`/api/products/${id}`);
+            toast.success('Product deleted successfully');
             onRefresh();
         } catch (error) {
             console.error('Failed to delete product', error);
-            alert('Failed to delete product.');
+            toast.error('Failed to delete product.');
         }
+    };
+
+    const getThumbnail = (product: Product) => {
+        if (product.images && product.images.length > 0) {
+            return product.images[0];
+        }
+        return product.image || null;
+    };
+
+    const getBackendUrl = (path: string) => {
+        if (path.startsWith('http')) return path;
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+        return `${backend}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
     return (
@@ -71,72 +57,89 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
                                 <th className="px-6 py-3 font-medium text-gray-500">Category</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Price</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Stock</th>
+                                <th className="px-6 py-3 font-medium text-gray-500">Spec</th>
                                 <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
                             {products.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                        No products found. Add one above.
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        No products found.
                                     </td>
                                 </tr>
                             ) : (
-                                products.map((product) => (
-                                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border flex items-center justify-center">
-                                                    {product.image ? (
-                                                        <img
-                                                            src={product.image}
-                                                            alt={product.name}
-                                                            className="h-full w-full object-cover"
-                                                        />
-                                                    ) : (
-                                                        <Package className="h-5 w-5 text-gray-400" />
-                                                    )}
+                                products.map((product) => {
+                                    const thumbnail = getThumbnail(product);
+                                    return (
+                                        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border flex items-center justify-center">
+                                                        {thumbnail ? (
+                                                            <img
+                                                                src={thumbnail} // Assuming backend returns full URL or verify if it's relative
+                                                                alt={product.name}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <Package className="h-5 w-5 text-gray-400" />
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">{product.name}</div>
+                                                        {product.sku && <div className="text-xs text-gray-500">SKU: {product.sku}</div>}
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div className="font-medium text-gray-900">{product.name}</div>
-                                                    {product.sku && <div className="text-xs text-gray-500">SKU: {product.sku}</div>}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-600 capitalize">
+                                                {product.category}
+                                            </td>
+                                            <td className="px-6 py-4 font-medium text-gray-900">
+                                                ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                ${(product.stock || 0) > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                    {product.stock} in stock
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {product.datasheet_path && (
+                                                    <a
+                                                        href={getBackendUrl(product.datasheet_path)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1 text-xs text-blue-600 hover:underline border border-blue-200 rounded px-2 py-1 bg-blue-50 w-fit"
+                                                    >
+                                                        <FileText className="w-3 h-3" />
+                                                        Download
+                                                    </a>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                        onClick={() => setEditingProduct(product)}
+                                                    >
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        onClick={() => handleDelete(product.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-600 capitalize">
-                                            {product.category}
-                                        </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">
-                                            ${parseFloat(product.price).toFixed(2)}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                ${parseInt(product.stock) > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                {product.stock} in stock
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                                    onClick={() => setEditingProduct(product)}
-                                                >
-                                                    <Edit2 className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    onClick={() => handleDelete(product.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
+                                            </td>
+                                        </tr>
+                                    )
+                                })
                             )}
                         </tbody>
                     </table>

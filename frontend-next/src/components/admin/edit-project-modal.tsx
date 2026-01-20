@@ -4,6 +4,7 @@ import { Upload, Save, X, Calendar, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Project {
     id: number;
@@ -13,6 +14,7 @@ interface Project {
     completion_date: string;
     status: string;
     thumbnail_path?: string;
+    project_image_urls?: string[];
 }
 
 interface EditProjectModalProps {
@@ -27,6 +29,12 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
     const [error, setError] = useState('');
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+
+    // Gallery State
+    const [existingGalleryImages, setExistingGalleryImages] = useState<string[]>([]);
+    const [deletedGalleryImages, setDeletedGalleryImages] = useState<string[]>([]);
+    const [newGalleryImages, setNewGalleryImages] = useState<File[]>([]);
+    const [newGalleryPreviews, setNewGalleryPreviews] = useState<string[]>([]);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -45,7 +53,13 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 completion_date: project.completion_date || '',
                 status: project.status || 'In Progress',
             });
-            setThumbnailPreview(project.thumbnail_path ? `http://127.0.0.1:8000/storage/${project.thumbnail_path}` : '');
+            setThumbnailPreview(project.thumbnail_path ? `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}` : '');
+
+            // Initialize Gallery
+            setExistingGalleryImages(project.project_image_urls || []);
+            setDeletedGalleryImages([]);
+            setNewGalleryImages([]);
+            setNewGalleryPreviews([]);
         }
     }, [project]);
 
@@ -71,6 +85,26 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
         }
     };
 
+    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setNewGalleryImages(prev => [...prev, ...files]);
+
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setNewGalleryPreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeExistingImage = (path: string) => {
+        setExistingGalleryImages(prev => prev.filter(p => p !== path));
+        setDeletedGalleryImages(prev => [...prev, path]);
+    };
+
+    const removeNewImage = (index: number) => {
+        setNewGalleryImages(prev => prev.filter((_, i) => i !== index));
+        setNewGalleryPreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!project) return;
@@ -90,12 +124,23 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 submitData.append('thumbnail', thumbnail);
             }
 
+            // Append deleted images
+            deletedGalleryImages.forEach((path, index) => {
+                submitData.append(`deleted_images[${index}]`, path);
+            });
+
+            // Append new gallery images
+            newGalleryImages.forEach((image, index) => {
+                submitData.append(`project_images[${index}]`, image);
+            });
+
             await api.post(`/api/projects/${project.id}`, submitData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
+            toast.success('Project updated successfully');
             onSuccess();
             onClose();
         } catch (err: any) {
@@ -103,6 +148,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 err.message ||
                 'Failed to update project';
             setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -213,6 +259,64 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                 />
                             </div>
                         </div>
+
+                        {/* Gallery Section */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Gallery Images</label>
+                            <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
+                                {/* Existing Images */}
+                                {existingGalleryImages.map((path, index) => (
+                                    <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                        <img
+                                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${path}`}
+                                            alt="Gallery"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeExistingImage(path)}
+                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                ))}
+
+                                {/* New Images Previews */}
+                                {newGalleryPreviews.map((preview, index) => (
+                                    <div key={`new-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                        <img src={preview} alt="New Gallery" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeNewImage(index)}
+                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                        <div className="absolute bottom-0 inset-x-0 bg-indigo-500/80 text-white text-[10px] text-center p-0.5">
+                                            New
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* Add Button */}
+                                <div
+                                    className="aspect-square border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-center hover:bg-white hover:border-indigo-500 transition-all cursor-pointer"
+                                    onClick={() => document.getElementById('edit-gallery-input')?.click()}
+                                >
+                                    <Upload className="h-5 w-5 text-gray-400 mb-1" />
+                                    <span className="text-xs text-gray-500">Add</span>
+                                </div>
+                            </div>
+                            <input
+                                id="edit-gallery-input"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleGalleryChange}
+                                className="hidden"
+                            />
+                        </div>
                     </div>
 
                     <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
@@ -221,8 +325,8 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
-                </motion.div>
-            </div>
-        </AnimatePresence>
+                </motion.div >
+            </div >
+        </AnimatePresence >
     );
 }

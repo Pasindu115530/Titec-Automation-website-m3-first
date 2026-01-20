@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quotations', function (Blueprint $table) {
+        Schema::create('contact_messages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('company')->nullable();
             $table->string('email');
             $table->string('phone')->nullable();
-            $table->json('items'); // Stores item details including price
-            $table->enum('status', ['pending', 'sent', 'rejected'])->default('pending');
-            $table->decimal('total_amount', 10, 2)->nullable();
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quotations');
+        Schema::dropIfExists('contact_messages');
     }
 };

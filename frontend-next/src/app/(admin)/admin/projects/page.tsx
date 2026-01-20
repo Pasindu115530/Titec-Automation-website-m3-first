@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import ProjectsTable from '@/components/admin/projects-table';
+import { toast } from 'sonner';
 
 interface Project {
     id: number;
@@ -23,12 +25,13 @@ interface Project {
 export default function AddProjectPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    // Removed local error/success states in favor of toast
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+    const [galleryImages, setGalleryImages] = useState<File[]>([]);
+    const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useLocalStorage('admin_add_project_form', {
         title: '',
         client: '',
         description: '',
@@ -44,6 +47,7 @@ export default function AddProjectPage() {
             setProjects(response.data.data);
         } catch (error) {
             console.error('Failed to fetch projects', error);
+            toast.error('Failed to fetch projects');
         }
     };
 
@@ -73,11 +77,25 @@ export default function AddProjectPage() {
         }
     };
 
+    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setGalleryImages(prev => [...prev, ...files]);
+
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setGalleryPreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const removeGalleryImage = (index: number) => {
+        setGalleryImages(prev => prev.filter((_, i) => i !== index));
+        setGalleryPreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setSuccess('');
         setIsLoading(true);
+        const toastId = toast.loading('Saving project...');
 
         try {
             const submitData = new FormData();
@@ -89,6 +107,9 @@ export default function AddProjectPage() {
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
             }
+            galleryImages.forEach((image, index) => {
+                submitData.append(`project_images[${index}]`, image);
+            });
 
             const response = await api.post('/api/projects', submitData, {
                 headers: {
@@ -96,33 +117,28 @@ export default function AddProjectPage() {
                 },
             });
 
-            setSuccess('Project added successfully!');
-            setTimeout(() => {
-                router.push('/admin/projects'); // Optional: still redirect or stay to add more?
-                // For now, let's refresh the list and clear form effectively if they want to stay, 
-                // but the original code redirected. 
-                // The user request implies managing projects ON this page ("Under form i need table").
-                // So maybe we shouldn't redirect?
-                // User said: "Under form i need table can show all details about projects and add Actions row"
-                // If I redirect, they can't see the table update.
-                // I will Comment out the redirect and just clear form + refresh list.
-                // router.push('/admin/projects'); 
-                fetchProjects();
-                setFormData({
-                    title: '',
-                    client: '',
-                    description: '',
-                    completion_date: '',
-                    status: 'In Progress',
-                });
-                setThumbnail(null);
-                setThumbnailPreview('');
-            }, 1000);
+            toast.success('Project added successfully!', { id: toastId });
+
+            // Refresh and Clear
+            fetchProjects();
+            setFormData({
+                title: '',
+                client: '',
+                description: '',
+                completion_date: '',
+                status: 'In Progress',
+            });
+            setThumbnail(null);
+            setThumbnailPreview('');
+            setGalleryImages([]);
+            setGalleryPreviews([]);
+
         } catch (err: any) {
             const errorMessage = err.response?.data?.message ||
                 err.message ||
                 'Failed to add project';
-            setError(errorMessage);
+            toast.error(errorMessage, { id: toastId });
+            console.error(err);
         } finally {
             setIsLoading(false);
         }
@@ -143,32 +159,12 @@ export default function AddProjectPage() {
                         {isLoading ? 'Saving...' : (
                             <>
                                 <Save className="h-4 w-4" />
-                                Save Project
+                                <span className="hidden sm:inline">Save Project</span>
                             </>
                         )}
                     </Button>
                 </div>
             </div>
-
-            {error && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"
-                >
-                    {error}
-                </motion.div>
-            )}
-
-            {success && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700"
-                >
-                    {success}
-                </motion.div>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Info */}
@@ -288,6 +284,43 @@ export default function AddProjectPage() {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleThumbnailChange}
+                                className="hidden"
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Project Gallery</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                                {galleryPreviews.map((preview, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden group border">
+                                        <img src={preview} alt="Gallery" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeGalleryImage(index)}
+                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <div
+                                    className="aspect-square border-2 border-dashed border-gray-200 rounded-md flex flex-col items-center justify-center text-center hover:bg-gray-50/50 hover:border-indigo-500 transition-all cursor-pointer"
+                                    onClick={() => document.getElementById('gallery-input')?.click()}
+                                >
+                                    <Upload className="h-5 w-5 text-gray-400 mb-1" />
+                                    <span className="text-xs text-gray-500">Add</span>
+                                </div>
+                            </div>
+                            <input
+                                id="gallery-input"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleGalleryChange}
                                 className="hidden"
                             />
                         </CardContent>

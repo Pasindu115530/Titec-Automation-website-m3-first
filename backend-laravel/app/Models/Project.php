@@ -21,6 +21,7 @@ class Project extends Model
         'completion_date',
         'status',
         'thumbnail_path',
+        'project_image_urls',
     ];
 
     /**
@@ -30,5 +31,6 @@ class Project extends Model
      */
     protected $casts = [
         'completion_date' => 'date',
+        'project_image_urls' => 'array',
     ];
 }
