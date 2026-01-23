@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3, Upload } from 'lucide-react';
+import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3, Upload, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -19,8 +19,15 @@ interface EditProductModalProps {
 export default function EditProductModal({ isOpen, onClose, product, onSuccess }: EditProductModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+
+
+    // Gallery State
+    const [existingImages, setExistingImages] = useState<string[]>([]);
+    const [deletedImages, setDeletedImages] = useState<string[]>([]);
+    const [newImages, setNewImages] = useState<File[]>([]);
+    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+    const [datasheetFile, setDatasheetFile] = useState<File | null>(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -41,8 +48,12 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 stock: product.stock ? String(product.stock) : '',
                 sku: product.sku || '',
             });
-            setImagePreview(product.image || null);
-            setImageFile(null); // Reset file input
+            // Initialize Gallery
+            setExistingImages(product.images || []);
+            setDeletedImages([]);
+            setNewImages([]);
+            setNewImagePreviews([]);
+            setDatasheetFile(null);
         }
     }, [product]);
 
@@ -56,12 +67,24 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         }));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
+    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setNewImages(prev => [...prev, ...files]);
+
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setNewImagePreviews(prev => [...prev, ...newPreviews]);
         }
+    };
+
+    const removeExistingImage = (path: string) => {
+        setExistingImages(prev => prev.filter(p => p !== path));
+        setDeletedImages(prev => [...prev, path]);
+    };
+
+    const removeNewImage = (index: number) => {
+        setNewImages(prev => prev.filter((_, i) => i !== index));
+        setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -83,8 +106,20 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             // Standard workaround is sending POST with _method=PUT
             data.append('_method', 'PUT');
 
-            if (imageFile) {
-                data.append('image', imageFile);
+            if (newImages.length > 0) {
+                newImages.forEach((image, index) => {
+                    data.append(`images[${index}]`, image);
+                });
+            }
+
+            if (deletedImages.length > 0) {
+                deletedImages.forEach((path, index) => {
+                    data.append(`deleted_images[${index}]`, path);
+                });
+            }
+
+            if (datasheetFile) {
+                data.append('datasheet', datasheetFile);
             }
 
             // Using POST with _method=PUT
@@ -205,45 +240,102 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                 <label className="text-sm font-medium">Category</label>
                                 <div className="relative">
                                     <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                    <select
+                                    <Input
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
-                                        className="pl-9 w-full px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                    >
-                                        <option value="">Select a category</option>
-                                        <option value="electronics">Electronics</option>
-                                        <option value="clothing">Clothing</option>
-                                        <option value="food">Food</option>
-                                        <option value="books">Books</option>
-                                        <option value="home">Home & Garden</option>
-                                        <option value="sports">Sports</option>
-                                    </select>
+                                        placeholder="Select or Type..."
+                                        list="edit-categories"
+                                        className="pl-9"
+                                    />
+                                    <datalist id="edit-categories">
+                                        <option value="PLC" />
+                                        <option value="VFD" />
+                                        <option value="Relay" />
+                                        <option value="HMI" />
+                                        <option value="Circuit Breaker" />
+                                    </datalist>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Product Image</label>
-                                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                    <div className="flex flex-col items-center justify-center gap-2">
-                                        {imagePreview ? (
-                                            <div className="relative w-full h-32">
-                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
-                                                <span className="text-xs text-gray-500 mt-1">Click to change</span>
+                            <div className="space-y-2 col-span-2">
+                                <label className="text-sm font-medium">Product Images</label>
+                                <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
+                                    {/* Existing Images */}
+                                    {existingImages.map((path, index) => (
+                                        <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                            <img
+                                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}${path.startsWith('/') ? '' : '/'}${path}`}
+                                                alt="Product"
+                                                className="w-full h-full object-contain"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExistingImage(path)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+
+                                    {/* New Images Previews */}
+                                    {newImagePreviews.map((preview, index) => (
+                                        <div key={`new-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                            <img src={preview} alt="New Product" className="w-full h-full object-contain" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeNewImage(index)}
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                            <div className="absolute bottom-0 inset-x-0 bg-indigo-500/80 text-white text-[10px] text-center p-0.5">
+                                                New
                                             </div>
-                                        ) : (
-                                            <>
-                                                <Upload className="h-8 w-8 text-gray-400" />
-                                                <span className="text-sm text-gray-600">Click to upload image</span>
-                                            </>
-                                        )}
+                                        </div>
+                                    ))}
+
+                                    {/* Add Button */}
+                                    <div
+                                        className="aspect-square border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-center hover:bg-white hover:border-indigo-500 transition-all cursor-pointer"
+                                        onClick={() => document.getElementById('edit-product-gallery-input')?.click()}
+                                    >
+                                        <Upload className="h-5 w-5 text-gray-400 mb-1" />
+                                        <span className="text-xs text-gray-500">Add</span>
                                     </div>
                                 </div>
+                                <input
+                                    id="edit-product-gallery-input"
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleGalleryChange}
+                                    className="hidden"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Datasheet (PDF)</label>
+                            <div className="flex flex-col gap-2">
+                                {product?.datasheet_path && (
+                                    <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded w-fit">
+                                        <FileText className="h-4 w-4" />
+                                        <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}${product.datasheet_path.startsWith('/') ? '' : '/'}${product.datasheet_path}`} target="_blank" rel="noreferrer" className="underline">
+                                            View Current Datasheet
+                                        </a>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        type="file"
+                                        accept="application/pdf"
+                                        onChange={(e) => e.target.files && setDatasheetFile(e.target.files[0])}
+                                        className="text-xs"
+                                    />
+                                    {datasheetFile && <FileText className="w-5 h-5 text-green-600" />}
+                                </div>
+                                <p className="text-[10px] text-gray-400">Upload new to replace existing.</p>
                             </div>
                         </div>
                     </div>
@@ -255,7 +347,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                         </Button>
                     </div>
                 </motion.div>
-            </div>
-        </AnimatePresence>
+            </div >
+        </AnimatePresence >
     );
 }

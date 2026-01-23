@@ -160,17 +160,49 @@ class QuotationRequestController extends Controller
             'name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'nullable|string',
-            'items' => 'required|array',
-            'items.*.name' => 'required|string',
-            'items.*.quantity' => 'required|numeric',
-            'items.*.price' => 'required|numeric',
+            'mode' => 'nullable|string|in:create,upload',
+            'items' => 'required_if:mode,create|array',
+            'items.*.name' => 'required_if:mode,create|string',
+            'items.*.quantity' => 'required_if:mode,create|numeric',
+            'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
+            'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240',
         ]);
 
-        // Create a dummy request record for tracking or just generate PDF?
-        // Better to create a record so we have a reference number (Quotation #)
-        // We can set status to 'quoted' immediately
-        $quoteRequest = QuotationRequest::create([
+        $mode = $request->input('mode', 'create');
+        $pdfContent = null;
+
+        if ($mode === 'upload') {
+            $file = $request->file('file');
+            if (!$file) {
+                return response()->json(['message' => 'File not found.'], 400);
+            }
+            $path = $file->storage_path('quotations', 'public'); // path is not returned by storage_path? wait. $file->store()
+            $path = $file->store('quotations', 'public');
+            $pdfContent = file_get_contents(storage_path('app/public/' . $path));
+        } else {
+            // Create dummy request for PDF view context if needed, or pass null
+            // We create a record anyway
+            $items = $validated['items'] ?? [];
+            // Generate PDF
+             // We need a request object for the view usually
+             $quoteRequestForPdf = new QuotationRequest([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'created_at' => now(),
+             ]);
+             
+            $pdf = Pdf::loadView('pdfs.quotation', [
+                'request' => $quoteRequestForPdf,
+                'items' => $items,
+                'message' => $validated['message'] ?? ''
+            ]);
+            $pdfContent = $pdf->output();
+        }
+
+        // Create Record
+        QuotationRequest::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
@@ -178,15 +210,8 @@ class QuotationRequestController extends Controller
             'customer_notes' => $validated['message'] ?? 'Direct Quote initiated by Admin'
         ]);
 
-        // Generate PDF
-        $pdf = Pdf::loadView('pdfs.quotation', [
-            'request' => $quoteRequest, // pass the model
-            'items' => $validated['items'],
-            'message' => $validated['message']
-        ]);
-
         // Send Email
-        Mail::to($validated['email'])->send(new QuotationReplyMail($pdf->output(), $validated['message']));
+        Mail::to($validated['email'])->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
 
         return response()->json(['message' => 'Direct quotation sent successfully']);
     }

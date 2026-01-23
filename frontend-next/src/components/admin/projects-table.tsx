@@ -18,12 +18,15 @@ interface Project {
 interface ProjectsTableProps {
     projects: Project[];
     onRefresh: () => void;
+    isLoading?: boolean;
 }
 
 import { toast } from 'sonner';
 
-export default function ProjectsTable({ projects, onRefresh }: ProjectsTableProps) {
+export default function ProjectsTable({ projects, onRefresh, isLoading }: ProjectsTableProps) {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
     const handleDelete = async (id: number) => {
         // ... (auth checks omitted for brevity in replacement if unchanged, but I need to include context to replace correctly)
@@ -36,12 +39,15 @@ export default function ProjectsTable({ projects, onRefresh }: ProjectsTableProp
         }
 
         try {
+            setDeletingId(id);
             await api.delete(`/api/projects/${id}`);
             toast.success('Project deleted successfully');
             onRefresh();
         } catch (error) {
             console.error('Failed to delete project', error);
             toast.error('Failed to delete project. You might not have permission.');
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -63,7 +69,16 @@ export default function ProjectsTable({ projects, onRefresh }: ProjectsTableProp
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {projects.length === 0 ? (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                        <div className="flex justify-center items-center">
+                                            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="ml-2">Loading projects...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : projects.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                                         No projects found. Add one above.
@@ -74,10 +89,10 @@ export default function ProjectsTable({ projects, onRefresh }: ProjectsTableProp
                                     <tr key={project.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border">
+                                                <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border">
                                                     {project.thumbnail_path ? (
                                                         <img
-                                                            src={`http://127.0.0.1:8000/storage/${project.thumbnail_path}`}
+                                                            src={`${backendUrl}/storage/${project.thumbnail_path}`}
                                                             alt={project.title}
                                                             className="h-full w-full object-cover"
                                                         />
@@ -123,8 +138,13 @@ export default function ProjectsTable({ projects, onRefresh }: ProjectsTableProp
                                                     size="sm"
                                                     className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                                                     onClick={() => handleDelete(project.id)}
+                                                    disabled={deletingId === project.id}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === project.id ? (
+                                                        <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        <Trash2 className="h-4 w-4" />
+                                                    )}
                                                 </Button>
                                             </div>
                                         </td>

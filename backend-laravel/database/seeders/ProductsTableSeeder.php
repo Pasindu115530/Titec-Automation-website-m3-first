@@ -57,6 +57,54 @@ class ProductsTableSeeder extends Seeder
             ],
         ];
 
+        $products = array_merge($products, [
+             [
+                'name' => 'Delta HMI DOP-107EG',
+                'model_number' => 'DOP-107EG',
+                'slug' => 'delta-hmi-dop-107eg',
+                'description' => '7-inch TFT LCD HMI, Standard Ethernet Type, Cortex-A8 800MHz CPU.',
+                'price' => 280.00,
+                'stock' => 15,
+                'category' => 'HMI',
+                'sku' => 'DEL-DOP-107EG',
+                'images' => json_encode(['products/dop-107eg.jpg']),
+                'datasheet_path' => null,
+                'stock_status' => 'in_stock',
+                'created_at' => now(),
+                'updated_at' => now(),
+             ],
+             [
+                'name' => 'Schneider Electric Acti9 iC60N MCB',
+                'model_number' => 'A9F54110',
+                'slug' => 'schneider-acti9-ic60n-mcb',
+                'description' => 'Miniature Circuit Breaker, Acti9 iC60N, 1P, 10A, C curve, 6000A.',
+                'price' => 8.50,
+                'stock' => 200,
+                'category' => 'Circuit Breaker',
+                'sku' => 'SCH-A9F54110',
+                'images' => json_encode([]),
+                'datasheet_path' => null,
+                'stock_status' => 'in_stock',
+                'created_at' => now(),
+                'updated_at' => now(),
+             ],
+             [
+                'name' => 'Yaskawa GA700 AC Drive',
+                'model_number' => 'CIPR-GA70C4003ABAA',
+                'slug' => 'yaskawa-ga700-ac-drive',
+                'description' => 'High performance AC drive, 400V 3-phase, 1.5kW.',
+                'price' => 550.00,
+                'stock' => 3,
+                'category' => 'VFD',
+                'sku' => 'YAS-GA700-1.5KW',
+                'images' => json_encode([]),
+                'datasheet_path' => null,
+                'stock_status' => 'out_of_stock',
+                'created_at' => now(),
+                'updated_at' => now(),
+             ]
+        ]);
+
         foreach ($products as $product) {
             DB::table('products')->updateOrInsert(
                 ['slug' => $product['slug']],

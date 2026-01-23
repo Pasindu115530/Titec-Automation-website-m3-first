@@ -40,14 +40,18 @@ export default function AddProjectPage() {
     });
 
     const [projects, setProjects] = useState<Project[]>([]);
+    const [projectsLoading, setProjectsLoading] = useState(false);
 
     const fetchProjects = async () => {
+        setProjectsLoading(true);
         try {
             const response = await api.get('/api/projects');
             setProjects(response.data.data);
         } catch (error) {
             console.error('Failed to fetch projects', error);
             toast.error('Failed to fetch projects');
+        } finally {
+            setProjectsLoading(false);
         }
     };
 
@@ -148,7 +152,7 @@ export default function AddProjectPage() {
         <div className="max-w-5xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">Add Project</h1>
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">Add Project</h1>
                     <p className="text-gray-500 mt-1">Showcase a new project in your portfolio.</p>
                 </div>
                 <div className="flex gap-2">
@@ -330,7 +334,7 @@ export default function AddProjectPage() {
 
             {/* Existing Projects Table */}
             <div className="mt-12">
-                <ProjectsTable projects={projects} onRefresh={fetchProjects} />
+                <ProjectsTable projects={projects} onRefresh={fetchProjects} isLoading={projectsLoading} />
             </div>
         </div>
     );

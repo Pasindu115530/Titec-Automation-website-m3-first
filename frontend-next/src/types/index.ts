@@ -22,4 +22,5 @@ export interface Product {
     datasheet_path?: string;
     stock?: number;
     sku?: string;
+    model_number?: string;
 }

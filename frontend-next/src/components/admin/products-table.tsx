@@ -10,10 +10,12 @@ import { Product } from '@/types';
 interface ProductsTableProps {
     products: Product[];
     onRefresh: () => void;
+    isLoading?: boolean;
 }
 
-export default function ProductsTable({ products, onRefresh }: ProductsTableProps) {
+export default function ProductsTable({ products, onRefresh, isLoading }: ProductsTableProps) {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleDelete = async (id: string) => {
         if (!window.confirm('Are you sure you want to permanently delete this product?')) {
@@ -21,12 +23,16 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
         }
 
         try {
+            setDeletingId(id);
             await api.delete(`/api/products/${id}`);
             toast.success('Product deleted successfully');
             onRefresh();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to delete product', error);
-            toast.error('Failed to delete product.');
+            const msg = error.response?.data?.message || 'Failed to delete product.';
+            toast.error(msg);
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -62,7 +68,16 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {products.length === 0 ? (
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                        <div className="flex justify-center items-center">
+                                            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="ml-2">Loading products...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : products.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                                         No products found.
@@ -78,7 +93,7 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
                                                     <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border flex items-center justify-center">
                                                         {thumbnail ? (
                                                             <img
-                                                                src={thumbnail} // Assuming backend returns full URL or verify if it's relative
+                                                                src={getBackendUrl(thumbnail)}
                                                                 alt={product.name}
                                                                 className="h-full w-full object-cover"
                                                             />
@@ -96,7 +111,7 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
                                                 {product.category}
                                             </td>
                                             <td className="px-6 py-4 font-medium text-gray-900">
-                                                ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                                                LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -132,8 +147,13 @@ export default function ProductsTable({ products, onRefresh }: ProductsTableProp
                                                         size="sm"
                                                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                                                         onClick={() => handleDelete(product.id)}
+                                                        disabled={deletingId === product.id}
                                                     >
-                                                        <Trash2 className="h-4 w-4" />
+                                                        {deletingId === product.id ? (
+                                                            <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        ) : (
+                                                            <Trash2 className="h-4 w-4" />
+                                                        )}
                                                     </Button>
                                                 </div>
                                             </td>

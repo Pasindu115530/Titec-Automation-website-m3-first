@@ -72,10 +72,34 @@ export const quotationService = {
         });
     },
 
-    async sendDirectQuote(data: { name: string, email: string, phone: string, items: any[], message: string }): Promise<any> {
+    async sendDirectQuote(data: { name: string, email: string, phone: string, items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
+        let body;
+        let headers = {};
+
+        if (data.mode === 'upload' && data.file) {
+            const formData = new FormData();
+            formData.append('name', data.name);
+            formData.append('email', data.email);
+            formData.append('phone', data.phone || '');
+            formData.append('message', data.message);
+            formData.append('mode', 'upload');
+            formData.append('file', data.file);
+            body = formData;
+        } else {
+            body = JSON.stringify(data);
+            headers = { 'Content-Type': 'application/json' };
+        }
+
+        const userStr = localStorage.getItem('user');
+        const token = userStr ? JSON.parse(userStr).token : '';
+        if (token) {
+            headers = { ...headers, 'Authorization': `Bearer ${token}` };
+        }
+
         return fetchFromApi<any>('/api/quotation-requests/direct', {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: body,
+            headers: Object.keys(headers).length ? headers : undefined,
         });
     }
 };

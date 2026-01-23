@@ -1,4 +1,4 @@
-import { SERVICES } from "@/data/services";
+import { SERVICES } from "@/data/serviceData";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Footer from "@/components/footer";

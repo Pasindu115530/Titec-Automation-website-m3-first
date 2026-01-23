@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 export default function AdminProductsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
   const [error, setError] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [products, setProducts] = useState<any[]>([]);
@@ -53,10 +54,13 @@ export default function AdminProductsPage() {
     } catch (error) {
       console.error('Failed to fetch products', error);
       toast.error('Failed to load products');
+    } finally {
+      setTableLoading(false);
     }
   };
 
   useEffect(() => {
+    setTableLoading(true);
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
@@ -199,21 +203,22 @@ export default function AdminProductsPage() {
                 <label className="text-sm font-medium">Category <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                  <select
+                  <Input
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="pl-9 w-full h-10 px-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-sm"
+                    placeholder="Select or Type..."
+                    list="categories"
+                    className="pl-9"
                     required
-                  >
-                    <option value="">Select...</option>
-                    <option value="electronics">Electronics</option>
-                    <option value="clothing">Clothing</option>
-                    <option value="food">Food</option>
-                    <option value="books">Books</option>
-                    <option value="home">Home & Garden</option>
-                    <option value="sports">Sports</option>
-                  </select>
+                  />
+                  <datalist id="categories">
+                    <option value="PLC" />
+                    <option value="VFD" />
+                    <option value="Relay" />
+                    <option value="HMI" />
+                    <option value="Circuit Breaker" />
+                  </datalist>
                 </div>
               </div>
 
@@ -294,7 +299,7 @@ export default function AdminProductsPage() {
             </div>
           </div>
 
-          <ProductsTable products={products} onRefresh={fetchProducts} />
+          <ProductsTable products={products} onRefresh={fetchProducts} isLoading={tableLoading} />
         </div>
       </div>
     </div>

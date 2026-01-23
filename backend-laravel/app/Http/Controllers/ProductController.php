@@ -120,18 +120,37 @@ class ProductController extends Controller
         
         // Wait, typical "HTML form" update replaces content. 
         // Let's start with APPEND logic as it's safer.
+        // Helper to strip public URL prefix to match DB storage paths if needed
+        // Assuming images are stored as relative paths 'products/filename.jpg' in DB but full URLs sent?
+        // Let's rely on exact string match if possible, or simple filename match.
+        
         $currentImages = $product->images ?? [];
         
+        // Handle deletions
+        if ($request->has('deleted_images')) {
+            $deletedImages = $request->deleted_images; // Expected to be array of paths as stored in DB
+            $currentImages = array_values(array_filter($currentImages, function($img) use ($deletedImages) {
+                return !in_array($img, $deletedImages);
+            }));
+
+            // Optionally delete physical files for deleted images
+            foreach ($deletedImages as $delImg) {
+                if (file_exists(public_path($delImg))) {
+                     File::delete(public_path($delImg));
+                }
+            }
+        }
+        
+        // Handle new images (append)
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('products'), $filename);
-                $currentImages[] = '/products/' . $filename;
+                $currentImages[] = '/products/' . $filename; // Ensure this format matches DB
             }
-            $validated['images'] = $currentImages;
-        } else {
-             unset($validated['images']); // Don't overwrite with null
         }
+        
+        $validated['images'] = $currentImages;
 
         // Sync model_number with SKU if present
         if (!empty($validated['sku'])) {

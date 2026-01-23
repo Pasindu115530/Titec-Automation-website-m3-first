@@ -26,14 +26,15 @@ export default function AdminLayout({
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const pathname = usePathname();
     const router = useRouter();
-    const { user, logout, isAdmin } = useAuth();
+    const { user, logout, isAdmin, isLoading } = useAuth();
 
     useEffect(() => {
         // Redirect to admin login if not authenticated, except when already on login page
-        if (!isAdmin && pathname !== '/admin/login') {
+        // Only redirect after initial load is complete
+        if (!isLoading && !isAdmin && pathname !== '/admin/login') {
             router.push('/admin/login');
         }
-    }, [isAdmin, pathname, router]);
+    }, [isAdmin, isLoading, pathname, router]);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -107,7 +108,7 @@ export default function AdminLayout({
                 </nav>
 
                 <div className="p-4 border-t border-gray-100 min-w-[16rem]">
-                    <button 
+                    <button
                         onClick={logout}
                         className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                     >
