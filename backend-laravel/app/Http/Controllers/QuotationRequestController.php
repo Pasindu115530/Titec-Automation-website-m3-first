@@ -25,29 +25,36 @@ class QuotationRequestController extends Controller
 
     public function store(Request $request)
     {
+        // Security: Validate input to prevent malformed data and abuse
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20', // Enforce realistic length
+            'message' => 'nullable|string|max:2000', // Prevent huge payloads
+            'items' => 'nullable|array',
+            'items.*.product_id' => 'required_with:items|exists:products,id',
+            'items.*.quantity' => 'required_with:items|integer|min:1|max:1000'
+        ]);
+
         // Concatenate contact info with the message for notes, but also store separately
         // We keep message in notes for now as per original design or just store message
-        $fullMessage = "Message: " . ($request->message ?? '');
+        $fullMessage = "Message: " . ($validated['message'] ?? '');
 
         // 1. Create the Request "Header"
         $quoteRequest = QuotationRequest::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'customer_notes' => $fullMessage, // Or just request->message if we want cleaner notes
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'customer_notes' => $fullMessage, 
             'status' => 'pending'
         ]);
 
         // 2. Attach Products (The "Pivot" Magic)
-        // Assuming frontend sends: items = [{product_id: 1, quantity: 5}, {product_id: 2, quantity: 1}]
-        if ($request->items) {
-            foreach ($request->items as $item) {
-                // Check if product_id exists if strict, or just use what we have
-                if (isset($item['product_id'])) {
-                    $quoteRequest->products()->attach($item['product_id'], [
-                        'quantity' => $item['quantity']
-                    ]);
-                }
+        if (!empty($validated['items'])) {
+            foreach ($validated['items'] as $item) {
+                $quoteRequest->products()->attach($item['product_id'], [
+                    'quantity' => $item['quantity']
+                ]);
             }
         }
 

@@ -55,5 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
 // Plan said: POST /quotation-requests (Public/Auth). Let's put it outside middleware for now or keep inside if user mandatory. 
 // Store page says "Login if prompted", implying Auth. Let's put inside auth group for "User" requests, 
 // OR allow guest. Controller has `auth()->id()`. If guest, it's null.
-Route::post('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'store']);
-Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']);
+// Public form routes - Throttled to 3 requests per minute per IP to prevent spam/abuse
+Route::middleware('throttle:3,1')->group(function () {
+    Route::post('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'store']);
+    Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']);
+});
