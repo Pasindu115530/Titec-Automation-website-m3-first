@@ -12,7 +12,17 @@ export const api = axios.create({
 // Attach bearer token from localStorage for client-side requests
 api.interceptors.request.use((config) => {
     try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        let token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+        // Fallback: try to get token from user object
+        if (!token && typeof window !== 'undefined') {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                token = user.token;
+            }
+        }
+
         if (token) {
             if (config.headers) {
                 config.headers['Authorization'] = `Bearer ${token}`;

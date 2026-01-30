@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { toast } from 'sonner';
+import { ProductAutocomplete } from './product-autocomplete';
+import { Product } from '@/types';
 
 interface ReplyModalProps {
     isOpen: boolean;
@@ -19,12 +21,14 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
         name: p.name,
         quantity: p.pivot?.quantity || 1,
         price: p.price || 0,
+        isOriginal: true
     })) || [];
 
     // Use persistence keyed by request ID
     // Note: Parent must provide key={request.id} to ensure this remounts and re-initializes for new requests
-    const [items, setItems] = useLocalStorage<any[]>(`admin_reply_items_${request?.id || 'new'}`, initialItems.length ? initialItems : [{ name: '', quantity: 1, price: 0 }]);
-    const [message, setMessage] = useLocalStorage(`admin_reply_message_${request?.id || 'new'}`, '');
+    const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
+    const [items, setItems] = useLocalStorage<any[]>(`admin_reply_items_${request?.id || 'new'}_v2`, initialItems.length ? initialItems : [{ name: '', quantity: 1, price: 0 }], expirationMinutes);
+    const [message, setMessage] = useLocalStorage(`admin_reply_message_${request?.id || 'new'}_v2`, '', expirationMinutes);
     const [isSending, setIsSending] = useState(false);
 
     // New state for tabs and file
@@ -168,7 +172,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                             <tr>
                                                 <th className="px-4 py-2 text-left">Item Name</th>
                                                 <th className="px-4 py-2 w-24">Qty</th>
-                                                <th className="px-4 py-2 w-32">Price ($)</th>
+                                                <th className="px-4 py-2 w-32">Price (LKR)</th>
                                                 <th className="px-4 py-2 w-32 text-right">Total</th>
                                                 <th className="px-4 py-2 w-10"></th>
                                             </tr>
@@ -177,12 +181,27 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                             {items.map((item, index) => (
                                                 <tr key={index}>
                                                     <td className="p-2">
-                                                        <Input
-                                                            value={item.name}
-                                                            onChange={(e) => handleItemChange(index, 'name', e.target.value)}
-                                                            placeholder="Item description"
-                                                            className="h-8"
-                                                        />
+                                                        {item.isOriginal ? (
+                                                            <div className="px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium">
+                                                                {item.name}
+                                                            </div>
+                                                        ) : (
+                                                            <ProductAutocomplete
+                                                                value={item.name}
+                                                                onChange={(val) => handleItemChange(index, 'name', val)}
+                                                                onSelect={(product: Product) => {
+                                                                    const newItems = [...items];
+                                                                    newItems[index] = {
+                                                                        ...newItems[index],
+                                                                        name: product.name,
+                                                                        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+                                                                    };
+                                                                    setItems(newItems);
+                                                                }}
+                                                                placeholder="Search product..."
+                                                                className="h-8"
+                                                            />
+                                                        )}
                                                     </td>
                                                     <td className="p-2">
                                                         <Input
@@ -201,7 +220,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                         />
                                                     </td>
                                                     <td className="p-2 text-right font-medium">
-                                                        ${(item.quantity * item.price).toFixed(2)}
+                                                        {(item.quantity * item.price).toFixed(2)} LKR
                                                     </td>
                                                     <td className="p-2 text-center">
                                                         <button onClick={() => removeItem(index)} className="text-red-400 hover:text-red-600">
@@ -221,7 +240,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                         <tfoot className="bg-gray-50 font-semibold">
                                             <tr>
                                                 <td colSpan={3} className="px-4 py-2 text-right">Grand Total:</td>
-                                                <td className="px-4 py-2 text-right">${total.toFixed(2)}</td>
+                                                <td className="px-4 py-2 text-right">{total.toFixed(2)} LKR</td>
                                                 <td></td>
                                             </tr>
                                         </tfoot>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+export function useLocalStorage<T>(key: string, initialValue: T, expirationMinutes?: number): [T, (value: T | ((val: T) => T)) => void] {
     // State to store our value
     // Pass initial state function to useState so logic is only executed once
     const [storedValue, setStoredValue] = useState<T>(() => {
@@ -11,7 +11,27 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
             // Get from local storage by key
             const item = window.localStorage.getItem(key);
             // Parse stored json or if none return initialValue
-            return item ? JSON.parse(item) : initialValue;
+            if (item) {
+                const parsedItem = JSON.parse(item);
+
+                // Check if item has expiration data
+                if (expirationMinutes && parsedItem && typeof parsedItem === 'object' && 'timestamp' in parsedItem && 'value' in parsedItem) {
+                    const now = Date.now();
+                    const created = parsedItem.timestamp;
+                    const expirationMs = expirationMinutes * 60 * 1000;
+
+                    if (now - created > expirationMs) {
+                        // Expired, remove and return initialValue
+                        window.localStorage.removeItem(key);
+                        return initialValue;
+                    }
+                    return parsedItem.value;
+                }
+
+                // Backward compatibility or no expiration
+                return parsedItem;
+            }
+            return initialValue;
         } catch (error) {
             // If error also return initialValue
             console.warn(`Error reading localStorage key "${key}":`, error);
@@ -30,7 +50,15 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
             setStoredValue(valueToStore);
             // Save to local storage
             if (typeof window !== 'undefined') {
-                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                if (expirationMinutes) {
+                    const itemToStore = {
+                        value: valueToStore,
+                        timestamp: Date.now()
+                    };
+                    window.localStorage.setItem(key, JSON.stringify(itemToStore));
+                } else {
+                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                }
             }
         } catch (error) {
             console.warn(`Error setting localStorage key "${key}":`, error);
