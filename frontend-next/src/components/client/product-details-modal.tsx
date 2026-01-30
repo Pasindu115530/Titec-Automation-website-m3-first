@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, FileText, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
+import { X, ShoppingBag, FileText, ChevronLeft, ChevronRight, MessageCircle, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useAuth } from '@/context/AuthContext';
+import { getImageUrl } from '@/utils/image-utils';
+import { toast } from 'sonner';
 
 interface ProductDetailsModalProps {
     isOpen: boolean;
@@ -26,11 +27,28 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
 
     if (!isOpen || !product) return null;
 
-    const getBackendUrl = (path: string) => {
-        if (!path) return '';
-        if (path.startsWith('http')) return path;
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-        return `${backend}${path.startsWith('/') ? '' : '/'}${path}`;
+    const handleShare = async () => {
+        const url = `${window.location.origin}/store/${product.id}`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: product.name,
+                    text: `Check out ${product.name} at Titec Automation`,
+                    url: url,
+                });
+                return;
+            } catch (err) {
+                console.log('Share failed or cancelled');
+            }
+        }
+
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Link copied to clipboard!');
+        } catch (err) {
+            toast.error('Failed to copy link');
+        }
     };
 
     // Combine main image and gallery images
@@ -41,7 +59,7 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
         allImages.push(product.image);
     }
 
-    const currentImage = allImages[selectedImageIndex] ? getBackendUrl(allImages[selectedImageIndex]) : null;
+    const currentImage = allImages[selectedImageIndex] ? getImageUrl(allImages[selectedImageIndex], '') : null;
 
     const nextImage = () => {
         if (allImages.length > 1) {
@@ -64,12 +82,21 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
                     className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col md:flex-row relative"
                 >
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 z-10 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg text-gray-500 hover:text-gray-800 transition-all"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+                    <div className="absolute top-4 right-4 z-10 flex gap-2">
+                        <button
+                            onClick={handleShare}
+                            className="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg text-gray-500 hover:text-gray-800 transition-all"
+                            title="Share"
+                        >
+                            <Share2 className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="p-2 bg-white/80 hover:bg-white rounded-full shadow-lg text-gray-500 hover:text-gray-800 transition-all"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
 
                     {/* Image Section */}
                     <div className="w-full md:w-1/2 bg-gray-50 p-6 flex flex-col items-center justify-center relative min-h-[300px] md:min-h-full">
@@ -118,7 +145,7 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
                                         onClick={() => setSelectedImageIndex(idx)}
                                         className={`w-14 h-14 border-2 rounded-md overflow-hidden flex-shrink-0 transition-all ${selectedImageIndex === idx ? 'border-blue-600 ring-2 ring-blue-100' : 'border-transparent hover:border-gray-300'}`}
                                     >
-                                        <img src={getBackendUrl(img)} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                                        <img src={getImageUrl(img, '')} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
                                     </button>
                                 ))}
                             </div>
@@ -128,10 +155,15 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
                     {/* Content Section */}
                     <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col">
                         <div className="mb-auto">
-                            <div className="flex items-center gap-2 mb-3">
+                            <div className="flex items-center gap-2 mb-3 flex-wrap">
                                 <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded uppercase tracking-wider">
                                     {product.category}
                                 </span>
+                                {product.brand && (
+                                    <span className="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded uppercase tracking-wider">
+                                        {product.brand}
+                                    </span>
+                                )}
                                 {(product.stock || 0) > 0 ? (
                                     <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
                                         In Stock
@@ -181,7 +213,7 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
                             <div className="flex gap-3">
                                 {product.datasheet_path && (
                                     <a
-                                        href={getBackendUrl(product.datasheet_path)}
+                                        href={getImageUrl(product.datasheet_path, '')}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"

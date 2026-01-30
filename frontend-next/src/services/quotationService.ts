@@ -7,12 +7,12 @@ export const quotationService = {
         return response.data;
     },
 
-    async getQuotationById(id: number): Promise<Quotation> {
+    async getQuotationById(id: string | number): Promise<Quotation> {
         const response = await api.get<Quotation>(`/api/quotations/${id}`);
         return response.data;
     },
 
-    async updateQuotation(id: number, data: Partial<Quotation>): Promise<Quotation> {
+    async updateQuotation(id: string | number, data: Partial<Quotation>): Promise<Quotation> {
         const response = await api.put<Quotation>(`/api/quotations/${id}`, data);
         return response.data;
     },

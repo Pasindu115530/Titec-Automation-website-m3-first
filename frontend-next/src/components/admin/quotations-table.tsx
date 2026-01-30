@@ -57,7 +57,7 @@ export default function QuotationsTable({ quotations, onRefresh }: QuotationsTab
                                             <div className="text-xs text-gray-500">{quotation.email}</div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
-                                            {quotation.items.length} item(s)
+                                            {(quotation.items || []).length} item(s)
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
                                             {new Date(quotation.created_at).toLocaleDateString()}

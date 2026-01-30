@@ -43,6 +43,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'category' => 'required|string|max:100',
+            'brand' => 'nullable|string|max:100',
             'stock' => 'required|integer',
             'sku' => 'nullable|string|max:50',
             'images' => 'nullable|array',
@@ -85,8 +86,14 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id)
     {
+        $product = Product::find($id);
+
+        if (!$product) {
+             return response()->json(['message' => 'Product not found'], 404);
+        }
+
         return response()->json([
             'data' => $product,
             'message' => 'Product retrieved successfully'
@@ -103,6 +110,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'sometimes|required|numeric',
             'category' => 'sometimes|required|string|max:100',
+            'brand' => 'nullable|string|max:100',
             'stock' => 'sometimes|required|integer',
             'sku' => 'nullable|string|max:50',
             'images' => 'nullable|array',

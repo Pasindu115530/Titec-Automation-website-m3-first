@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProjectModal from './edit-project-modal';
 import Loader from '@/components/loader';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface Project {
     id: number;
@@ -27,7 +28,7 @@ import { toast } from 'sonner';
 export default function ProjectsTable({ projects, onRefresh, isLoading }: ProjectsTableProps) {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+
 
     const handleDelete = async (id: number) => {
         // ... (auth checks omitted for brevity in replacement if unchanged, but I need to include context to replace correctly)
@@ -90,7 +91,7 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                                 <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border">
                                                     {project.thumbnail_path ? (
                                                         <img
-                                                            src={`${backendUrl}/storage/${project.thumbnail_path}`}
+                                                            src={getImageUrl(project.thumbnail_path, '')}
                                                             alt={project.title}
                                                             className="h-full w-full object-cover"
                                                         />

@@ -69,7 +69,7 @@ export default function Footer() {
                         <h4 className="font-semibold mb-4">Contact</h4>
                         <ul className="space-y-3">
                             <li>
-                                <a href={`mailto:${contact.email}`} className="flex items-center gap-3 text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                                <a href={`mailto:${contact.email || ''}`} className="flex items-center gap-3 text-gray-400 hover:text-blue-400 transition-colors text-sm">
                                     <FaEnvelope className="text-blue-500" />
                                     <span>{contact.email}</span>
                                 </a>
@@ -81,13 +81,13 @@ export default function Footer() {
                                 </a>
                             </li>
                             <li>
-                                <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-green-400 transition-colors text-sm">
+                                <a href={contact.whatsapp || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-green-400 transition-colors text-sm">
                                     <FaWhatsapp className="text-green-500" />
                                     <span>WhatsApp</span>
                                 </a>
                             </li>
                             <li>
-                                <a href={contact.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-blue-400 transition-colors text-sm">
+                                <a href={contact.facebook || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-blue-400 transition-colors text-sm">
                                     <FaFacebook className="text-blue-600" />
                                     <span>Facebook</span>
                                 </a>

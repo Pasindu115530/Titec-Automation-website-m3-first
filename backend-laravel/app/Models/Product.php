@@ -18,6 +18,7 @@ class Product extends Model
         'price',
         'stock',
         'category',
+        'brand',
         'sku',
         'images',
         'datasheet_path',

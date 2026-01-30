@@ -15,8 +15,8 @@ Route::post('/login', [AuthController::class, 'login']);
 // Public routes
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/projects/{project}', [ProjectController::class, 'show']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{product}', [ProductController::class, 'show']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

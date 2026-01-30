@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface Project {
     id: number;
@@ -59,7 +60,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 status: project.status || 'In Progress',
                 technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
             });
-            setThumbnailPreview(project.thumbnail_path ? `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}` : '');
+            setThumbnailPreview(project.thumbnail_path ? getImageUrl(project.thumbnail_path, '') : '');
 
             // Initialize Gallery
             setExistingGalleryImages(project.project_image_urls || []);
@@ -300,7 +301,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                 {existingGalleryImages.map((path, index) => (
                                     <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
                                         <img
-                                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${path}`}
+                                            src={getImageUrl(path, '')}
                                             alt="Gallery"
                                             className="w-full h-full object-cover"
                                         />

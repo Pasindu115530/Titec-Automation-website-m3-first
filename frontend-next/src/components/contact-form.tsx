@@ -60,7 +60,7 @@ export default function ContactForm() {
                             <div className="p-2.5 bg-white/10 rounded-lg backdrop-blur-sm group-hover:bg-white/20 transition-all">
                                 <FaEnvelope className="w-5 h-5" />
                             </div>
-                            <a href={`mailto:${contacts[0].email}`} className="text-base font-medium">
+                            <a href={`mailto:${contacts[0].email || ''}`} className="text-base font-medium">
                                 {contacts[0].email}
                             </a>
                         </div>
@@ -78,7 +78,7 @@ export default function ContactForm() {
                             <div className="p-2.5 bg-white/10 rounded-lg backdrop-blur-sm group-hover:bg-white/20 transition-all">
                                 <FaFacebook className="w-5 h-5" />
                             </div>
-                            <a href={contacts[0].facebook} target="_blank" rel="noopener noreferrer" className="text-base font-medium">
+                            <a href={contacts[0].facebook || '#'} target="_blank" rel="noopener noreferrer" className="text-base font-medium">
                                 Facebook
                             </a>
                         </div>
@@ -87,7 +87,7 @@ export default function ContactForm() {
                             <div className="p-2.5 bg-white/10 rounded-lg backdrop-blur-sm group-hover:bg-white/20 transition-all">
                                 <FaWhatsapp className="w-5 h-5" />
                             </div>
-                            <a href={contacts[0].whatsapp} target="_blank" rel="noopener noreferrer" className="text-base font-medium">
+                            <a href={contacts[0].whatsapp || '#'} target="_blank" rel="noopener noreferrer" className="text-base font-medium">
                                 WhatsApp
                             </a>
                         </div>

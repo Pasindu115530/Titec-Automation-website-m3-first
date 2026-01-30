@@ -20,7 +20,7 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
     useEffect(() => {
         if (quotation) {
             // Initialize items with existing prices or 0
-            setItems(quotation.items.map(item => ({ ...item, price: item.price || 0 })));
+            setItems((quotation.items || []).map(item => ({ ...item, price: item.price || 0 })));
         }
     }, [quotation]);
 
