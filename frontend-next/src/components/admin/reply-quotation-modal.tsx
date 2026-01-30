@@ -150,9 +150,9 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                 </div>
                                 <div>
                                     <p><span className="font-medium">Original Request:</span></p>
-                                    <p className="text-gray-600 mt-1 line-clamp-2">
-                                        {request?.customer_notes}
-                                    </p>
+                                    <div className="text-gray-600 mt-1 max-h-32 overflow-y-auto bg-white p-2 rounded border border-gray-200 text-sm whitespace-pre-wrap">
+                                        {request?.customer_notes || 'No message provided.'}
+                                    </div>
                                 </div>
                             </div>
                         </div>

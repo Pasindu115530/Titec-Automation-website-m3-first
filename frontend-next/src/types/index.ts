@@ -3,8 +3,10 @@ export interface Project {
     title: string;
     client: string;
     description: string;
+    location?: string;
     completion_date: string;
     status: string;
+    technologies?: string[];
     thumbnail_path: string;
     project_image_urls: string[];
     created_at: string;

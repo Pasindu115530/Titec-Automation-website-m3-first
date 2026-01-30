@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
+import JsonLd from "@/components/json-ld";
 import Header from "@/components/header";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -20,8 +21,55 @@ import CartDrawer from "@/components/cart-drawer";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-    title: "Titec Automation",
-    description: "Industrial Automation Solutions",
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk'),
+    title: {
+        default: "TiTEC Automation | Industrial Automation Solutions in Sri Lanka",
+        template: "%s | TiTEC Automation"
+    },
+    description: "Leading provider of industrial automation solutions, PLC programming, SCADA systems, and electrical design in Sri Lanka. Expert engineering for manufacturing efficiency.",
+    keywords: ["Industrial Automation", "PLC Programming", "SCADA Systems", "Electrical Design", "Sri Lanka Automation", "TiTEC Automation", "Control Panels", "Factory Automation"],
+    authors: [{ name: "TiTEC Automation" }],
+    creator: "TiTEC Automation",
+    publisher: "TiTEC Automation",
+    formatDetection: {
+        email: false,
+        address: false,
+        telephone: false,
+    },
+    openGraph: {
+        title: "TiTEC Automation | Industrial Automation Solutions",
+        description: "Expert industrial automation solutions including PLC, SCADA, and robotics. Transform your manufacturing with TiTEC Automation.",
+        url: process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk',
+        siteName: "TiTEC Automation",
+        locale: "en_US",
+        type: "website",
+        images: [
+            {
+                url: '/og-image.jpg', // Ensure this image exists in public folder
+                width: 1200,
+                height: 630,
+                alt: 'TiTEC Automation Solutions',
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "TiTEC Automation | Industrial Automation Solutions",
+        description: "Expert industrial automation solutions including PLC, SCADA, and robotics.",
+        // creator: "@titecautomation", // Add if available
+        images: ['/og-image.jpg'], // Ensure this image exists
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
 };
 
 export default function ClientRootLayout({
@@ -36,6 +84,7 @@ export default function ClientRootLayout({
             >
                 <AuthProvider>
                     <CartProvider>
+                        <JsonLd />
                         <div className="w-full min-h-screen flex flex-col">
                             <FloatingActionButtons />
                             <Header />

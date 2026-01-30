@@ -4,6 +4,7 @@ import { Edit2, Trash2, Calendar, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProjectModal from './edit-project-modal';
+import Loader from '@/components/loader';
 
 interface Project {
     id: number;
@@ -71,11 +72,8 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                         <tbody className="divide-y">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                        <div className="flex justify-center items-center">
-                                            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                            <span className="ml-2">Loading projects...</span>
-                                        </div>
+                                    <td colSpan={5} className="h-64 bg-gray-50/50">
+                                        <Loader variant="inline" size={80} />
                                     </td>
                                 </tr>
                             ) : projects.length === 0 ? (

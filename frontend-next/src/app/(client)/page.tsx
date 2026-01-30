@@ -7,7 +7,7 @@ import Loader from "@/components/loader";
 import Footer from "@/components/footer";
 import { clients } from "@/assets/clients/clients";
 import type { Client } from "@/assets/clients/clients";
-import heroRobotArm from "@/assets/hero_robot_arm_1767856086813.png";
+import heroRobotArm from "@/assets/hero_robot_arm_17678560868133.png";
 import { Project } from "@/types";
 import { SERVICES } from "@/data/serviceData";
 import { projectService } from "@/services/projectService";

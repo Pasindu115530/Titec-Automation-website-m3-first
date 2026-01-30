@@ -4,6 +4,7 @@ import React from 'react';
 import { MdHomeRepairService } from "react-icons/md";
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { contacts } from '@/assets/clients/Contacts';
 
 export default function FloatingActionButtons() {
     const { setIsOpen } = useCart();
@@ -17,9 +18,12 @@ export default function FloatingActionButtons() {
                 >
                     <ShoppingBag color="white" size={30} />
                 </div>
-                <div className="bg-(--cta-hover-red) rounded-full p-4  cursor-pointer hover:scale-105 transition-transform shadow-lg">
+                <a
+                    href={`tel:${contacts[0].tel}`}
+                    className="bg-(--cta-hover-red) rounded-full p-4  cursor-pointer hover:scale-105 transition-transform shadow-lg block"
+                >
                     <MdHomeRepairService color="white" size={30} />
-                </div>
+                </a>
             </div>
         </div>
     );

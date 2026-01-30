@@ -1,4 +1,4 @@
-import { fetchFromApi } from './api';
+import { api } from '@/lib/api';
 
 export interface DashboardStats {
     stats: {
@@ -19,13 +19,7 @@ export interface DashboardStats {
 
 export const dashboardService = {
     async getStats(): Promise<DashboardStats> {
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : '';
-
-        return fetchFromApi<DashboardStats>('/api/dashboard/stats', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await api.get<DashboardStats>('/api/dashboard/stats');
+        return response.data;
     },
 };

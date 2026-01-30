@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
-import { 
-    FileText, 
-    ShoppingCart, 
-    Clock, 
-    CheckCircle, 
-    XCircle, 
+import {
+    FileText,
+    ShoppingCart,
+    Clock,
+    CheckCircle,
+    XCircle,
     LogOut,
     User,
     Package,
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Footer from '@/components/footer';
 import { api } from '@/lib/api';
+import Loader from '@/components/loader';
 
 interface Quotation {
     id: number;
@@ -71,7 +72,7 @@ export default function CustomerDashboard() {
         // Check authentication
         const userData = localStorage.getItem('user');
         const token = localStorage.getItem('token');
-        
+
         if (!userData || !token) {
             router.push('/login');
             return;
@@ -89,12 +90,12 @@ export default function CustomerDashboard() {
     const fetchDashboardData = async () => {
         setIsLoading(true);
         setError('');
-        
+
         try {
             // Fetch quotations
             const quotationsResponse = await api.get('/api/quotations');
             setQuotations(quotationsResponse.data.data || quotationsResponse.data || []);
-            
+
             // Fetch orders
             const ordersResponse = await api.get('/api/orders');
             setOrders(ordersResponse.data.data || ordersResponse.data || []);
@@ -129,7 +130,7 @@ export default function CustomerDashboard() {
         };
 
         const config = statusConfig[status.toLowerCase()] || statusConfig.pending;
-        
+
         return (
             <Badge className={`${config.color} border flex items-center gap-1`}>
                 {config.icon}
@@ -162,19 +163,12 @@ export default function CustomerDashboard() {
     };
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading dashboard...</p>
-                </div>
-            </div>
-        );
+        return <Loader />;
     }
 
     return (
         <>
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+            <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8 px-4">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
                     <motion.div
@@ -211,7 +205,7 @@ export default function CustomerDashboard() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
                     >
-                        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                        <Card className="bg-linear-to-br from-blue-500 to-blue-600 text-white">
                             <CardHeader className="pb-2">
                                 <CardDescription className="text-blue-100">Total Quotations</CardDescription>
                             </CardHeader>
@@ -223,7 +217,7 @@ export default function CustomerDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+                        <Card className="bg-linear-to-br from-yellow-500 to-yellow-600 text-white">
                             <CardHeader className="pb-2">
                                 <CardDescription className="text-yellow-100">Pending Quotations</CardDescription>
                             </CardHeader>
@@ -235,7 +229,7 @@ export default function CustomerDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+                        <Card className="bg-linear-to-br from-purple-500 to-purple-600 text-white">
                             <CardHeader className="pb-2">
                                 <CardDescription className="text-purple-100">Total Orders</CardDescription>
                             </CardHeader>
@@ -247,7 +241,7 @@ export default function CustomerDashboard() {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+                        <Card className="bg-linear-to-br from-green-500 to-green-600 text-white">
                             <CardHeader className="pb-2">
                                 <CardDescription className="text-green-100">Completed Orders</CardDescription>
                             </CardHeader>

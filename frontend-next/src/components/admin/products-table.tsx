@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import EditProductModal from './edit-product-modal';
 import { toast } from 'sonner';
 import { Product } from '@/types';
+import Loader from '@/components/loader';
 
 interface ProductsTableProps {
     products: Product[];
@@ -70,11 +71,8 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                         <tbody className="divide-y">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                        <div className="flex justify-center items-center">
-                                            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                            <span className="ml-2">Loading products...</span>
-                                        </div>
+                                    <td colSpan={6} className="h-64 bg-gray-50/50">
+                                        <Loader variant="inline" size={80} />
                                     </td>
                                 </tr>
                             ) : products.length === 0 ? (
@@ -90,7 +88,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                         <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border flex items-center justify-center">
+                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border flex items-center justify-center">
                                                         {thumbnail ? (
                                                             <img
                                                                 src={getBackendUrl(thumbnail)}
