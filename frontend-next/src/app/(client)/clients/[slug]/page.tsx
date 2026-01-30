@@ -2,6 +2,7 @@
 import { clients } from '@/assets/clients/clients';
 import { projectService } from '@/services/projectService';
 import { slugify } from '@/utils/slugify';
+import { getImageUrl } from '@/utils/image-utils';
 import SectionHeader from '@/components/section-header';
 import Footer from '@/components/footer';
 import Link from 'next/link';
@@ -80,8 +81,8 @@ export default async function ClientPage({ params }: PageProps) {
                                     className="group block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                                 >
                                     <div className="h-48 bg-gray-200 relative overflow-hidden">
-                                        {project.image ? (
-                                            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                                        {project.thumbnail_path ? (
+                                            <img src={getImageUrl(project.thumbnail_path)} alt={project.title} className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="absolute inset-0 bg-linear-to-br from-gray-300 to-gray-100 flex items-center justify-center text-gray-500">
                                                 <span className="text-lg font-medium">Project Image</span>

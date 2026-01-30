@@ -161,7 +161,7 @@
 
 	/* Header background uses variable so the theme can be changed easily */
 	.site-header {
-		background: var(--background);
+		background: transparent;
 		font-family: 'Poppins', sans-serif;
 		max-width: 95%;
 		width: 1200px;

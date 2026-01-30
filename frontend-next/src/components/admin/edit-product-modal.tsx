@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { getImageUrl } from '@/utils/image-utils';
 
 import { Product } from '@/types';
 
@@ -34,6 +35,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         description: '',
         price: '',
         category: '',
+        brand: '',
         stock: '',
         sku: '',
     });
@@ -45,6 +47,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 description: product.description || '',
                 price: product.price ? String(product.price) : '',
                 category: product.category || '',
+                brand: product.brand || '',
                 stock: product.stock ? String(product.stock) : '',
                 sku: product.sku || '',
             });
@@ -100,6 +103,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('description', formData.description);
             data.append('price', formData.price);
             data.append('category', formData.category);
+            data.append('brand', formData.brand || '');
             data.append('stock', formData.stock);
             data.append('sku', formData.sku);
             // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
@@ -257,6 +261,19 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     </datalist>
                                 </div>
                             </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Brand</label>
+                                <div className="relative">
+                                    <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        name="brand"
+                                        value={formData.brand}
+                                        onChange={handleInputChange}
+                                        placeholder="Omron, Siemens, etc."
+                                        className="pl-9"
+                                    />
+                                </div>
+                            </div>
                             <div className="space-y-2 col-span-2">
                                 <label className="text-sm font-medium">Product Images</label>
                                 <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
@@ -264,7 +281,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     {existingImages.map((path, index) => (
                                         <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
                                             <img
-                                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}${path.startsWith('/') ? '' : '/'}${path}`}
+                                                src={getImageUrl(path, '')}
                                                 alt="Product"
                                                 className="w-full h-full object-contain"
                                             />
@@ -321,7 +338,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                 {product?.datasheet_path && (
                                     <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded w-fit">
                                         <FileText className="h-4 w-4" />
-                                        <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}${product.datasheet_path.startsWith('/') ? '' : '/'}${product.datasheet_path}`} target="_blank" rel="noreferrer" className="underline">
+                                        <a href={getImageUrl(product.datasheet_path, '')} target="_blank" rel="noreferrer" className="underline">
                                             View Current Datasheet
                                         </a>
                                     </div>

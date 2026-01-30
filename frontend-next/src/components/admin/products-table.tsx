@@ -6,6 +6,8 @@ import { api } from '@/lib/api';
 import EditProductModal from './edit-product-modal';
 import { toast } from 'sonner';
 import { Product } from '@/types';
+import Loader from '@/components/loader';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface ProductsTableProps {
     products: Product[];
@@ -43,12 +45,6 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
         return product.image || null;
     };
 
-    const getBackendUrl = (path: string) => {
-        if (path.startsWith('http')) return path;
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-        return `${backend}${path.startsWith('/') ? '' : '/'}${path}`;
-    };
-
     return (
         <>
             <div className="bg-white rounded-lg shadow border overflow-hidden">
@@ -61,6 +57,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                             <tr>
                                 <th className="px-6 py-3 font-medium text-gray-500">Product</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Category</th>
+                                <th className="px-6 py-3 font-medium text-gray-500">Brand</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Price</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Stock</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Spec</th>
@@ -70,11 +67,8 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                         <tbody className="divide-y">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                        <div className="flex justify-center items-center">
-                                            <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                            <span className="ml-2">Loading products...</span>
-                                        </div>
+                                    <td colSpan={6} className="h-64 bg-gray-50/50">
+                                        <Loader variant="inline" size={80} />
                                     </td>
                                 </tr>
                             ) : products.length === 0 ? (
@@ -90,10 +84,10 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                         <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border flex items-center justify-center">
+                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border flex items-center justify-center">
                                                         {thumbnail ? (
                                                             <img
-                                                                src={getBackendUrl(thumbnail)}
+                                                                src={getImageUrl(thumbnail, '')}
                                                                 alt={product.name}
                                                                 className="h-full w-full object-cover"
                                                             />
@@ -110,6 +104,9 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                             <td className="px-6 py-4 text-gray-600 capitalize">
                                                 {product.category}
                                             </td>
+                                            <td className="px-6 py-4 text-gray-600 capitalize">
+                                                {product.brand || '-'}
+                                            </td>
                                             <td className="px-6 py-4 font-medium text-gray-900">
                                                 LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                                             </td>
@@ -122,7 +119,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                             <td className="px-6 py-4">
                                                 {product.datasheet_path && (
                                                     <a
-                                                        href={getBackendUrl(product.datasheet_path)}
+                                                        href={getImageUrl(product.datasheet_path, '')}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-1 text-xs text-blue-600 hover:underline border border-blue-200 rounded px-2 py-1 bg-blue-50 w-fit"

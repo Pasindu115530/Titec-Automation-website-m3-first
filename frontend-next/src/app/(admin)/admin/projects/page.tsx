@@ -34,9 +34,11 @@ export default function AddProjectPage() {
     const [formData, setFormData] = useLocalStorage('admin_add_project_form', {
         title: '',
         client: '',
+        location: '',
         description: '',
         completion_date: '',
         status: 'In Progress',
+        technologies: '',
     });
 
     const [projects, setProjects] = useState<Project[]>([]);
@@ -105,9 +107,17 @@ export default function AddProjectPage() {
             const submitData = new FormData();
             submitData.append('title', formData.title);
             submitData.append('client', formData.client);
+            if (formData.location) submitData.append('location', formData.location);
             submitData.append('description', formData.description);
             submitData.append('completion_date', formData.completion_date);
             submitData.append('status', formData.status);
+
+            // Handle Technologies array
+            const techArray = formData.technologies.split(',').map(t => t.trim()).filter(Boolean);
+            techArray.forEach((tech, index) => {
+                submitData.append(`technologies[${index}]`, tech);
+            });
+
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
             }
@@ -128,9 +138,11 @@ export default function AddProjectPage() {
             setFormData({
                 title: '',
                 client: '',
+                location: '',
                 description: '',
                 completion_date: '',
                 status: 'In Progress',
+                technologies: '',
             });
             setThumbnail(null);
             setThumbnailPreview('');
@@ -191,7 +203,6 @@ export default function AddProjectPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Client / Customer</label>
                                     <div className="relative">
                                         <User className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
                                         <Input
@@ -202,6 +213,24 @@ export default function AddProjectPage() {
                                             onChange={handleInputChange}
                                         />
                                     </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Location</label>
+                                    <Input
+                                        name="location"
+                                        placeholder="e.g. Colombo, Sri Lanka"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-1 md:col-span-2">
+                                    <label className="text-sm font-medium">Technologies (Comma separated)</label>
+                                    <Input
+                                        name="technologies"
+                                        placeholder="e.g. PLC, SCADA, Robotics"
+                                        value={formData.technologies}
+                                        onChange={handleInputChange}
+                                    />
                                 </div>
                             </div>
 

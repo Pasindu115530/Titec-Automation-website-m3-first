@@ -5,14 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { getImageUrl } from '@/utils/image-utils';
 
 interface Project {
     id: number;
     title: string;
     client: string;
+    location?: string;
     description: string;
     completion_date: string;
     status: string;
+    technologies?: string[];
     thumbnail_path?: string;
     project_image_urls?: string[];
 }
@@ -39,9 +42,11 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
     const [formData, setFormData] = useState({
         title: '',
         client: '',
+        location: '',
         description: '',
         completion_date: '',
         status: 'In Progress',
+        technologies: '',
     });
 
     useEffect(() => {
@@ -49,11 +54,13 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
             setFormData({
                 title: project.title || '',
                 client: project.client || '',
+                location: project.location || '',
                 description: project.description || '',
                 completion_date: project.completion_date || '',
                 status: project.status || 'In Progress',
+                technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
             });
-            setThumbnailPreview(project.thumbnail_path ? `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${project.thumbnail_path}` : '');
+            setThumbnailPreview(project.thumbnail_path ? getImageUrl(project.thumbnail_path, '') : '');
 
             // Initialize Gallery
             setExistingGalleryImages(project.project_image_urls || []);
@@ -117,9 +124,17 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
             submitData.append('_method', 'PUT'); // Laravel method spoofing
             submitData.append('title', formData.title);
             submitData.append('client', formData.client);
+            if (formData.location) submitData.append('location', formData.location);
             submitData.append('description', formData.description);
             submitData.append('completion_date', formData.completion_date);
             submitData.append('status', formData.status);
+
+            // Handle Technologies array
+            const techArray = formData.technologies.split(',').map(t => t.trim()).filter(Boolean);
+            techArray.forEach((tech, index) => {
+                submitData.append(`technologies[${index}]`, tech);
+            });
+
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
             }
@@ -200,6 +215,24 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                     />
                                 </div>
                             </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Location</label>
+                                <Input
+                                    name="location"
+                                    placeholder="e.g. Colombo"
+                                    value={formData.location}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Technologies</label>
+                                <Input
+                                    name="technologies"
+                                    placeholder="e.g. PLC, SCADA (comma separated)"
+                                    value={formData.technologies}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
                         </div>
 
                         <div className="space-y-2">
@@ -268,7 +301,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                 {existingGalleryImages.map((path, index) => (
                                     <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
                                         <img
-                                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/storage/${path}`}
+                                            src={getImageUrl(path, '')}
                                             alt="Gallery"
                                             className="w-full h-full object-cover"
                                         />

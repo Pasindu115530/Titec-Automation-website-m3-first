@@ -17,9 +17,11 @@ class Project extends Model
     protected $fillable = [
         'title',
         'client',
+        'location',
         'description',
         'completion_date',
         'status',
+        'technologies',
         'thumbnail_path',
         'project_image_urls',
     ];
@@ -31,6 +33,7 @@ class Project extends Model
      */
     protected $casts = [
         'completion_date' => 'date',
+        'technologies' => 'array',
         'project_image_urls' => 'array',
     ];
 }

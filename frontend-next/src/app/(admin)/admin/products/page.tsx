@@ -33,6 +33,7 @@ export default function AdminProductsPage() {
     description: '',
     price: '',
     category: '',
+    brand: '',
     stock: '',
     sku: '',
   });
@@ -114,6 +115,7 @@ export default function AdminProductsPage() {
       data.append('description', formData.description);
       data.append('price', formData.price);
       data.append('category', formData.category);
+      data.append('brand', formData.brand);
       data.append('stock', formData.stock);
       data.append('sku', formData.sku);
 
@@ -138,7 +140,7 @@ export default function AdminProductsPage() {
 
       // Reset Form
       setFormData({
-        name: '', description: '', price: '', category: '', stock: '', sku: ''
+        name: '', description: '', price: '', category: '', brand: '', stock: '', sku: ''
       });
       setImageFiles([]);
       setImagePreviews([]);
@@ -219,6 +221,20 @@ export default function AdminProductsPage() {
                     <option value="HMI" />
                     <option value="Circuit Breaker" />
                   </datalist>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Brand</label>
+                <div className="relative">
+                  <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleInputChange}
+                    placeholder="Omron, Siemens, etc."
+                    className="pl-9"
+                  />
                 </div>
               </div>
 

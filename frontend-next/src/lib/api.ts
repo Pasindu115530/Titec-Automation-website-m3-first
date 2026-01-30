@@ -38,9 +38,23 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 419) {
-            // CSRF token mismatch - try to refresh
-            console.error('CSRF token mismatch');
+        if (error.response) {
+            if (error.response.status === 401) {
+                // Unauthorized - clear session and redirect
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('quotationCart');
+
+                    // Prevent infinite loop if already on login page
+                    if (!window.location.pathname.includes('/admin/login')) {
+                        window.location.href = '/admin/login';
+                    }
+                }
+            } else if (error.response.status === 419) {
+                // CSRF token mismatch
+                console.error('CSRF token mismatch');
+            }
         }
         return Promise.reject(error);
     }

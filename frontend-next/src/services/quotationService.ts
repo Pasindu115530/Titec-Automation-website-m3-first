@@ -1,51 +1,43 @@
-import { fetchFromApi } from './api';
+import { api } from '@/lib/api';
 import { Quotation } from '../types/quotation';
 
 export const quotationService = {
     async getQuotations(): Promise<Quotation[]> {
-        return fetchFromApi<Quotation[]>('/api/quotations');
+        const response = await api.get<Quotation[]>('/api/quotations');
+        return response.data;
     },
 
-    async getQuotationById(id: number): Promise<Quotation> {
-        return fetchFromApi<Quotation>(`/api/quotations/${id}`);
+    async getQuotationById(id: string | number): Promise<Quotation> {
+        const response = await api.get<Quotation>(`/api/quotations/${id}`);
+        return response.data;
     },
 
-    async updateQuotation(id: number, data: Partial<Quotation>): Promise<Quotation> {
-        return fetchFromApi<Quotation>(`/api/quotations/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(data),
-        });
+    async updateQuotation(id: string | number, data: Partial<Quotation>): Promise<Quotation> {
+        const response = await api.put<Quotation>(`/api/quotations/${id}`, data);
+        return response.data;
     },
 
     // New methods for Requests
     async getQuotationRequests(page: number = 1, status?: string): Promise<any> {
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : '';
-
-        const queryParams = new URLSearchParams();
-        queryParams.append('page', page.toString());
-        if (status) {
-            queryParams.append('status', status);
-        }
-
-        return fetchFromApi<any>(`/api/quotation-requests?${queryParams.toString()}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+        const response = await api.get<any>('/api/quotation-requests', {
+            params: {
+                page,
+                status
             }
         });
+        return response.data;
     },
 
     async createQuotationRequest(data: { name: string, email: string, phone: string, message: string, items: { product_id: number, quantity: number }[] }): Promise<any> {
-        return fetchFromApi<any>('/api/quotation-requests', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
+        const response = await api.post<any>('/api/quotation-requests', data);
+        return response.data;
     },
 
     async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
         console.log('Service replyToRequest Data:', data);
-        let body;
-        let headers = {};
+
+        let config = {};
+        let body: any = data;
 
         if (data.mode === 'upload' && data.file) {
             const formData = new FormData();
@@ -53,28 +45,20 @@ export const quotationService = {
             formData.append('mode', 'upload');
             formData.append('file', data.file);
             body = formData;
-            // Content-Type header should not be set manually for FormData, browser sets it with boundary
-        } else {
-            body = JSON.stringify(data);
-            headers = { 'Content-Type': 'application/json' };
+            config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            };
         }
 
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : '';
-        if (token) {
-            headers = { ...headers, 'Authorization': `Bearer ${token}` };
-        }
-
-        return fetchFromApi<any>(`/api/quotation-requests/${id}/reply`, {
-            method: 'POST',
-            body: body,
-            headers: Object.keys(headers).length ? headers : undefined
-        });
+        const response = await api.post<any>(`/api/quotation-requests/${id}/reply`, body, config);
+        return response.data;
     },
 
     async sendDirectQuote(data: { name: string, email: string, phone: string, items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
-        let body;
-        let headers = {};
+        let config = {};
+        let body: any = data;
 
         if (data.mode === 'upload' && data.file) {
             const formData = new FormData();
@@ -85,21 +69,14 @@ export const quotationService = {
             formData.append('mode', 'upload');
             formData.append('file', data.file);
             body = formData;
-        } else {
-            body = JSON.stringify(data);
-            headers = { 'Content-Type': 'application/json' };
+            config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            };
         }
 
-        const userStr = localStorage.getItem('user');
-        const token = userStr ? JSON.parse(userStr).token : '';
-        if (token) {
-            headers = { ...headers, 'Authorization': `Bearer ${token}` };
-        }
-
-        return fetchFromApi<any>('/api/quotation-requests/direct', {
-            method: 'POST',
-            body: body,
-            headers: Object.keys(headers).length ? headers : undefined,
-        });
+        const response = await api.post<any>('/api/quotation-requests/direct', body, config);
+        return response.data;
     }
 };

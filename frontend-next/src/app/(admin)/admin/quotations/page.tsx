@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { quotationService } from '@/services/quotationService';
 import { Quotation } from '@/types/quotation';
 import QuotationsTable from '@/components/admin/quotations-table';
+import Loader from '@/components/loader';
 
 import ReplyModal from '@/components/admin/reply-quotation-modal';
 import DirectQuoteModal from '@/components/admin/direct-quote-modal';
@@ -26,7 +27,11 @@ export default function AdminQuotationsPage() {
     const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
     const [isDirectQuoteModalOpen, setIsDirectQuoteModalOpen] = useState(false);
 
+    // Race condition handling
+    const activeStatus = React.useRef(statusFilter);
+
     useEffect(() => {
+        activeStatus.current = statusFilter;
         // Reset and load when filter changes
         setPage(1);
         setQuotations([]);
@@ -40,6 +45,12 @@ export default function AdminQuotationsPage() {
 
         try {
             const response = await quotationService.getQuotationRequests(pageNum, status);
+
+            // Check if this response matches the current active filter
+            if (status !== activeStatus.current) {
+                return;
+            }
+
             // Laravel pagination response: { data: [], current_page: 1, last_page: 1, ... }
             const newQuotations = response.data;
 
@@ -54,8 +65,11 @@ export default function AdminQuotationsPage() {
             console.error('Failed to load quotations', error);
             toast.error('Failed to load quotations');
         } finally {
-            setLoading(false);
-            setLoadingMore(false);
+            // Only update loading state if we are still on the same filter
+            if (status === activeStatus.current) {
+                setLoading(false);
+                setLoadingMore(false);
+            }
         }
     };
 
@@ -163,9 +177,7 @@ export default function AdminQuotationsPage() {
             </div>
 
             {loading ? (
-                <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
+                <Loader variant="inline" size={100} />
             ) : (
                 <div className="space-y-4">
                     <div className="overflow-x-auto bg-white rounded-lg shadow">

@@ -3,8 +3,10 @@ export interface Project {
     title: string;
     client: string;
     description: string;
+    location?: string;
     completion_date: string;
     status: string;
+    technologies?: string[];
     thumbnail_path: string;
     project_image_urls: string[];
     created_at: string;
@@ -17,6 +19,7 @@ export interface Product {
     price: number;
     description: string; // mapped from 'desc' in backend if needed, or 'description'
     category: string;
+    brand?: string;
     image?: string; // Legacy fallback
     images?: string[]; // New multiple images support
     datasheet_path?: string;

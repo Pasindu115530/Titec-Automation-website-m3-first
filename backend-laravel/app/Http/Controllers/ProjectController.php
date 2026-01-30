@@ -28,9 +28,11 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'client' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
+            'technologies' => 'nullable|array',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
             'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
@@ -52,9 +54,11 @@ class ProjectController extends Controller
         $project = Project::create([
             'title' => $validated['title'],
             'client' => $validated['client'] ?? null,
+            'location' => $validated['location'] ?? null,
             'description' => $validated['description'] ?? null,
             'completion_date' => $validated['completion_date'] ?? null,
             'status' => $validated['status'] ?? 'In Progress',
+            'technologies' => $validated['technologies'] ?? [],
             'thumbnail_path' => $thumbnailPath,
             'project_image_urls' => $galleryPaths, // Casted to array in model
         ]);
@@ -84,9 +88,11 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'client' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
+            'technologies' => 'nullable|array',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'deleted_images' => 'nullable|array',
@@ -126,6 +132,11 @@ class ProjectController extends Controller
         }
 
         $validated['project_image_urls'] = $currentImages;
+
+        // Ensure we don't overwrite technologies if not present, or handle partial updates correctly
+        // With 'sometimes' validation, if not sent, it won't be in validated.
+        // But for array field, if we want to clear it, frontend must send empty array?
+        // Let's rely on standard update.
 
         $project->update($validated);
 
