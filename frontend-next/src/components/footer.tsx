@@ -22,7 +22,7 @@ export default function Footer() {
                     </p>
 
                     <Link
-                        href="/about"
+                        href="/contact"
                         className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-300 group"
                         aria-label="Contact Us"
                     >

@@ -17,7 +17,7 @@ export default function Loader({ size = 400, speed = 3, variant = 'fullscreen', 
     return (
         <div className={`${containerClasses} ${className}`}>
             <div
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center max-w-[250px] max-h-[250px] md:max-w-none md:max-h-none"
                 style={{ width: sizeValue, height: sizeValue }}
             >
                 {/* Static Logo */}
