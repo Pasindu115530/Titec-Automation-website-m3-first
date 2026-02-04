@@ -37,6 +37,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           # Next.js build එකෙන් හැදෙන folder එක (පරීක්ෂා කරන්න: out හෝ .next)
-          local-dir: ./frontend-next/out/ 
+          local-dir: ./frontend-next/ 
           # cPanel එකේ ඔයා හදපු Application Root folder එක
           server-dir: frontend/
