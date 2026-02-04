@@ -47,7 +47,7 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         REMOTE_HOST: ${{ secrets.HOST_IP }}
         REMOTE_USER: ${{ secrets.CPANEL_USER }}
-        REMOTE_PORT: '7822' 
+        REMOTE_PORT: '22' 
         
         SOURCE: "/" 
         TARGET: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
