@@ -1,4 +1,4 @@
-name: Deploy Full Stack (Native Rsync)
+name: Deploy Full Stack (Direct Key)
 
 on:
   push:
@@ -10,15 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Get Code
     - name: 🚚 Get Latest Code
       uses: actions/checkout@v4
 
-    # --- PART A: PREPARE LARAVEL (BACKEND) ---
+    # --- SETUP BACKEND ---
     - name: ⚙️ Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.3' # Stick to 8.2 for safety unless you are sure about 8.3
+        php-version: '8.2'
         extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, fileinfo
 
     - name: 🔨 Build Backend
@@ -26,7 +25,7 @@ jobs:
         cd backend-laravel
         composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs
 
-    # --- PART B: PREPARE NEXT.JS (FRONTEND) ---
+    # --- SETUP FRONTEND ---
     - name: ⚙️ Setup Node
       uses: actions/setup-node@v4
       with:
@@ -34,7 +33,6 @@ jobs:
 
     - name: 🔨 Build Frontend
       env:
-        # Passes the API URL you haven't set yet (we will fix this below)
         NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
       run: |
         cd frontend-next
@@ -42,20 +40,20 @@ jobs:
         npm run build
         rm -rf node_modules
 
-    # --- PART C: DEPLOY FILES (Native Rsync - No Plugin) ---
+    # --- DEPLOY (MODIFIED FOR PLAIN TEXT) ---
     - name: 🚀 Deploy Files
       run: |
-        # 1. Prepare SSH Key
         mkdir -p ~/.ssh
-        # We decode the key to fix formatting issues (Requires Base64 Secret)
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ~/.ssh/id_rsa
+        
+        # FIX: WRITE THE KEY DIRECTLY TO FILE (NO DECODING)
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        
         chmod 600 ~/.ssh/id_rsa
         
-        # 2. Add Server to Known Hosts (Using Port 1243)
+        # Add Known Host
         ssh-keyscan -p ${{ secrets.REMOTE_PORT }} -H ${{ secrets.HOST_IP }} >> ~/.ssh/known_hosts
 
-        # 3. Run Rsync
-        # This copies 'backend-laravel' and 'frontend-next' INTO 'titec_project'
+        # Run Rsync
         rsync -avz -e "ssh -p ${{ secrets.REMOTE_PORT }} -i ~/.ssh/id_rsa" \
           --exclude='.git/' \
           --exclude='.github/' \
@@ -64,25 +62,21 @@ jobs:
           --exclude='backend-laravel/storage/logs/' \
           ./ ${{ secrets.CPANEL_USER }}@${{ secrets.HOST_IP }}:/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
 
-    # --- PART D: RESTART SERVICES ---
+    # --- RESTART ---
     - name: 🧹 Restart Server Services
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST_IP }}
         username: ${{ secrets.CPANEL_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }} # Uses 1243 correctly now
+        port: ${{ secrets.REMOTE_PORT }}
         script: |
-          # 1. Finalize Laravel
           cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/backend-laravel
           php artisan migrate --force
           php artisan config:cache
-
-          # 2. Finalize Frontend
+          
           cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/frontend-next
           export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
           npm install --production
-          
-          # 3. Restart App
           mkdir -p tmp
           touch tmp/restart.txt
