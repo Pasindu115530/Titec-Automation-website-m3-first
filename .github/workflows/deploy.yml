@@ -1,42 +1,81 @@
-name: Deploy Next.js Frontend
+name: Deploy Full Stack (Laravel + Next.js)
 
 on:
   push:
     branches:
-      - main  # ඔයාගේ ප්‍රධාන branch එකේ නම පරීක්ෂා කරන්න
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # 1. GitHub Repository එකෙන් code එක ලබා ගැනීම
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    # 1. GitHub එකෙන් අලුත්ම code එක ලබා ගැනීම
+    - name: 🚚 Get Latest Code
+      uses: actions/checkout@v4
 
-      # 2. Node.js Version 20 ස්ථාපනය කිරීම (Next.js සඳහා අවශ්‍ය වේ)
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+    # --- PART A: PREPARE LARAVEL (BACKEND) ---
+    - name: ⚙️ Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, fileinfo
 
-      # 3. Frontend folder එක ඇතුළත dependencies install කිරීම
-      - name: Install Dependencies
-        run: npm install
-        working-directory: frontend-next
+    - name: 🔨 Build Backend
+      run: |
+        cd backend-laravel
+        composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs
 
-      # 4. Next.js project එක build කිරීම
-      - name: Build Project
-        run: npm run build
-        working-directory: frontend-next
+    # --- PART B: PREPARE NEXT.JS (FRONTEND) ---
+    - name: ⚙️ Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-      # 5. Build වුණු files FTP හරහා cPanel එකට යැවීම
-      - name: Sync Files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          # Next.js build එකෙන් හැදෙන folder එක (පරීක්ෂා කරන්න: out හෝ .next)
-          local-dir: ./frontend-next/ 
-          # cPanel එකේ ඔයා හදපු Application Root folder එක
-          server-dir: frontend/
+    - name: 🔨 Build Frontend
+      run: |
+        cd frontend-next
+        npm install
+        npm run build
+        # Upload speed එක වැඩි කිරීමට node_modules අයින් කරයි
+        rm -rf node_modules
+
+    # --- PART C: TRANSFER FILES (RSYNC via SSH) ---
+    - name: 🚀 Deploy via SSH (Rsync)
+      uses: easingthemes/ssh-deploy@v5.0.0
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.HOST_IP }}
+        REMOTE_USER: ${{ secrets.CPANEL_USER }}
+        REMOTE_PORT: '7822' 
+        
+        SOURCE: "/" 
+        TARGET: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
+        
+        # .env සහ storage files overwrite වීම වැළැක්වීමට
+        EXCLUDE: "/.git/, /.github/, /backend-laravel/.env, /frontend-next/.env, /backend-laravel/storage/logs/"
+        
+        ARGS: "-rltgoDzvO --delete"
+
+    # --- PART D: RESTART & FINALIZE ---
+    - name: 🧹 Restart Server Services
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.CPANEL_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 7822
+        script: |
+          # 1. Laravel Backend එක finalize කිරීම
+          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/backend-laravel
+          php artisan migrate --force
+          php artisan config:cache
+
+          # 2. Frontend එක finalize කිරීම
+          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/frontend-next
+          export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
+          npm install --production
+          
+          # 3. Node.js App එක restart කිරීම
+          mkdir -p tmp
+          touch tmp/restart.txt
