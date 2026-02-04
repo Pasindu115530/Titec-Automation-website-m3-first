@@ -1,4 +1,4 @@
-name: Deploy Full Stack (Direct Key)
+name: Deploy Full Stack (Zip & Ship)
 
 on:
   push:
@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Get Code
     - name: 🚚 Get Latest Code
       uses: actions/checkout@v4
 
-    # --- SETUP BACKEND ---
+    # --- PART A: BUILD BACKEND ---
     - name: ⚙️ Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -25,7 +26,7 @@ jobs:
         cd backend-laravel
         composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs
 
-    # --- SETUP FRONTEND ---
+    # --- PART B: BUILD FRONTEND ---
     - name: ⚙️ Setup Node
       uses: actions/setup-node@v4
       with:
@@ -40,30 +41,21 @@ jobs:
         npm run build
         rm -rf node_modules
 
-    # --- DEPLOY (MODIFIED FOR PLAIN TEXT) ---
-    - name: 🚀 Deploy Files
+    # --- PART C: COMPRESS FILES (The Fix for No Rsync) ---
+    - name: 📦 Create Deployment Archive
       run: |
-        mkdir -p ~/.ssh
-        
-        # FIX: WRITE THE KEY DIRECTLY TO FILE (NO DECODING)
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        
-        chmod 600 ~/.ssh/id_rsa
-        
-        # Add Known Host
-        ssh-keyscan -p ${{ secrets.REMOTE_PORT }} -H ${{ secrets.HOST_IP }} >> ~/.ssh/known_hosts
-
-        # Run Rsync
-        rsync -avz -e "ssh -p ${{ secrets.REMOTE_PORT }} -i ~/.ssh/id_rsa" \
-          --exclude='.git/' \
-          --exclude='.github/' \
+        tar -czf deploy_package.tar.gz \
+          --exclude='.git' \
+          --exclude='.github' \
           --exclude='backend-laravel/.env' \
           --exclude='frontend-next/.env' \
-          --exclude='backend-laravel/storage/logs/' \
-          ./ ${{ secrets.CPANEL_USER }}@${{ secrets.HOST_IP }}:/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+          --exclude='backend-laravel/storage/logs' \
+          backend-laravel frontend-next
 
-    # --- RESTART ---
-    - name: 🧹 Restart Server Services
+    # --- PART D: UPLOAD & DEPLOY ---
+    
+    # 1. Ensure Folder Exists on Server
+    - name: 📂 Prepare Server Directory
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST_IP }}
@@ -71,12 +63,44 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.REMOTE_PORT }}
         script: |
-          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/backend-laravel
+          mkdir -p /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+
+    # 2. Upload the Zip File (SCP)
+    - name: 🚀 Upload Archive
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.CPANEL_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_PORT }}
+        source: "deploy_package.tar.gz"
+        target: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
+
+    # 3. Unzip & Restart
+    - name: 🧹 Extract & Restart
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_IP }}
+        username: ${{ secrets.CPANEL_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_PORT }}
+        script: |
+          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+          
+          # Extract and Overwrite
+          tar -xzf deploy_package.tar.gz
+          rm deploy_package.tar.gz
+          
+          # Finalize Laravel
+          cd backend-laravel
           php artisan migrate --force
           php artisan config:cache
           
-          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/frontend-next
+          # Finalize Frontend
+          cd ../frontend-next
           export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
           npm install --production
+          
+          # Restart App
           mkdir -p tmp
           touch tmp/restart.txt
