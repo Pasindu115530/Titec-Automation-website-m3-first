@@ -49,10 +49,10 @@ export default function ContactForm() {
                 {/* Left Side: Info Content */}
                 <div className="space-y-6 pt-10">
                     <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-white">
-                        Contact Us
+                        Contact 
                     </h2>
                     <p className="text-lg text-white/90 leading-relaxed max-w-sm">
-                        Have a question or need a quote? Send us a message and we will respond shortly.
+                        Have a question or need a quote? Send us a message and we respond shortly.
                     </p>
 
                     <div className="pt-22 space-y-6">
