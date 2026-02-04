@@ -18,14 +18,13 @@ jobs:
           node-version: '18'
 
       - name: Install Dependencies
-        # 'frontend' folder එක ඇතුළට ගිහින් install කරන්න
+        # මෙතන folder නම නිවැරදි කළා
         run: npm install
-        working-directory: ./frontend
+        working-directory: frontend-next
 
       - name: Build Project
-        # 'frontend' folder එක ඇතුළේ build එක run කරන්න
         run: npm run build
-        working-directory: ./frontend
+        working-directory: frontend-next
 
       - name: Sync Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,7 +32,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # GitHub එකේ තියෙන build වුණු folder එක (Next.js වල සාමාන්‍යයෙන් 'frontend/out' හෝ 'frontend/.next')
-          local-dir: ./frontend/out/ 
-          # cPanel එකේ ඔයා හදපු folder එක
+          # Build එකෙන් පස්සේ හැදෙන folder එකේ path එක
+          local-dir: ./frontend-next/out/ 
+          # cPanel එකේ ඔයා හදපු App Root folder එකේ නම (මේක කලින් frontend කියලා නේද දුන්නේ?)
           server-dir: frontend/
