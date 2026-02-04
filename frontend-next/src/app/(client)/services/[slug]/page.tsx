@@ -4,9 +4,9 @@ import Image from "next/image";
 import Footer from "@/components/footer";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 }
 
 export async function generateStaticParams() {

@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { Project } from '@/types';
 
 interface PageProps {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }
 
 // Generate static params for all clients
@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 }
 
 export default async function ClientPage({ params }: PageProps) {
-    const { slug } = params;
+    const { slug } = await params;
     const client = clients.find((c) => slugify(c.name) === slug);
 
     if (!client) {
