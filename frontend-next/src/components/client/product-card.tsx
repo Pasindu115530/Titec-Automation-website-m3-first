@@ -3,24 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/image-utils";
+import { createSlug } from "@/utils/slug-utils";
 
 interface ProductCardProps {
     product: Product;
     isAdmin: boolean;
     onAddToQuote: () => void;
-    // getImageUrl, getDatasheetUrl, onSelect removed as not needed or handled internally/via Link
 }
 
 export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps) {
-    // We use getImageUrl util directly or passed? The util is global now.
-    // Let's use the global util to be safe and consistent.
+    // ...
     const imageUrl = product.images && product.images.length > 0
         ? getImageUrl(product.images[0], '')
         : (product.image ? getImageUrl(product.image, '') : '');
 
     return (
         <Link
-            href={`/store/${product.id}`}
+            href={`/store/${createSlug(product.name, product.id)}`} // Use slug
             className="border rounded-xl bg-white hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer"
         >
             <div className="h-48 bg-gray-100 relative overflow-hidden">

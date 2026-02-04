@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { getImageUrl } from '@/utils/image-utils';
+import { createSlug } from '@/utils/slug-utils';
 import { toast } from 'sonner';
 
 interface ProductDetailsModalProps {
@@ -28,7 +29,7 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
     if (!isOpen || !product) return null;
 
     const handleShare = async () => {
-        const url = `${window.location.origin}/store/${product.id}`;
+        const url = `${window.location.origin}/store/${createSlug(product.name, product.id)}`;
 
         if (navigator.share) {
             try {
@@ -143,7 +144,7 @@ export default function ProductDetailsModal({ isOpen, onClose, product, onAddToQ
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImageIndex(idx)}
-                                        className={`w-14 h-14 border-2 rounded-md overflow-hidden flex-shrink-0 transition-all ${selectedImageIndex === idx ? 'border-blue-600 ring-2 ring-blue-100' : 'border-transparent hover:border-gray-300'}`}
+                                        className={`w-14 h-14 border-2 rounded-md overflow-hidden shrink-0 transition-all ${selectedImageIndex === idx ? 'border-blue-600 ring-2 ring-blue-100' : 'border-transparent hover:border-gray-300'}`}
                                     >
                                         <img src={getImageUrl(img, '')} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
                                     </button>

@@ -1,10 +1,12 @@
 import { productService } from "@/services/productService";
-import StoreClient from "@/components/client/store-client";
 import { Metadata, ResolvingMetadata } from "next";
+
 import { getImageUrl } from "@/utils/image-utils";
+import { extractIdFromSlug } from "@/utils/slug-utils";
+import ProductDetailsModalWrapper from "@/components/client/product-details-wrapper";
 
 type Props = {
-    params: Promise<{ id: string }>
+    params: Promise<{ slug: string }>
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
@@ -17,7 +19,8 @@ export async function generateMetadata(
     { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const { id } = await params;
+    const { slug } = await params;
+    const id = extractIdFromSlug(slug);
     let product = null;
 
     try {
@@ -65,31 +68,15 @@ export async function generateMetadata(
 }
 
 export default async function ProductPage({ params }: Props) {
-    const { id } = await params;
-    let products: any[] = [];
+    const { slug } = await params;
+    const id = extractIdFromSlug(slug);
     let product: any = null;
 
     try {
-        // Fetch all for the store background
-        products = await productService.getProducts();
-
-        // Fetch specific for JSON-LD (or find in list if populated)
-        // We use finding from list to save a request if possible, or fetch if needed.
-        // But for guaranteed fresh data for SEO, we can fetchById. 
-        // Let's just find it to render faster, assuming list has full data.
-        product = products.find((p: any) => String(p.id) === id);
-
-        // If not found in list (maybe pagination later?), try fetchById
-        if (!product) {
-            try {
-                product = await productService.getProductById(id);
-            } catch (err) {
-                // ignore
-            }
-        }
-
+        // Fetch only the specific product for SEO and performance
+        product = await productService.getProductById(id);
     } catch (error) {
-        console.error("Failed to fetch products server-side:", error);
+        console.error("Failed to fetch product server-side:", error);
     }
 
     // JSON-LD Construction
@@ -117,13 +104,24 @@ export default async function ProductPage({ params }: Props) {
             },
             "offers": {
                 "@type": "Offer",
-                "url": `https://titecautomation.com/store/${product.id}`, // Ideally env var for host
+                "url": `https://titecautomation.com/store/${slug}`,
                 "priceCurrency": "LKR",
                 "price": product.price,
                 "availability": stockStatus,
                 "itemCondition": "https://schema.org/NewCondition"
             }
         };
+    }
+
+    if (!product) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-800">Product Not Found</h1>
+                    <p className="text-gray-600 mt-2">The product you are looking for does not exist.</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -134,7 +132,9 @@ export default async function ProductPage({ params }: Props) {
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
                 />
             )}
-            <StoreClient initialProducts={products} />
+
+            {/* Render primarily the Product Details as a standalone page */}
+            <ProductDetailsModalWrapper product={product} />
         </>
     );
 }
