@@ -3,36 +3,40 @@ name: Deploy Next.js Frontend
 on:
   push:
     branches:
-      - main
+      - main  # ඔයාගේ ප්‍රධාන branch එකේ නම පරීක්ෂා කරන්න
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # 1. GitHub Repository එකෙන් code එක ලබා ගැනීම
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. Node.js Version 20 ස්ථාපනය කිරීම (Next.js සඳහා අවශ්‍ය වේ)
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
+      # 3. Frontend folder එක ඇතුළත dependencies install කිරීම
       - name: Install Dependencies
-        # මෙතන folder නම නිවැරදි කළා
         run: npm install
         working-directory: frontend-next
 
+      # 4. Next.js project එක build කිරීම
       - name: Build Project
         run: npm run build
         working-directory: frontend-next
 
+      # 5. Build වුණු files FTP හරහා cPanel එකට යැවීම
       - name: Sync Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Build එකෙන් පස්සේ හැදෙන folder එකේ path එක
+          # Next.js build එකෙන් හැදෙන folder එක (පරීක්ෂා කරන්න: out හෝ .next)
           local-dir: ./frontend-next/out/ 
-          # cPanel එකේ ඔයා හදපු App Root folder එකේ නම (මේක කලින් frontend කියලා නේද දුන්නේ?)
+          # cPanel එකේ ඔයා හදපු Application Root folder එක
           server-dir: frontend/
