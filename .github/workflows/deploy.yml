@@ -1,0 +1,39 @@
+name: Deploy Next.js Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        # 'frontend' folder එක ඇතුළට ගිහින් install කරන්න
+        run: npm install
+        working-directory: ./frontend
+
+      - name: Build Project
+        # 'frontend' folder එක ඇතුළේ build එක run කරන්න
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Sync Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # GitHub එකේ තියෙන build වුණු folder එක (Next.js වල සාමාන්‍යයෙන් 'frontend/out' හෝ 'frontend/.next')
+          local-dir: ./frontend/out/ 
+          # cPanel එකේ ඔයා හදපු folder එක
+          server-dir: frontend/
