@@ -3,11 +3,16 @@ import { Product } from '../types';
 
 export const productService = {
     async getProducts(search?: string): Promise<Product[]> {
-        const params: any = {};
-        if (search) params.search = search;
+        try {
+            const params: any = {};
+            if (search) params.search = search;
 
-        const response = await api.get<{ data: Product[] }>('/api/products', { params });
-        return response.data.data;
+            const response = await api.get<{ data: Product[] }>('/api/products', { params });
+            return response.data.data;
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+            return [];
+        }
     },
 
     async getProductById(id: string): Promise<Product> {
