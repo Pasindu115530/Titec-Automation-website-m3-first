@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        'quotations' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/quotations'),
+            'throw' => false,
+        ],
+
     ],
 
     /*

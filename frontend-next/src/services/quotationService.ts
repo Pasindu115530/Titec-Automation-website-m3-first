@@ -89,5 +89,36 @@ export const quotationService = {
 
         const response = await api.post<any>('/api/quotation-requests/direct', body, config);
         return response.data;
+    },
+
+    async downloadQuotationPDF(id: number | string): Promise<void> {
+        try {
+            const response = await api.get(`/api/quotation-requests/${id}/download`, {
+                responseType: 'blob', // Important for handling binary data
+            });
+
+            // Create a temporary URL for the Blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Try to extract filename from content-disposition
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = `quotation_${id}.pdf`;
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="?(.+?)"?$/);
+                if (fileNameMatch && fileNameMatch.length === 2)
+                    filename = fileNameMatch[1];
+            }
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+            throw error; // Re-throw to handle in UI
+        }
     }
 };

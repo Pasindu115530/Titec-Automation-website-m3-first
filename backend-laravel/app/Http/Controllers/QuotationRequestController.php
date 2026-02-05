@@ -115,12 +115,14 @@ class QuotationRequestController extends Controller
                 }
                 
                 // Store file in public storage
-                $path = $file->store('quotations', 'public');
+                // Store file in private storage
+                $path = $file->store('quotations', 'quotations');
                 
                 \Illuminate\Support\Facades\Log::info('Reply: PDF uploaded at: ' . $path);
 
                 // Read content from the stored file
-                $pdfContent = file_get_contents(storage_path('app/public/' . $path));
+                // With private disk, we can use Storage façade
+                $pdfContent = \Illuminate\Support\Facades\Storage::disk('quotations')->get($path);
             } else {
                 // Generate PDF from items
                 $pdf = Pdf::loadView('pdfs.quotation', [
@@ -129,6 +131,12 @@ class QuotationRequestController extends Controller
                     'message' => $validated['message'] ?? ''
                 ]);
                 $pdfContent = $pdf->output();
+                
+                // Store the generated PDF for future download
+                // Filename strategy: quote_{id}_{timestamp}.pdf
+                $filename = 'quotations/quote_' . $quoteRequest->id . '_' . time() . '.pdf';
+                \Illuminate\Support\Facades\Storage::disk('quotations')->put($filename, $pdfContent);
+                $path = $filename; // Keep track of path if we want to save it to DB
             }
 
             // 2. Send Email
@@ -154,8 +162,11 @@ class QuotationRequestController extends Controller
                 $mail->send(new QuotationReplyMail($pdfContent, $messageContent));
             }
 
-            // 3. Update Status
-            $quoteRequest->update(['status' => 'quoted']);
+            // 3. Update Status and save file path
+            $quoteRequest->update([
+                'status' => 'quoted',
+                'file_path' => $path
+            ]);
 
             return response()->json(['message' => 'Quotation sent successfully']);
 
@@ -182,22 +193,19 @@ class QuotationRequestController extends Controller
 
         $mode = $request->input('mode', 'create');
         $pdfContent = null;
+        $path = null;
 
         if ($mode === 'upload') {
             $file = $request->file('file');
             if (!$file) {
                 return response()->json(['message' => 'File not found.'], 400);
             }
-            $path = $file->storage_path('quotations', 'public'); // path is not returned by storage_path? wait. $file->store()
-            $path = $file->store('quotations', 'public');
-            $pdfContent = file_get_contents(storage_path('app/public/' . $path));
+            $path = $file->store('quotations', 'quotations');
+            $pdfContent = \Illuminate\Support\Facades\Storage::disk('quotations')->get($path);
         } else {
-            // Create dummy request for PDF view context if needed, or pass null
-            // We create a record anyway
+            // Create dummy request for PDF view context
             $items = $validated['items'] ?? [];
-            // Generate PDF
-             // We need a request object for the view usually
-             $quoteRequestForPdf = new QuotationRequest([
+            $quoteRequestForPdf = new QuotationRequest([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
@@ -210,6 +218,10 @@ class QuotationRequestController extends Controller
                 'message' => $validated['message'] ?? ''
             ]);
             $pdfContent = $pdf->output();
+            
+            $filename = 'quotations/direct_' . time() . '.pdf';
+            \Illuminate\Support\Facades\Storage::disk('quotations')->put($filename, $pdfContent);
+            $path = $filename;
         }
 
         // Create Record
@@ -218,7 +230,8 @@ class QuotationRequestController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'status' => 'quoted',
-            'customer_notes' => $validated['message'] ?? 'Direct Quote initiated by Admin'
+            'customer_notes' => $validated['message'] ?? 'Direct Quote initiated by Admin',
+            'file_path' => $path
         ]);
 
         // Send Email
@@ -229,5 +242,33 @@ class QuotationRequestController extends Controller
         $mail->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
 
         return response()->json(['message' => 'Direct quotation sent successfully']);
+    }
+
+    public function download(Request $request, $id)
+    {
+        // 1. Find the request to ensure it exists
+        $quoteRequest = QuotationRequest::findOrFail($id);
+
+        if (!$quoteRequest->file_path) {
+             abort(404, 'No file attached to this quotation.');
+        }
+
+        // 2. Find the file on the secure disk
+        $disk = \Illuminate\Support\Facades\Storage::disk('quotations');
+        $filename = $quoteRequest->file_path;
+        
+        if (!$disk->exists($filename)) {
+             // Fallback: Check if it's stored with full path from 'store()' which might include disk prefix? 
+             // store('quotations', 'quotations') stores as 'quotations/filename.pdf' relative to disk root?
+             // If we stored 'quotations/...' and disk root is '.../app/private/quotations', do we get double?
+             // Check: filesystems.php root is 'app/private/quotations'.
+             // $file->store('quotations', 'quotations') puts it in 'app/private/quotations/quotations/...'
+             // So $path variable holds 'quotations/...'
+             // Accessing disk('quotations')->exists('quotations/...') should work.
+             
+             abort(404, 'File not found on server.');
+        }
+
+        return $disk->download($filename);
     }
 }

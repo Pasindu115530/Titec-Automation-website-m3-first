@@ -14,7 +14,8 @@ class QuotationRequest extends Model
         'email',
         'phone',
         'customer_notes', 
-        'status' // pending, quoted, closed
+        'status', // pending, quoted, closed
+        'file_path'
     ];
 
     // 1. Who asked for this?

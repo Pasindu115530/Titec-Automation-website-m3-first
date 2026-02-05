@@ -232,12 +232,28 @@ export default function AdminQuotationsPage() {
                                                 </button>
                                             )}
                                             {q.status === 'quoted' && (
-                                                <button
-                                                    // optionally view the reply
-                                                    className="text-gray-400 text-sm cursor-default"
-                                                >
-                                                    Sent
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        // optionally view the reply
+                                                        className="text-gray-400 text-sm cursor-default"
+                                                    >
+                                                        Sent
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            const toastId = toast.loading('Downloading PDF...');
+                                                            try {
+                                                                await quotationService.downloadQuotationPDF(q.id);
+                                                                toast.success('Download started', { id: toastId });
+                                                            } catch {
+                                                                toast.error('Failed to download PDF. File may not exist.', { id: toastId });
+                                                            }
+                                                        }}
+                                                        className="text-blue-600 hover:text-blue-900 text-sm font-medium bg-blue-50 px-3 py-1 rounded-md border border-blue-100"
+                                                    >
+                                                        View PDF
+                                                    </button>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
