@@ -3,11 +3,17 @@ import { Quotation } from '../types/quotation';
 
 export const quotationService = {
     async getQuotations(): Promise<Quotation[]> {
-        const response = await api.get<Quotation[]>('/api/quotations');
-        return response.data;
+        try {
+            const response = await api.get<Quotation[]>('/api/quotations');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch quotations:', error);
+            return [];
+        }
     },
 
     async getQuotationById(id: string | number): Promise<Quotation> {
+        // Keeping this one throwing as individual page should likely 404/error if not found
         const response = await api.get<Quotation>(`/api/quotations/${id}`);
         return response.data;
     },
@@ -19,13 +25,18 @@ export const quotationService = {
 
     // New methods for Requests
     async getQuotationRequests(page: number = 1, status?: string): Promise<any> {
-        const response = await api.get<any>('/api/quotation-requests', {
-            params: {
-                page,
-                status
-            }
-        });
-        return response.data;
+        try {
+            const response = await api.get<any>('/api/quotation-requests', {
+                params: {
+                    page,
+                    status
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to fetch quotation requests:', error);
+            return { data: [], current_page: 1, last_page: 1, total: 0 };
+        }
     },
 
     async createQuotationRequest(data: { name: string, email: string, phone: string, message: string, items: { product_id: number, quantity: number }[] }): Promise<any> {
