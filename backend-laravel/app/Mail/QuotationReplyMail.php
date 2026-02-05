@@ -29,11 +29,13 @@ class QuotationReplyMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new \Illuminate\Mail\Mailables\Address(
-                config('mail.sales.address'), 
-                config('mail.sales.name')
-            ),
             subject: 'Quotation for your Request - Titec Automation',
+            replyTo: [
+                new \Illuminate\Mail\Mailables\Address(
+                    config('mail.sales.address'), 
+                    config('mail.sales.name')
+                )
+            ],
         );
     }
 
