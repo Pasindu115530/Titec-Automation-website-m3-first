@@ -147,7 +147,11 @@ class QuotationRequestController extends Controller
             $messageContent = $request->input('message') ?? ($validated['message'] ?? '');
 
             if ($recipientEmail) {
-                Mail::to($recipientEmail)->send(new QuotationReplyMail($pdfContent, $messageContent));
+                $mail = Mail::to($recipientEmail);
+                if (config('mail.sales.address')) {
+                    $mail->bcc(config('mail.sales.address'));
+                }
+                $mail->send(new QuotationReplyMail($pdfContent, $messageContent));
             }
 
             // 3. Update Status
@@ -218,7 +222,11 @@ class QuotationRequestController extends Controller
         ]);
 
         // Send Email
-        Mail::to($validated['email'])->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
+        $mail = Mail::to($validated['email']);
+        if (config('mail.sales.address')) {
+            $mail->bcc(config('mail.sales.address'));
+        }
+        $mail->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
 
         return response()->json(['message' => 'Direct quotation sent successfully']);
     }
