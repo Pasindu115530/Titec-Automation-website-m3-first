@@ -36,9 +36,11 @@ export default async function ClientPage({ params }: PageProps) {
     // Fetch projects for this client from API
     let clientProjects: Project[] = [];
     try {
-        clientProjects = await projectService.getProjectsByClient(client.name);
+        const projects = await projectService.getProjectsByClient(client.name);
+        clientProjects = projects || [];
     } catch (error) {
         console.error("Failed to fetch client projects:", error);
+        clientProjects = [];
     }
 
     return (
@@ -72,7 +74,7 @@ export default async function ClientPage({ params }: PageProps) {
                         subtitle="Explore our successful deployments."
                     />
 
-                    {clientProjects.length > 0 ? (
+                    {clientProjects?.length > 0 ? (
                         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                             {clientProjects.map((project) => (
                                 <Link
