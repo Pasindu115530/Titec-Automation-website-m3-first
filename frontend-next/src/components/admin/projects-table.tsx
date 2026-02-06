@@ -109,10 +109,11 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                ${project.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                                                    project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                                                ${(project.status || '').toLowerCase() === 'completed' ? 'bg-green-100 text-green-800' :
+                                                    (project.status || '').toLowerCase() === 'in progress' ? 'bg-blue-100 text-blue-600' :
+                                                        (project.status || '').toLowerCase() === 'maintenance' ? 'bg-blue-100 text-red-600' :
                                                         'bg-gray-100 text-gray-800'}`}>
-                                                {project.status === 'Completed' && <CheckCircle className="w-3 h-3 mr-1" />}
+                                                {(project.status || '').toLowerCase() === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
                                                 {project.status}
                                             </span>
                                         </td>
