@@ -23,7 +23,7 @@ class ContactController extends Controller
 
         // Send email to sales
         // Assuming 'sales@titecautomation.com' or configured via .env
-        $salesEmail = config('MAIL_SALES_ADDRESS', 'sales@titecautomation.lk'); 
+        $salesEmail = config('mail.sales.address', 'info@titecautomation.lk'); 
         
         try {
             Mail::to($salesEmail)->send(new ContactFormSubmitted($contactMessage));

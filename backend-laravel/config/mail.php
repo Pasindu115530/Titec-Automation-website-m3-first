@@ -116,8 +116,8 @@ return [
     ],
 
     'sales' => [
-        'address' => env('MAIL_SALES_ADDRESS'),
-        'name' => env('MAIL_SALES_NAME'),
+        'address' => env('MAIL_SALES', env('MAIL_SALES_ADDRESS')),
+        'name' => env('MAIL_SALES_NAME', 'Titec Sales'),
     ],
 
 ];
