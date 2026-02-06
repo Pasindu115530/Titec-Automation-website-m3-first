@@ -49,6 +49,17 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
         technologies: '',
     });
 
+
+    // Helper to normalize status for UI
+    const normalizeStatus = (status: string) => {
+        if (!status) return 'In Progress';
+        const s = status.toLowerCase();
+        if (s === 'completed') return 'Completed';
+        if (s === 'maintenance') return 'Maintenance';
+        if (s === 'in progress') return 'In Progress';
+        return status;
+    };
+
     useEffect(() => {
         if (project) {
             setFormData({
@@ -57,7 +68,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 location: project.location || '',
                 description: project.description || '',
                 completion_date: project.completion_date || '',
-                status: project.status || 'In Progress',
+                status: normalizeStatus(project.status),
                 technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
             });
             setThumbnailPreview(project.thumbnail_path ? getImageUrl(project.thumbnail_path, '') : '');
@@ -267,12 +278,12 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                     value={formData.status}
                                     onChange={handleInputChange}
                                 >
-                                    <option>In Progress</option>
-                                    <option>Completed</option>
-                                    <option>Maintenance</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Maintenance">Maintenance</option>
                                 </select>
-                            </div>
-                        </div>
+                            </div >
+                        </div >
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Thumbnail</label>
@@ -350,7 +361,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                 className="hidden"
                             />
                         </div>
-                    </div>
+                    </div >
 
                     <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
                         <Button variant="outline" onClick={onClose}>Cancel</Button>
