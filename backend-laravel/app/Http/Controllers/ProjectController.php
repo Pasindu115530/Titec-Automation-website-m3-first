@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ProjectController extends Controller
 {
@@ -40,14 +40,17 @@ class ProjectController extends Controller
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            $path = $file->store('projects', 'public');
-            $thumbnailPath = $path;
+            $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
+            $file->move(public_path('projects'), $filename);
+            $thumbnailPath = '/projects/' . $filename;
         }
 
         $galleryPaths = [];
         if ($request->hasFile('project_images')) {
             foreach ($request->file('project_images') as $image) {
-                $galleryPaths[] = $image->store('projects/gallery', 'public');
+                $filename = time() . '_' . uniqid() . '_gallery_' . $image->getClientOriginalName();
+                $image->move(public_path('projects/gallery'), $filename);
+                $galleryPaths[] = '/projects/gallery/' . $filename;
             }
         }
 
@@ -101,13 +104,14 @@ class ProjectController extends Controller
 
         if ($request->hasFile('thumbnail')) {
             // Delete old thumbnail if exists
-            if ($project->thumbnail_path) {
-                Storage::disk('public')->delete($project->thumbnail_path);
+            if ($project->thumbnail_path && file_exists(public_path($project->thumbnail_path))) {
+                File::delete(public_path($project->thumbnail_path));
             }
             
             $file = $request->file('thumbnail');
-            $path = $file->store('projects', 'public');
-            $validated['thumbnail_path'] = $path;
+            $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
+            $file->move(public_path('projects'), $filename);
+            $validated['thumbnail_path'] = '/projects/' . $filename;
         }
 
         // Handle Gallery Images
@@ -117,8 +121,12 @@ class ProjectController extends Controller
         if ($request->has('deleted_images')) {
             $deletedImages = $request->input('deleted_images');
             foreach ($deletedImages as $delImg) {
+                // Remove from array
                 if (in_array($delImg, $currentImages)) {
-                    Storage::disk('public')->delete($delImg);
+                    // Delete physical file
+                    if (file_exists(public_path($delImg))) {
+                        File::delete(public_path($delImg));
+                    }
                     $currentImages = array_values(array_diff($currentImages, [$delImg]));
                 }
             }
@@ -127,16 +135,13 @@ class ProjectController extends Controller
         // 2. Add new images
         if ($request->hasFile('project_images')) {
             foreach ($request->file('project_images') as $image) {
-                $currentImages[] = $image->store('projects/gallery', 'public');
+                $filename = time() . '_' . uniqid() . '_gallery_' . $image->getClientOriginalName();
+                $image->move(public_path('projects/gallery'), $filename);
+                $currentImages[] = '/projects/gallery/' . $filename;
             }
         }
 
         $validated['project_image_urls'] = $currentImages;
-
-        // Ensure we don't overwrite technologies if not present, or handle partial updates correctly
-        // With 'sometimes' validation, if not sent, it won't be in validated.
-        // But for array field, if we want to clear it, frontend must send empty array?
-        // Let's rely on standard update.
 
         $project->update($validated);
 
@@ -153,13 +158,17 @@ class ProjectController extends Controller
     {
         // Delete thumbnail if exists
         if ($project->thumbnail_path) {
-            Storage::disk('public')->delete($project->thumbnail_path);
+            if (file_exists(public_path($project->thumbnail_path))) {
+                File::delete(public_path($project->thumbnail_path));
+            }
         }
 
         // Delete gallery images
         if ($project->project_image_urls) {
             foreach ($project->project_image_urls as $imagePath) {
-                Storage::disk('public')->delete($imagePath);
+                if (file_exists(public_path($imagePath))) {
+                    File::delete(public_path($imagePath));
+                }
             }
         }
 

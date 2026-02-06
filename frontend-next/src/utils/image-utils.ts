@@ -5,8 +5,8 @@ export const getImageUrl = (path?: string | null, fallback: string = '/placehold
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
     const cleanPath = path.startsWith('/') ? path.substring(1) : path;
 
-    // If path starts with 'products/' or 'datasheets/', it's in public folder, not storage
-    if (cleanPath.startsWith('products/') || cleanPath.startsWith('datasheets/')) {
+    // If path starts with 'products/', 'datasheets/', or 'projects/', it's in public folder, not storage
+    if (cleanPath.startsWith('products/') || cleanPath.startsWith('datasheets/') || cleanPath.startsWith('projects/')) {
         return `${backendUrl}/${cleanPath}`;
     }
 
