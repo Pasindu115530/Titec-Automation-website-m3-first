@@ -75,7 +75,19 @@ class ProductController extends Controller
             $validated['model_number'] = !empty($validated['sku']) ? $validated['sku'] : 'MN-' . strtoupper(uniqid()); 
         }
 
-        $product = Product::create($validated);
+        try {
+            $product = Product::create($validated);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            return response()->json([
+                'message' => 'Product with this Model Number or SKU already exists.',
+                'error' => 'Duplicate Entry'
+            ], 422);
+        } catch (\Exception $e) {
+             return response()->json([
+                'message' => 'Failed to create product.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
         return response()->json([
             'data' => $product,
@@ -178,7 +190,19 @@ class ProductController extends Controller
             $validated['datasheet_path'] = '/datasheets/' . $filename;
         }
 
-        $product->update($validated);
+        try {
+            $product->update($validated);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+             return response()->json([
+                'message' => 'Product with this Model Number or SKU already exists.',
+                'error' => 'Duplicate Entry'
+            ], 422);
+        } catch (\Exception $e) {
+             return response()->json([
+                'message' => 'Failed to update product.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
         return response()->json([
             'data' => $product,
