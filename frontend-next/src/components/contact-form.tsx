@@ -60,8 +60,8 @@ export default function ContactForm() {
                             <div className="p-2.5 bg-white/10 rounded-lg backdrop-blur-sm group-hover:bg-white/20 transition-all">
                                 <FaEnvelope className="w-5 h-5" />
                             </div>
-                            <a href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`} className="text-base font-medium">
-                                {process.env.NEXT_PUBLIC_EMAIL}
+                            <a href={`mailto:${contacts[0].email}`} className="text-base font-medium">
+                                {contacts[0].email}
                             </a>
                         </div>
 
