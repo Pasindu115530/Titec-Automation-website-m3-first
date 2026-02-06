@@ -36,7 +36,7 @@ export default function CartDrawer() {
         try {
             setIsSubmitting(true);
             await submitQuotationRequest(formData);
-            toast.success('Quotation request submitted successfully!');
+            toast.success('Quotation request submitted successfully! You will receive a confirmation email.');
             setIsOpen(false);
             // Reset form (optional, since modal closes)
             setFormData({ name: '', email: '', phone: '', message: '' });
@@ -77,7 +77,7 @@ export default function CartDrawer() {
                             </button>
 
                             {/* Left Side: Form */}
-                            <div className="md:w-1/2 p-6 md:p-8 overflow-y-auto border-r border-gray-100">
+                            <div className="md:w-1/2 p-6 md:p-8 overflow-y-auto border-r border-gray-100 order-1"> {/* order-1 ensures it is top on mobile */}
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-bold text-gray-900">Request Quotation</h2>
                                     <p className="text-sm text-gray-500 mt-1">Fill in your details and we'll get back to you with a formal quote.</p>
@@ -130,15 +130,15 @@ export default function CartDrawer() {
                                             name="message"
                                             value={formData.message}
                                             onChange={handleInputChange}
-                                            rows={4}
+                                            rows={2} // Reduced rows for mobile
                                             className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
-                                            placeholder="Any specific requirements or questions?"
+                                            placeholder="Any specific requirements?"
                                         />
                                     </div>
 
                                     <Button
                                         type="submit"
-                                        className="w-full h-12 text-lg bg-(--secondary-blue) hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 mt-4"
+                                        className="w-full h-12 text-lg bg-(--secondary-blue) hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 mt-4 sticky bottom-0"
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? (
@@ -157,23 +157,23 @@ export default function CartDrawer() {
                             </div>
 
                             {/* Right Side: Cart Items */}
-                            <div className="md:w-1/2 p-6 md:p-8 bg-gray-50/50 flex flex-col h-[50vh] md:h-auto">
+                            <div className="md:w-1/2 p-6 md:p-8 bg-gray-50/50 flex flex-col h-[30vh] md:h-auto order-2"> {/* order-2 ensures it is bottom on mobile */}
                                 <div className="flex items-center gap-2 mb-4">
                                     <ShoppingBag className="h-5 w-5 text-indigo-600" />
-                                    <h3 className="font-semibold text-gray-900">Items in your list ({items.length})</h3>
+                                    <h3 className="font-semibold text-gray-900">Items ({items.length})</h3>
                                 </div>
 
                                 <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
                                     {items.length === 0 ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center text-gray-400">
-                                            <ShoppingBag className="h-12 w-12 opacity-20 mb-3" />
-                                            <p>Your list is empty</p>
+                                            <ShoppingBag className="h-8 w-8 opacity-20 mb-2" />
+                                            <p className="text-sm">List empty</p>
                                             <button
                                                 onClick={() => {
                                                     setIsOpen(false);
                                                     router.push('/store');
                                                 }}
-                                                className='w-full h-12 text-lg bg-(--secondary-blue) hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 mt-4 text-white font-medium rounded-lg transition-all'
+                                                className='text-sm text-indigo-600 font-medium underline mt-2'
                                             >
                                                 Visit Store
                                             </button>
@@ -181,15 +181,15 @@ export default function CartDrawer() {
                                     ) : (
                                         items.map((item) => (
                                             <div key={item.id} className="flex gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="h-16 w-16 rounded-lg bg-gray-50 shrink-0 flex items-center justify-center border border-gray-100 overflow-hidden">
+                                                <div className="h-12 w-12 rounded-lg bg-gray-50 shrink-0 flex items-center justify-center border border-gray-100 overflow-hidden">
                                                     {item.image ? (
                                                         <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
                                                     ) : (
-                                                        <ShoppingBag className="h-6 w-6 text-gray-300" />
+                                                        <ShoppingBag className="h-4 w-4 text-gray-300" />
                                                     )}
                                                 </div>
                                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                    <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
+                                                    <h4 className="font-medium text-gray-900 truncate text-sm">{item.name}</h4>
                                                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                                                 </div>
                                                 <Button

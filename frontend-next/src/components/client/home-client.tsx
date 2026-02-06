@@ -349,7 +349,7 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                                 const imageUrl = getImageUrl(project.thumbnail_path, '');
 
                                 return (
-                                    <div key={project.id} className="group relative h-96 w-full max-w-sm mx-auto overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-100 bg-gray-900">
+                                    <Link key={project.id} href={`/projects/${project.id}`} className="block group relative h-96 w-full max-w-sm mx-auto overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-100 bg-gray-900">
                                         {/* Background Image */}
                                         <div className="absolute inset-0">
                                             {imageUrl ? (
@@ -368,10 +368,10 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
 
                                         {/* Content Overlay */}
                                         <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                                            <div className="transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                                            <div className="transform translate-y-12 max-md:translate-y-0 group-hover:translate-y-0 transition-transform duration-500 ease-out">
                                                 {/* Client Badge */}
                                                 {project.client && (
-                                                    <div className="inline-block px-3 py-1 mb-3 rounded-full bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 transform -translate-y-2 group-hover:translate-y-0">
+                                                    <div className="inline-block px-3 py-1 mb-3 rounded-full bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold tracking-widest uppercase opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-all duration-500 delay-100 transform -translate-y-2 group-hover:translate-y-0 max-md:translate-y-0">
                                                         {project.client}
                                                     </div>
                                                 )}
@@ -380,21 +380,20 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                                                     {project.title}
                                                 </h3>
 
-                                                <div className="w-12 h-1 bg-red-500 mb-4 transition-all duration-500 group-hover:w-full group-hover:bg-blue-500/50"></div>
+                                                <div className="w-12 h-1 bg-red-500 mb-4 transition-all duration-500 group-hover:w-full max-md:w-16 group-hover:bg-blue-500/50"></div>
 
-                                                <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+                                                <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-opacity duration-500 delay-200">
                                                     {project.description || "Leading automation solutions for modern industry."}
                                                 </p>
 
-                                                <Link
-                                                    href={`/projects/${project.id}`}
-                                                    className="inline-flex items-center text-white font-bold tracking-widest text-xs hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 uppercase"
+                                                <div
+                                                    className="inline-flex items-center text-white font-bold tracking-widest text-xs hover:text-blue-400 transition-colors opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-opacity duration-500 delay-300 uppercase"
                                                 >
                                                     View Details <span className="ml-2 text-lg">→</span>
-                                                </Link>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 );
                             })
                         ) : (
