@@ -6,6 +6,7 @@ import Footer from "@/components/footer";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { Search, Package } from "lucide-react";
 import { Product } from "@/types";
 import { ProductCard } from "@/components/client/product-card";
@@ -84,6 +85,7 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
             description: product.description,
             image: getDisplayImage(product),
         }, false);
+        toast.success("Item added to the quotation");
     };
 
     const getDisplayImage = (product: Product) => {

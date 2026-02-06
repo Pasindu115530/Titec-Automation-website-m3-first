@@ -193,16 +193,18 @@
                 <td style="text-align: right;">{{ number_format($subTotal, 2) }}</td>
             </tr>
             <!-- VAT -->
+            @if($vat > 0)
             <tr class="totals-row">
                 <td colspan="3" class="no-border"></td>
-                <td style="background-color: #f0f0f0;">VAT(18%)</td>
-                <td style="text-align: right;">{{ number_format($subTotal * 0.18, 2) }}</td>
+                <td style="background-color: #f0f0f0;">VAT({{ $vat }}%)</td>
+                <td style="text-align: right;">{{ number_format($subTotal * ($vat / 100), 2) }}</td>
             </tr>
+            @endif
             <!-- Grand Total -->
             <tr class="totals-row">
                 <td colspan="3" class="no-border"></td>
                 <td style="background-color: #d9d9d9;">Total</td>
-                <td style="text-align: right;">{{ number_format($subTotal * 1.18, 2) }}</td>
+                <td style="text-align: right;">{{ number_format($subTotal * (1 + ($vat / 100)), 2) }}</td>
             </tr>
         </tbody>
     </table>

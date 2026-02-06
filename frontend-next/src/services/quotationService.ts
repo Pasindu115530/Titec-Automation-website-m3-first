@@ -44,7 +44,7 @@ export const quotationService = {
         return response.data;
     },
 
-    async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
+    async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }): Promise<any> {
         console.log('Service replyToRequest Data:', data);
 
         let config = {};
@@ -67,7 +67,7 @@ export const quotationService = {
         return response.data;
     },
 
-    async sendDirectQuote(data: { name: string, email: string, phone: string, items?: any[], message: string, mode?: 'create' | 'upload', file?: File }): Promise<any> {
+    async sendDirectQuote(data: { name: string, email: string, phone: string, items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }): Promise<any> {
         let config = {};
         let body: any = data;
 

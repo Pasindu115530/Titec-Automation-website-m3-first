@@ -99,6 +99,7 @@ class QuotationRequestController extends Controller
             'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240', // Max 10MB
+            'vat' => 'nullable|numeric|min:0',
         ]);
 
         try {
@@ -128,7 +129,8 @@ class QuotationRequestController extends Controller
                 $pdf = Pdf::loadView('pdfs.quotation', [
                     'request' => $quoteRequest,
                     'items' => $validated['items'] ?? [],
-                    'message' => $validated['message'] ?? ''
+                    'message' => $validated['message'] ?? '',
+                    'vat' => $validated['vat'] ?? 18
                 ]);
                 $pdfContent = $pdf->output();
                 
@@ -189,6 +191,7 @@ class QuotationRequestController extends Controller
             'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240',
+            'vat' => 'nullable|numeric|min:0',
         ]);
 
         $mode = $request->input('mode', 'create');
@@ -215,7 +218,8 @@ class QuotationRequestController extends Controller
             $pdf = Pdf::loadView('pdfs.quotation', [
                 'request' => $quoteRequestForPdf,
                 'items' => $items,
-                'message' => $validated['message'] ?? ''
+                'message' => $validated['message'] ?? '',
+                'vat' => $validated['vat'] ?? 18
             ]);
             $pdfContent = $pdf->output();
             

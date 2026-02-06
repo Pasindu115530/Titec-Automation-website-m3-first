@@ -125,7 +125,7 @@
             </table>
 
             <div style="text-align: center;">
-                <a href="https://titecautomation.lk/admin/quotations/{{ $requestData->id }}" class="btn">View in Admin Panel</a>
+                <a href="https://titecautomation.lk/admin/quotations" class="btn">View in Admin Panel</a>
             </div>
         </div>
     </div>

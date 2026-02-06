@@ -86,7 +86,7 @@ export default function AdminQuotationsPage() {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }) => {
+    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }) => {
         if (!selectedRequest) return;
         const toastId = toast.loading('Sending reply...');
         try {

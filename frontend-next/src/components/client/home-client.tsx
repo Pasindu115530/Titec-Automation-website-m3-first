@@ -12,6 +12,7 @@ import { Project } from "@/types";
 import { SERVICES } from "@/data/serviceData";
 import { useCart } from "@/context/CartContext";
 import { getImageUrl } from "@/utils/image-utils";
+import { projectService } from "@/services/projectService";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -36,14 +37,29 @@ function useInView(threshold = 0) {
 }
 
 interface HomeClientProps {
-    initialProjects: Project[];
+    initialProjects?: Project[];
 }
 
-export default function HomeClient({ initialProjects }: HomeClientProps) {
+export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
     const [status, setStatus] = useState("loading");
-    // Use passed projects or local state if we were fetching more, but for now just use props
-    // We can keep state if we want to simulate the loading effect still
+    const [projects, setProjects] = useState<Project[]>(initialProjects);
     const { setIsOpen } = useCart();
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                // If we didn't receive initial projects (or want to ensure fresh data), fetch them
+                if (projects.length === 0) {
+                    const data = await projectService.getProjects();
+                    setProjects(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch projects client-side:", error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
 
     // Refs for Scroll Animations
     const { ref: contentRef, isInView: contentInView } = useInView(0);
@@ -328,40 +344,54 @@ export default function HomeClient({ initialProjects }: HomeClientProps) {
                     </div>
 
                     <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {initialProjects.length > 0 ? (
-                            initialProjects.map((project, index) => {
+                        {projects.length > 0 ? (
+                            projects.map((project, index) => {
                                 const imageUrl = getImageUrl(project.thumbnail_path, '');
 
                                 return (
-                                    <div key={project.id} className="group h-96 w-full max-w-sm mx-auto perspective-1000 cursor-pointer">
-                                        <div className="relative h-full w-full shadow-xl rounded-xl transition-all duration-700 transform-style-3d group-hover:rotate-y-180">
-                                            {/* Front Face */}
-                                            <div className="absolute inset-0 h-full w-full bg-white rounded-xl backface-hidden flex flex-col overflow-hidden">
-                                                <div className="h-48 bg-linear-to-br from-gray-200 to-gray-100 flex items-center justify-center text-gray-400 relative">
-                                                    {imageUrl ? (
-                                                        <img src={imageUrl} alt={project.title} className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <span className="font-semibold text-lg">PROJECT {index + 1}</span>
-                                                    )}
+                                    <div key={project.id} className="group relative h-96 w-full max-w-sm mx-auto overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-100 bg-gray-900">
+                                        {/* Background Image */}
+                                        <div className="absolute inset-0">
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={project.title}
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                                                    <span className="text-gray-600 font-bold">NO IMAGE</span>
                                                 </div>
-                                                <div className="p-6 flex flex-col justify-between grow">
-                                                    <div>
-                                                        <h3 className="text-xl font-bold text-gray-800">{project.title}</h3>
-                                                        <div className="w-12 h-1 bg-red-500 mt-2"></div>
-                                                        {project.client && (
-                                                            <p className="text-xs text-blue-600 mt-1">{project.client}</p>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-80 transition-opacity duration-300"></div>
+                                        </div>
 
-                                            {/* Back Face */}
-                                            <div className="absolute inset-0 h-full w-full bg-blue-900/90 backdrop-blur-sm rounded-xl p-8 text-white rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center border border-white/10">
-                                                <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
-                                                <p className="text-base leading-relaxed text-gray-100">
-                                                    {project.description || "No description available."}
+                                        {/* Content Overlay */}
+                                        <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                                            <div className="transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                                                {/* Client Badge */}
+                                                {project.client && (
+                                                    <div className="inline-block px-3 py-1 mb-3 rounded-full bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 transform -translate-y-2 group-hover:translate-y-0">
+                                                        {project.client}
+                                                    </div>
+                                                )}
+
+                                                <h3 className="text-2xl font-bold text-white mb-2 font-orbitron drop-shadow-md group-hover:text-blue-200 transition-colors">
+                                                    {project.title}
+                                                </h3>
+
+                                                <div className="w-12 h-1 bg-red-500 mb-4 transition-all duration-500 group-hover:w-full group-hover:bg-blue-500/50"></div>
+
+                                                <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+                                                    {project.description || "Leading automation solutions for modern industry."}
                                                 </p>
-                                                <Link href={`/projects/${project.id}`} className="button-1">View Details</Link>
+
+                                                <Link
+                                                    href={`/projects/${project.id}`}
+                                                    className="inline-flex items-center text-white font-bold tracking-widest text-xs hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 uppercase"
+                                                >
+                                                    View Details <span className="ml-2 text-lg">→</span>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>

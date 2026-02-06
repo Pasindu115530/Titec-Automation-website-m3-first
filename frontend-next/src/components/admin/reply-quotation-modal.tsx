@@ -12,7 +12,7 @@ interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     request: any; // Using any for now to match flexible backend response
-    onSend: (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File }) => Promise<void>;
+    onSend: (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }) => Promise<void>;
 }
 
 export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyModalProps) {
@@ -29,6 +29,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
     const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
     const [items, setItems] = useLocalStorage<any[]>(`admin_reply_items_${request?.id || 'new'}_v2`, initialItems.length ? initialItems : [{ name: '', quantity: 1, price: 0 }], expirationMinutes);
     const [message, setMessage] = useLocalStorage(`admin_reply_message_${request?.id || 'new'}_v2`, '', expirationMinutes);
+    const [vat, setVat] = useLocalStorage(`admin_reply_vat_${request?.id || 'new'}`, 18, expirationMinutes);
     const [isSending, setIsSending] = useState(false);
 
     // New state for tabs and file
@@ -64,8 +65,8 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                     setIsSending(false);
                     return;
                 }
-                console.log('Sending Reply - Mode: Create', { items, message });
-                await onSend({ items, message, mode: 'create' });
+                console.log('Sending Reply - Mode: Create', { items, message, vat });
+                await onSend({ items, message, mode: 'create', vat });
             } else {
                 if (!pdfFile) {
                     toast.warning('Please select a PDF file.');
@@ -81,6 +82,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
             // Reset storage
             setItems([{ name: '', quantity: 1, price: 0 }]);
             setMessage('');
+            setVat(18);
             setPdfFile(null);
         } catch (error) {
             console.error(error);
@@ -92,7 +94,11 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
 
     if (!isOpen) return null;
 
-    const total = items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.price)), 0);
+    if (!isOpen) return null;
+
+    const subTotal = items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.price)), 0);
+    const vatAmount = subTotal * (vat / 100);
+    const grandTotal = subTotal + vatAmount;
 
     return (
         <AnimatePresence>
@@ -239,8 +245,27 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                         </tbody>
                                         <tfoot className="bg-gray-50 font-semibold">
                                             <tr>
-                                                <td colSpan={3} className="px-4 py-2 text-right">Grand Total:</td>
-                                                <td className="px-4 py-2 text-right">{total.toFixed(2)} LKR</td>
+                                                <td colSpan={3} className="px-4 py-2 text-right">Sub Total:</td>
+                                                <td className="px-4 py-2 text-right">{subTotal.toFixed(2)} LKR</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan={3} className="px-4 py-2 text-right flex items-center justify-end gap-2">
+                                                    VAT (%):
+                                                    <Input
+                                                        type="number"
+                                                        value={vat}
+                                                        onChange={(e) => setVat(Number(e.target.value))}
+                                                        className="w-20 h-8"
+                                                        min={0}
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-2 text-right">{vatAmount.toFixed(2)} LKR</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan={3} className="px-4 py-2 text-right text-lg">Grand Total:</td>
+                                                <td className="px-4 py-2 text-right text-lg">{grandTotal.toFixed(2)} LKR</td>
                                                 <td></td>
                                             </tr>
                                         </tfoot>
