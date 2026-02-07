@@ -36,6 +36,7 @@ export default function AdminProductsPage() {
     brand: '',
     stock: '',
     sku: '',
+    on_store: true,
   });
 
   // Debounce search
@@ -48,8 +49,8 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      // Use service with search
-      const data = await productService.getProducts(debouncedSearch);
+      // Use service with search and admin flag
+      const data = await productService.getProducts(debouncedSearch, true);
       setProducts(data || []);
       console.log(data);
     } catch (error) {
@@ -118,6 +119,7 @@ export default function AdminProductsPage() {
       data.append('brand', formData.brand);
       data.append('stock', formData.stock);
       data.append('sku', formData.sku);
+      data.append('on_store', formData.on_store ? '1' : '0');
 
       // Append images
       imageFiles.forEach((file) => {
@@ -140,7 +142,7 @@ export default function AdminProductsPage() {
 
       // Reset Form
       setFormData({
-        name: '', description: '', price: '', category: '', brand: '', stock: '', sku: ''
+        name: '', description: '', price: '', category: '', brand: '', stock: '', sku: '', on_store: true
       });
       setImageFiles([]);
       setImagePreviews([]);
@@ -291,6 +293,23 @@ export default function AdminProductsPage() {
                   <Input type="file" accept="application/pdf" onChange={handleDatasheetChange} className="text-xs" />
                   {datasheetFile && <FileText className="w-5 h-5 text-green-600" />}
                 </div>
+              </div>
+
+              {/* On Store Toggle */}
+              <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="on_store"
+                    checked={formData.on_store}
+                    onChange={(e) => setFormData(prev => ({ ...prev, on_store: e.target.checked }))}
+                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium">Display in Store</span>
+                    <p className="text-xs text-gray-500">Show this product to customers on the storefront</p>
+                  </div>
+                </label>
               </div>
 
               <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>

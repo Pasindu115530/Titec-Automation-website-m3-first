@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Edit2, Trash2, Package, FileText, Download } from 'lucide-react';
+import { Edit2, Trash2, Package, FileText, Download, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProductModal from './edit-product-modal';
@@ -18,16 +18,30 @@ interface ProductsTableProps {
 export default function ProductsTable({ products, onRefresh, isLoading }: ProductsTableProps) {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to permanently delete this product?')) {
-            return;
-        }
+    const openDeleteConfirm = (product: Product) => {
+        setProductToDelete(product);
+        setDeleteConfirmOpen(true);
+        setDeleteConfirmText('');
+    };
+
+    const closeDeleteConfirm = () => {
+        setDeleteConfirmOpen(false);
+        setProductToDelete(null);
+        setDeleteConfirmText('');
+    };
+
+    const handleDelete = async () => {
+        if (!productToDelete) return;
 
         try {
-            setDeletingId(id);
-            await api.delete(`/api/products/${id}`);
-            toast.success('Product deleted successfully');
+            setDeletingId(productToDelete.id);
+            await api.delete(`/api/products/${productToDelete.id}`);
+            toast.success('Product permanently deleted');
+            closeDeleteConfirm();
             onRefresh();
         } catch (error: any) {
             console.error('Failed to delete product', error);
@@ -143,7 +157,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                                         variant="ghost"
                                                         size="sm"
                                                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                        onClick={() => handleDelete(product.id)}
+                                                        onClick={() => openDeleteConfirm(product)}
                                                         disabled={deletingId === product.id}
                                                     >
                                                         {deletingId === product.id ? (
@@ -169,6 +183,54 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                 product={editingProduct}
                 onSuccess={onRefresh}
             />
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirmOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+                        <div className="p-6 border-b">
+                            <h3 className="text-lg font-semibold text-red-600">⚠️ Permanent Deletion</h3>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <p className="text-sm text-gray-700">
+                                You are about to <strong>permanently delete</strong>:
+                            </p>
+                            <div className="p-3 bg-gray-50 rounded-lg border">
+                                <p className="font-medium">{productToDelete?.name}</p>
+                                <p className="text-xs text-gray-500">SKU: {productToDelete?.sku || 'N/A'}</p>
+                            </div>
+                            <p className="text-sm text-red-600 font-medium">
+                                This action cannot be undone. The product will be removed from the database.
+                            </p>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700">
+                                    Type <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">DELETE</span> to confirm:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={deleteConfirmText}
+                                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 font-mono"
+                                    placeholder="Type DELETE here"
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+                        <div className="p-4 bg-gray-50 flex justify-end gap-2 rounded-b-xl">
+                            <Button variant="outline" onClick={closeDeleteConfirm}>
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleDelete}
+                                disabled={deleteConfirmText !== 'DELETE' || !!deletingId}
+                                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
+                            >
+                                {deletingId ? 'Deleting...' : 'Permanently Delete'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

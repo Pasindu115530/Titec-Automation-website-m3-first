@@ -2,10 +2,11 @@ import { api } from '@/lib/api';
 import { Product } from '../types';
 
 export const productService = {
-    async getProducts(search?: string): Promise<Product[]> {
+    async getProducts(search?: string, admin: boolean = false): Promise<Product[]> {
         try {
             const params: any = {};
             if (search) params.search = search;
+            if (admin) params.admin = 'true'; // Include all products for admin
 
             const response = await api.get<{ data: Product[] }>('/api/products', { params });
             return response.data.data;

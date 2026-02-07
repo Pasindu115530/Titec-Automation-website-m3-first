@@ -26,4 +26,5 @@ export interface Product {
     stock?: number;
     sku?: string;
     model_number?: string;
+    on_store?: boolean; // Visibility toggle for client store
 }

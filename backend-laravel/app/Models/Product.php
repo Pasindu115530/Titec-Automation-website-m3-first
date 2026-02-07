@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -23,11 +22,13 @@ class Product extends Model
         'images',
         'datasheet_path',
         'stock_status',
+        'on_store',
     ];
 
     protected $casts = [
         'images' => 'array',
         'price' => 'decimal:2',
+        'on_store' => 'boolean',
     ];
 
     // Relationship: A product can belong to many quotation requests

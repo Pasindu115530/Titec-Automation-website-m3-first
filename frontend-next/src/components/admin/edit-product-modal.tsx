@@ -38,6 +38,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         brand: '',
         stock: '',
         sku: '',
+        on_store: true,
     });
 
     useEffect(() => {
@@ -50,6 +51,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 brand: product.brand || '',
                 stock: product.stock ? String(product.stock) : '',
                 sku: product.sku || '',
+                on_store: product.on_store !== undefined ? product.on_store : true,
             });
             // Initialize Gallery
             setExistingImages(product.images || []);
@@ -106,6 +108,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('brand', formData.brand || '');
             data.append('stock', formData.stock);
             data.append('sku', formData.sku);
+            data.append('on_store', formData.on_store ? '1' : '0');
             // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
             // Standard workaround is sending POST with _method=PUT
             data.append('_method', 'PUT');
@@ -353,6 +356,23 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     {datasheetFile && <FileText className="w-5 h-5 text-green-600" />}
                                 </div>
                                 <p className="text-[10px] text-gray-400">Upload new to replace existing.</p>
+                            </div>
+
+                            {/* On Store Toggle */}
+                            <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border col-span-2">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="on_store"
+                                        checked={formData.on_store}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, on_store: e.target.checked }))}
+                                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="text-sm font-medium">Display in Store</span>
+                                        <p className="text-xs text-gray-500">Show this product to customers on the storefront</p>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>

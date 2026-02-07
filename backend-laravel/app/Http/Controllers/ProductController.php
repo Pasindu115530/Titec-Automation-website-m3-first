@@ -15,6 +15,11 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
+        // Filter by on_store for client requests (when admin parameter is not present)
+        if (!$request->input('admin', false)) {
+            $query->where('on_store', true);
+        }
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -46,6 +51,7 @@ class ProductController extends Controller
             'brand' => 'nullable|string|max:100',
             'stock' => 'required|integer',
             'sku' => 'nullable|string|max:50',
+            'on_store' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
@@ -125,6 +131,7 @@ class ProductController extends Controller
             'brand' => 'nullable|string|max:100',
             'stock' => 'sometimes|required|integer',
             'sku' => 'nullable|string|max:50',
+            'on_store' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
