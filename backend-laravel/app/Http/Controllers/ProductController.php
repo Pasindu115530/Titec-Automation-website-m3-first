@@ -84,11 +84,30 @@ class ProductController extends Controller
         try {
             $product = Product::create($validated);
         } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // Log duplicate entry with context
+            \Illuminate\Support\Facades\Log::warning('Duplicate product entry attempted', [
+                'user_id' => auth()->id() ?? 'guest',
+                'model_number' => $validated['model_number'] ?? 'N/A',
+                'sku' => $validated['sku'] ?? 'N/A',
+                'name' => $validated['name'] ?? 'N/A',
+                'ip_address' => request()->ip(),
+                'exception' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'message' => 'Product with this Model Number or SKU already exists.',
                 'error' => 'Duplicate Entry'
             ], 422);
         } catch (\Exception $e) {
+            // Log unexpected errors with full context
+            \Illuminate\Support\Facades\Log::error('Failed to create product - Unexpected Error', [
+                'user_id' => auth()->id() ?? 'guest',
+                'validated_data' => $validated,
+                'ip_address' => request()->ip(),
+                'exception_message' => $e->getMessage(),
+                'exception_trace' => $e->getTraceAsString()
+            ]);
+            
              return response()->json([
                 'message' => 'Failed to create product.',
                 'error' => $e->getMessage()

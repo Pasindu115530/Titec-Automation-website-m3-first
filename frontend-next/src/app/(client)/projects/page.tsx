@@ -6,7 +6,10 @@ export default async function ProjectsPage() {
     try {
         projects = await projectService.getProjects();
     } catch (error) {
-        console.error('Failed to load projects server-side', error);
+        // Silently fail during build, log only in development client-side
+        if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+            console.error('Failed to load projects server-side', error);
+        }
     }
 
     return <ProjectsClient initialProjects={projects} />;

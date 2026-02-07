@@ -79,9 +79,25 @@ class QuotationRequestController extends Controller
                  \Illuminate\Support\Facades\Log::warning('MAIL_SALES_ADDRESS not configured, admin notification skipped.');
             }
 
+        } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+            // SMTP-specific error, more actionable
+            \Illuminate\Support\Facades\Log::error('SMTP Error - Quotation Notification Failed', [
+                'quotation_id' => $quoteRequest->id,
+                'recipient_email' => $quoteRequest->email,
+                'error_type' => 'SMTP_TRANSPORT_ERROR',
+                'exception_message' => $e->getMessage(),
+                'smtp_host' => config('mail.mailers.smtp.host'),
+                'smtp_port' => config('mail.mailers.smtp.port'),
+                'suggestion' => 'Verify SMTP credentials and server configuration'
+            ]);
         } catch (\Exception $e) {
             // Log error but don't fail the request
-            \Illuminate\Support\Facades\Log::error('Failed to send quotation notification: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Quotation Notification Error', [
+                'quotation_id' => $quoteRequest->id,
+                'recipient_email' => $quoteRequest->email,
+                'error_type' => 'GENERAL_EMAIL_ERROR',
+                'exception_message' => $e->getMessage()
+            ]);
         }
 
         return response()->json(['message' => 'Request sent successfully!'], 201);
@@ -157,11 +173,44 @@ class QuotationRequestController extends Controller
             $messageContent = $request->input('message') ?? ($validated['message'] ?? '');
 
             if ($recipientEmail) {
-                $mail = Mail::to($recipientEmail);
-                if (config('mail.sales.address')) {
-                    $mail->bcc(config('mail.sales.address'));
+                try {
+                    $mail = Mail::to($recipientEmail);
+                    if (config('mail.sales.address')) {
+                        $mail->bcc(config('mail.sales.address'));
+                    }
+                    $mail->send(new QuotationReplyMail($pdfContent, $messageContent));
+                    
+                    \Illuminate\Support\Facades\Log::info('Quotation email sent successfully', [
+                        'quotation_id' => $quoteRequest->id,
+                        'recipient' => $recipientEmail,
+                        'mode' => $mode
+                    ]);
+                    
+                } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+                    // SMTP authentication or connection error
+                    \Illuminate\Support\Facades\Log::error('SMTP Error - Quote Email Failed', [
+                        'quotation_id' => $quoteRequest->id,
+                        'recipient' => $recipientEmail,
+                        'error_type' => 'SMTP_AUTH_FAILURE',
+                        'exception_message' => $e->getMessage(),
+                        'suggestion' => 'Check SMTP credentials in .env file'
+                    ]);
+                    
+                    // Still update status but notify admin
+                    throw new \Exception('Email sending failed: SMTP authentication error. Please contact administrator.');
+                    
+                } catch (\Exception $e) {
+                    // General email error
+                    \Illuminate\Support\Facades\Log::error('Email sending failed for quotation', [
+                        'quotation_id' => $quoteRequest->id,
+                        'recipient' => $recipientEmail,
+                        'error_type' => 'GENERAL_EMAIL_ERROR',
+                        'exception_message' => $e->getMessage(),
+                        'exception_trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    throw new \Exception('Email sending failed: ' . $e->getMessage());
                 }
-                $mail->send(new QuotationReplyMail($pdfContent, $messageContent));
             }
 
             // 3. Update Status and save file path
@@ -239,11 +288,43 @@ class QuotationRequestController extends Controller
         ]);
 
         // Send Email
-        $mail = Mail::to($validated['email']);
-        if (config('mail.sales.address')) {
-            $mail->bcc(config('mail.sales.address'));
+        try {
+            $mail = Mail::to($validated['email']);
+            if (config('mail.sales.address')) {
+                $mail->bcc(config('mail.sales.address'));
+            }
+            $mail->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
+            
+            \Illuminate\Support\Facades\Log::info('Direct quotation email sent successfully', [
+                'recipient' => $validated['email'],
+                'name' => $validated['name']
+            ]);
+            
+        } catch (\Symfony\Component\Mailer\Exception\TransportException $e) {
+            \Illuminate\Support\Facades\Log::error('SMTP Error - Direct Quote Email Failed', [
+                'recipient' => $validated['email'],
+                'error_type' => 'SMTP_AUTH_FAILURE',
+                'exception_message' => $e->getMessage(),
+                'suggestion' => 'Check SMTP credentials in .env file'
+            ]);
+            
+            return response()->json([
+                'message' => 'Email sending failed: SMTP authentication error.',
+                'error' => 'Please contact administrator.'
+            ], 500);
+            
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Direct Quote Email Failed', [
+                'recipient' => $validated['email'],
+                'error_type' => 'GENERAL_EMAIL_ERROR',
+                'exception_message' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'message' => 'Failed to send email.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        $mail->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
 
         return response()->json(['message' => 'Direct quotation sent successfully']);
     }

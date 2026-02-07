@@ -39,7 +39,10 @@ export default async function ClientPage({ params }: PageProps) {
         const projects = await projectService.getProjectsByClient(client.name);
         clientProjects = projects || [];
     } catch (error) {
-        console.error("Failed to fetch client projects:", error);
+        // Silently fail during build, log only in development client-side
+        if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+            console.error("Failed to fetch client projects:", error);
+        }
         clientProjects = [];
     }
 

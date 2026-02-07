@@ -18,7 +18,10 @@ export default async function Store() {
     try {
         products = await productService.getProducts();
     } catch (error) {
-        console.error("Failed to fetch products server-side:", error);
+        // Silently fail during build, log only in development client-side
+        if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+            console.error("Failed to fetch products server-side:", error);
+        }
     }
 
     return <StoreClient initialProducts={products} />;
