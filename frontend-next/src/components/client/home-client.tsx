@@ -43,6 +43,7 @@ interface HomeClientProps {
 export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
     const [status, setStatus] = useState("loading");
     const [projects, setProjects] = useState<Project[]>(initialProjects);
+    const [isProjectsLoading, setIsProjectsLoading] = useState(false);
     const { setIsOpen } = useCart();
 
     useEffect(() => {
@@ -50,11 +51,14 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
             try {
                 // If we didn't receive initial projects (or want to ensure fresh data), fetch them
                 if (projects.length === 0) {
+                    setIsProjectsLoading(true);
                     const data = await projectService.getProjects();
                     setProjects(data);
                 }
             } catch (error) {
                 console.error("Failed to fetch projects client-side:", error);
+            } finally {
+                setIsProjectsLoading(false);
             }
         };
 
@@ -344,7 +348,11 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                     </div>
 
                     <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {projects.length > 0 ? (
+                        {isProjectsLoading ? (
+                            <div className="col-span-full h-96 relative">
+                                <Loader variant="inline" />
+                            </div>
+                        ) : projects.length > 0 ? (
                             projects.map((project, index) => {
                                 const imageUrl = getImageUrl(project.thumbnail_path, '');
 

@@ -7,7 +7,7 @@ export const api = axios.create({
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     },
-    timeout: 10000, // 10 seconds timeout
+    timeout: 30000, // 30 seconds timeout - accommodates slower network connections
 });
 
 // Attach bearer token from localStorage for client-side requests

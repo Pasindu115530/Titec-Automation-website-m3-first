@@ -32,7 +32,7 @@ export default function CartDrawer() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        console.log("sending")
         try {
             setIsSubmitting(true);
             await submitQuotationRequest(formData);
@@ -40,9 +40,23 @@ export default function CartDrawer() {
             setIsOpen(false);
             // Reset form (optional, since modal closes)
             setFormData({ name: '', email: '', phone: '', message: '' });
-        } catch (error) {
-            console.error('Submission error:', error);
-            toast.error('Failed to submit request. Please try again.');
+        } catch (error: any) {
+            console.log('Submission error:', error);
+
+            // Provide specific error messages based on error type
+            if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+                toast.error('Request timed out. Please check your internet connection and try again.', {
+                    duration: 5000,
+                });
+            } else if (error.code === 'ERR_NETWORK' || !error.response) {
+                toast.error('Network error. Please check your internet connection.', {
+                    duration: 5000,
+                });
+            } else if (error.response?.status === 422) {
+                toast.error('Invalid data submitted. Please check your information.');
+            } else {
+                toast.error('Failed to submit request. Please try again.');
+            }
         } finally {
             setIsSubmitting(false);
         }

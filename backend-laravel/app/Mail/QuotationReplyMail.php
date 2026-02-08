@@ -57,9 +57,14 @@ class QuotationReplyMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            \Illuminate\Mail\Mailables\Attachment::fromData(fn () => $this->pdfContent, 'Quotation.pdf')
-                ->withMime('application/pdf'),
-        ];
+        // Only attach PDF if content is provided
+        if ($this->pdfContent) {
+            return [
+                \Illuminate\Mail\Mailables\Attachment::fromData(fn () => $this->pdfContent, 'Quotation.pdf')
+                    ->withMime('application/pdf'),
+            ];
+        }
+        
+        return [];
     }
 }

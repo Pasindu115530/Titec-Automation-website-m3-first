@@ -108,7 +108,8 @@ class QuotationRequestController extends Controller
         $quoteRequest = QuotationRequest::findOrFail($id);
 
         $validated = $request->validate([
-            'mode' => 'nullable|string|in:create,upload',
+            'include_pdf' => 'nullable|boolean',
+            'mode' => 'required_if:include_pdf,true|nullable|string|in:create,upload',
             'items' => 'required_if:mode,create|array',
             'items.*.name' => 'required_if:mode,create|string',
             'items.*.quantity' => 'required_if:mode,create|numeric',
@@ -121,40 +122,42 @@ class QuotationRequestController extends Controller
         try {
             \Illuminate\Support\Facades\Log::info('Reply Request Data:', $request->all());
             
+            $includePdf = $request->input('include_pdf', true);
             $mode = $request->input('mode', 'create');
             $pdfContent = null;
+            $path = null;
 
-            if ($mode === 'upload') {
-                // Read the uploaded file
-                $file = $request->file('file');
-                if (!$file) {
-                     return response()->json(['message' => 'File not found.'], 400);
+            // Only generate/upload PDF if include_pdf is true
+            if ($includePdf) {
+                if ($mode === 'upload') {
+                    // Read the uploaded file
+                    $file = $request->file('file');
+                    if (!$file) {
+                         return response()->json(['message' => 'File not found.'], 400);
+                    }
+                    
+                    // Store file in private storage
+                    $path = $file->store('quotations', 'quotations');
+                    
+                    \Illuminate\Support\Facades\Log::info('Reply: PDF uploaded at: ' . $path);
+
+                    // Read content from the stored file
+                    $pdfContent = \Illuminate\Support\Facades\Storage::disk('quotations')->get($path);
+                } else {
+                    // Generate PDF from items
+                    $pdf = Pdf::loadView('pdfs.quotation', [
+                        'request' => $quoteRequest,
+                        'items' => $validated['items'] ?? [],
+                        'message' => $validated['message'] ?? '',
+                        'vat' => $validated['vat'] ?? 18
+                    ]);
+                    $pdfContent = $pdf->output();
+                    
+                    // Store the generated PDF for future download
+                    $filename = 'quotations/quote_' . $quoteRequest->id . '_' . time() . '.pdf';
+                    \Illuminate\Support\Facades\Storage::disk('quotations')->put($filename, $pdfContent);
+                    $path = $filename;
                 }
-                
-                // Store file in public storage
-                // Store file in private storage
-                $path = $file->store('quotations', 'quotations');
-                
-                \Illuminate\Support\Facades\Log::info('Reply: PDF uploaded at: ' . $path);
-
-                // Read content from the stored file
-                // With private disk, we can use Storage façade
-                $pdfContent = \Illuminate\Support\Facades\Storage::disk('quotations')->get($path);
-            } else {
-                // Generate PDF from items
-                $pdf = Pdf::loadView('pdfs.quotation', [
-                    'request' => $quoteRequest,
-                    'items' => $validated['items'] ?? [],
-                    'message' => $validated['message'] ?? '',
-                    'vat' => $validated['vat'] ?? 18
-                ]);
-                $pdfContent = $pdf->output();
-                
-                // Store the generated PDF for future download
-                // Filename strategy: quote_{id}_{timestamp}.pdf
-                $filename = 'quotations/quote_' . $quoteRequest->id . '_' . time() . '.pdf';
-                \Illuminate\Support\Facades\Storage::disk('quotations')->put($filename, $pdfContent);
-                $path = $filename; // Keep track of path if we want to save it to DB
             }
 
             // 2. Send Email
@@ -178,11 +181,13 @@ class QuotationRequestController extends Controller
                     if (config('mail.sales.address')) {
                         $mail->bcc(config('mail.sales.address'));
                     }
-                    $mail->send(new QuotationReplyMail($pdfContent, $messageContent));
+                    // Pass null for PDF content if not including PDF
+                    $mail->send(new QuotationReplyMail($includePdf ? $pdfContent : null, $messageContent));
                     
                     \Illuminate\Support\Facades\Log::info('Quotation email sent successfully', [
                         'quotation_id' => $quoteRequest->id,
                         'recipient' => $recipientEmail,
+                        'include_pdf' => $includePdf,
                         'mode' => $mode
                     ]);
                     
@@ -213,7 +218,7 @@ class QuotationRequestController extends Controller
                 }
             }
 
-            // 3. Update Status and save file path
+            // 3. Update Status and save file path (if PDF was generated)
             $quoteRequest->update([
                 'status' => 'quoted',
                 'file_path' => $path

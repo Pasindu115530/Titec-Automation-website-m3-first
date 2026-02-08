@@ -29,8 +29,7 @@ class QuotationRequest extends Model
     {
         return $this->belongsToMany(Product::class, 'quotation_request_items')
                     ->withPivot('quantity')
-                    ->withTimestamps()
-                    ->withTrashed();
+                    ->withTimestamps();
     }
 
     // 3. Has the admin replied?

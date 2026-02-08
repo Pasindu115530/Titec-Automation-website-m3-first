@@ -40,14 +40,17 @@ export const quotationService = {
     },
 
     async createQuotationRequest(data: { name: string, email: string, phone: string, message: string, items: { product_id: number, quantity: number }[] }): Promise<any> {
-        const response = await api.post<any>('/api/quotation-requests', data);
+        // Use extended timeout for quotation submissions to accommodate slower networks
+        const response = await api.post<any>('/api/quotation-requests', data, {
+            timeout: 45000 // 45 seconds - extra time for users with poor network connections
+        });
         return response.data;
     },
 
-    async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }): Promise<any> {
+    async replyToRequest(id: number, data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number, includePdf?: boolean }): Promise<any> {
         console.log('Service replyToRequest Data:', data);
 
-        let config = {};
+        let config: any = {};
         let body: any = data;
 
         if (data.mode === 'upload' && data.file) {
@@ -55,12 +58,21 @@ export const quotationService = {
             formData.append('message', data.message);
             formData.append('mode', 'upload');
             formData.append('file', data.file);
+            formData.append('include_pdf', data.includePdf !== false ? 'true' : 'false');
             body = formData;
             config = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             };
+        } else {
+            // For create mode or message-only, ensure we're sending JSON
+            config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            console.log('Sending JSON payload:', JSON.stringify(body, null, 2));
         }
 
         const response = await api.post<any>(`/api/quotation-requests/${id}/reply`, body, config);
