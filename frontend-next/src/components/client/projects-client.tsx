@@ -26,11 +26,10 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
     const [projects, setProjects] = useState<Project[]>(initialProjects);
     const [isLoading, setIsLoading] = useState(false);
 
-    // If initialProjects is empty (SSR fetch failed), fetch client-side
+    // If initialProjects is empty (SSR fetch failed), fetch client-side immediately
     useEffect(() => {
         const fetchProjects = async () => {
-            // Only fetch if we received empty initial data from SSR
-            if (initialProjects.length === 0 && projects.length === 0) {
+            if (initialProjects.length === 0) {
                 setIsLoading(true);
                 try {
                     const data = await projectService.getProjects();
