@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'https://127.0.0.1:8000',
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.titecautomation.lk',
     withCredentials: true,
     headers: {
         'Accept': 'application/json',
