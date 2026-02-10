@@ -1,4 +1,4 @@
-export const getImageUrl = (path?: string | null, fallback: string = '/placeholder-project.jpg'): string => {
+export const getImageUrl = (path?: string | null, fallback: string = '/logo.jpg'): string => {
     if (!path) return fallback;
     if (path.startsWith('http')) return path;
 
