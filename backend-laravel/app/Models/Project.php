@@ -23,6 +23,7 @@ class Project extends Model
         'status',
         'technologies',
         'thumbnail_path',
+        'logo_path',
         'project_image_urls',
     ];
 

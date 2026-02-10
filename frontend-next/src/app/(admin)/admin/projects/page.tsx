@@ -28,6 +28,8 @@ export default function AddProjectPage() {
     // Removed local error/success states in favor of toast
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+    const [logo, setLogo] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string>('');
     const [galleryImages, setGalleryImages] = useState<File[]>([]);
     const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
@@ -83,6 +85,18 @@ export default function AddProjectPage() {
         }
     };
 
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setLogo(file);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setLogoPreview(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
@@ -121,6 +135,9 @@ export default function AddProjectPage() {
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
             }
+            if (logo) {
+                submitData.append('logo', logo);
+            }
             galleryImages.forEach((image, index) => {
                 submitData.append(`project_images[${index}]`, image);
             });
@@ -146,6 +163,8 @@ export default function AddProjectPage() {
             });
             setThumbnail(null);
             setThumbnailPreview('');
+            setLogo(null);
+            setLogoPreview('');
             setGalleryImages([]);
             setGalleryPreviews([]);
 
@@ -317,6 +336,41 @@ export default function AddProjectPage() {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleThumbnailChange}
+                                className="hidden"
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Client Logo</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div
+                                className="border-2 border-dashed border-gray-200 rounded-xl h-48 flex flex-col items-center justify-center text-center hover:bg-gray-50/50 hover:border-indigo-500 transition-all cursor-pointer group"
+                                onClick={() => document.getElementById('logo-input')?.click()}
+                            >
+                                {logoPreview ? (
+                                    <img
+                                        src={logoPreview}
+                                        alt="Preview"
+                                        className="h-full w-full object-contain rounded-lg p-2"
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                            <Upload className="h-5 w-5 text-gray-400 group-hover:text-indigo-600" />
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">Click to upload logo</span>
+                                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, SVG up to 2MB</span>
+                                    </>
+                                )}
+                            </div>
+                            <input
+                                id="logo-input"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoChange}
                                 className="hidden"
                             />
                         </CardContent>

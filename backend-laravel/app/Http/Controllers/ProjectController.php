@@ -34,6 +34,7 @@ class ProjectController extends Controller
             'status' => 'nullable|string|max:50',
             'technologies' => 'nullable|array',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 2MB
             'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
@@ -43,6 +44,14 @@ class ProjectController extends Controller
             $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
             $file->move(public_path('projects'), $filename);
             $thumbnailPath = '/projects/' . $filename;
+        }
+
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $filename = time() . '_' . uniqid() . '_logo_' . $file->getClientOriginalName();
+            $file->move(public_path('projects/logos'), $filename);
+            $logoPath = '/projects/logos/' . $filename;
         }
 
         $galleryPaths = [];
@@ -63,6 +72,7 @@ class ProjectController extends Controller
             'status' => $validated['status'] ?? 'In Progress',
             'technologies' => $validated['technologies'] ?? [],
             'thumbnail_path' => $thumbnailPath,
+            'logo_path' => $logoPath,
             'project_image_urls' => $galleryPaths, // Casted to array in model
         ]);
 
@@ -97,6 +107,7 @@ class ProjectController extends Controller
             'status' => 'nullable|string|max:50',
             'technologies' => 'nullable|array',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'deleted_images' => 'nullable|array',
             'deleted_images.*' => 'string',
@@ -112,6 +123,18 @@ class ProjectController extends Controller
             $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
             $file->move(public_path('projects'), $filename);
             $validated['thumbnail_path'] = '/projects/' . $filename;
+        }
+
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($project->logo_path && file_exists(public_path($project->logo_path))) {
+                File::delete(public_path($project->logo_path));
+            }
+            
+            $file = $request->file('logo');
+            $filename = time() . '_' . uniqid() . '_logo_' . $file->getClientOriginalName();
+            $file->move(public_path('projects/logos'), $filename);
+            $validated['logo_path'] = '/projects/logos/' . $filename;
         }
 
         // Handle Gallery Images
@@ -160,6 +183,13 @@ class ProjectController extends Controller
         if ($project->thumbnail_path) {
             if (file_exists(public_path($project->thumbnail_path))) {
                 File::delete(public_path($project->thumbnail_path));
+            }
+        }
+
+        // Delete logo if exists
+        if ($project->logo_path) {
+            if (file_exists(public_path($project->logo_path))) {
+                File::delete(public_path($project->logo_path));
             }
         }
 

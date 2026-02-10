@@ -8,6 +8,7 @@ export interface Project {
     status: string;
     technologies?: string[];
     thumbnail_path: string;
+    logo_path?: string;
     project_image_urls: string[];
     created_at: string;
     updated_at: string;

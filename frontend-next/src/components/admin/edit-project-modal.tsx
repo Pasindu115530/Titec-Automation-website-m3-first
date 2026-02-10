@@ -17,6 +17,7 @@ interface Project {
     status: string;
     technologies?: string[];
     thumbnail_path?: string;
+    logo_path?: string;
     project_image_urls?: string[];
 }
 
@@ -32,6 +33,8 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
     const [error, setError] = useState('');
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+    const [logo, setLogo] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string>('');
 
     // Gallery State
     const [existingGalleryImages, setExistingGalleryImages] = useState<string[]>([]);
@@ -72,6 +75,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                 technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
             });
             setThumbnailPreview(project.thumbnail_path ? getImageUrl(project.thumbnail_path, '') : '');
+            setLogoPreview(project.logo_path ? getImageUrl(project.logo_path, '') : '');
 
             // Initialize Gallery
             setExistingGalleryImages(project.project_image_urls || []);
@@ -98,6 +102,18 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
             const reader = new FileReader();
             reader.onload = (event) => {
                 setThumbnailPreview(event.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setLogo(file);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setLogoPreview(event.target?.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -148,6 +164,10 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
 
             if (thumbnail) {
                 submitData.append('thumbnail', thumbnail);
+            }
+
+            if (logo) {
+                submitData.append('logo', logo);
             }
 
             // Append deleted images
@@ -299,6 +319,27 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                     type="file"
                                     accept="image/*"
                                     onChange={handleThumbnailChange}
+                                    className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Logo (Client Brand)</label>
+                            <div className="flex gap-4 items-center">
+                                {logoPreview && (
+                                    <div className="h-16 w-16 bg-gray-100 flex items-center justify-center rounded-md border p-2">
+                                        <img
+                                            src={logoPreview}
+                                            alt="Logo Preview"
+                                            className="max-h-full max-w-full object-contain"
+                                        />
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleLogoChange}
                                     className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                                 />
                             </div>

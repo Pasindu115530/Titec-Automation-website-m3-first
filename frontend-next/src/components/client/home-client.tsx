@@ -5,8 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Loader from "@/components/loader";
 import Footer from "@/components/footer";
-import { clients } from "@/assets/clients/clients";
-import type { Client } from "@/assets/clients/clients";
+
 import heroRobotArm from "@/assets/hero_robot_arm_17678560868133.png";
 import { Project } from "@/types";
 import { SERVICES } from "@/data/serviceData";
@@ -275,23 +274,42 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
                     </div>
 
-                    <div className="clients-scroll-container">
-                        <div className="clients-scroll-track">
-                            {clients.map((client: Client, index) => (
-                                <div key={index} className="client-item relative group h-32 overflow-hidden bg-white flex items-center justify-center">
-                                    <Image
-                                        src={client.logo}
-                                        alt={client.name}
-                                        className="w-auto h-auto max-h-24 max-w-40 object-contain transition-transform duration-500 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                        <a href="#" className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition">
-                                            View Project
-                                        </a>
+                    <div className="max-w-7xl mx-auto px-6">
+                        {isProjectsLoading ? (
+                            <div className="flex items-center justify-center w-full h-32">
+                                <Loader variant="inline" />
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 items-center justify-items-center">
+                                {projects.length > 0 ? (
+                                    projects.map((project) => (
+                                        <Link
+                                            key={project.id}
+                                            href={`/projects/${project.id}`}
+                                            className="group relative flex items-center justify-center w-full h-32 bg-gray-50/50 rounded-xl border border-gray-100 p-6 hover:shadow-lg hover:border-gray-200 transition-all duration-300"
+                                        >
+                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                {project.logo_path ? (
+                                                    <img
+                                                        src={getImageUrl(project.logo_path, '')}
+                                                        alt={project.client}
+                                                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 transform group-hover:scale-110"
+                                                    />
+                                                ) : (
+                                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                                                        {(project.client || project.title).substring(0, 2).toUpperCase()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="col-span-full text-center text-gray-500 py-12">
+                                        <p>No projects to display.</p>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>
@@ -339,80 +357,7 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                 </div>
             </section>
 
-            {/* Projects Section */}
-            <section className="py-12 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center">
-                        <h2 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">PROJECTS</span></h2>
-                        <p className="mt-2 text-gray-600">Selected deployments and case studies.</p>
-                    </div>
 
-                    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {isProjectsLoading ? (
-                            <div className="col-span-full h-96 relative">
-                                <Loader variant="inline" />
-                            </div>
-                        ) : projects.length > 0 ? (
-                            projects.map((project, index) => {
-                                const imageUrl = getImageUrl(project.thumbnail_path, '');
-
-                                return (
-                                    <Link key={project.id} href={`/projects/${project.id}`} className="block group relative h-96 w-full max-w-sm mx-auto overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-100 bg-gray-900">
-                                        {/* Background Image */}
-                                        <div className="absolute inset-0">
-                                            {imageUrl ? (
-                                                <img
-                                                    src={imageUrl}
-                                                    alt={project.title}
-                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                                                    <span className="text-gray-600 font-bold">NO IMAGE</span>
-                                                </div>
-                                            )}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-80 transition-opacity duration-300"></div>
-                                        </div>
-
-                                        {/* Content Overlay */}
-                                        <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                                            <div className="transform translate-y-12 max-md:translate-y-0 group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                                                {/* Client Badge */}
-                                                {project.client && (
-                                                    <div className="inline-block px-3 py-1 mb-3 rounded-full bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold tracking-widest uppercase opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-all duration-500 delay-100 transform -translate-y-2 group-hover:translate-y-0 max-md:translate-y-0">
-                                                        {project.client}
-                                                    </div>
-                                                )}
-
-                                                <h3 className="text-2xl font-bold text-white mb-2 font-orbitron drop-shadow-md group-hover:text-blue-200 transition-colors">
-                                                    {project.title}
-                                                </h3>
-
-                                                <div className="w-12 h-1 bg-red-500 mb-4 transition-all duration-500 group-hover:w-full max-md:w-16 group-hover:bg-blue-500/50"></div>
-
-                                                <p className="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-opacity duration-500 delay-200">
-                                                    {project.description || "Leading automation solutions for modern industry."}
-                                                </p>
-
-                                                <div
-                                                    className="inline-flex items-center text-white font-bold tracking-widest text-xs hover:text-blue-400 transition-colors opacity-0 max-md:opacity-100 group-hover:opacity-100 transition-opacity duration-500 delay-300 uppercase"
-                                                >
-                                                    View Details <span className="ml-2 text-lg">→</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                );
-                            })
-                        ) : (
-                            <div className="col-span-full text-center py-12">
-                                <p className="text-gray-500">No projects available yet.</p>
-                            </div>
-                        )}
-
-                    </div>
-                </div>
-            </section>
 
             {/* Footer */}
             <Footer />
