@@ -334,7 +334,7 @@ export default function AddProjectPage() {
                             <input
                                 id="thumbnail-input"
                                 type="file"
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
                                 onChange={handleThumbnailChange}
                                 className="hidden"
                             />
@@ -362,14 +362,14 @@ export default function AddProjectPage() {
                                             <Upload className="h-5 w-5 text-gray-400 group-hover:text-indigo-600" />
                                         </div>
                                         <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">Click to upload logo</span>
-                                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, SVG up to 2MB</span>
+                                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, SVG, WebP up to 2MB</span>
                                     </>
                                 )}
                             </div>
                             <input
                                 id="logo-input"
                                 type="file"
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif, image/webp"
                                 onChange={handleLogoChange}
                                 className="hidden"
                             />
@@ -405,7 +405,7 @@ export default function AddProjectPage() {
                             <input
                                 id="gallery-input"
                                 type="file"
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
                                 multiple
                                 onChange={handleGalleryChange}
                                 className="hidden"

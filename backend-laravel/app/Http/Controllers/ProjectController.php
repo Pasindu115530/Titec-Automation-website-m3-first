@@ -33,9 +33,9 @@ class ProjectController extends Controller
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
             'technologies' => 'nullable|array',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 2MB
-            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // 2MB
+            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         $thumbnailPath = null;
@@ -106,9 +106,9 @@ class ProjectController extends Controller
             'completion_date' => 'nullable|date',
             'status' => 'nullable|string|max:50',
             'technologies' => 'nullable|array',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // 2MB
+            'project_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'deleted_images' => 'nullable|array',
             'deleted_images.*' => 'string',
         ]);
