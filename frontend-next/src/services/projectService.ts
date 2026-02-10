@@ -7,8 +7,10 @@ export const projectService = {
             const response = await api.get<{ data: Project[] }>('/api/projects');
             return response.data.data;
         } catch (error) {
-            // Log errors in all environments for debugging
-            console.error('Failed to fetch projects:', error);
+            // Only log errors in development client-side, not during build
+            if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+                console.error('Failed to fetch projects:', error);
+            }
             return [];
         }
     },
