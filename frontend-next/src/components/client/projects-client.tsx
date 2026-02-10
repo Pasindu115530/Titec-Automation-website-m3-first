@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus, ArrowRight, Zap, MapPin } from "lucide-react";
+import { MessageSquare, ArrowRight, Zap, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ interface ProjectsClientProps {
 }
 
 export default function ProjectsClient({ initialProjects }: ProjectsClientProps) {
-    const { addItem } = useCart();
+    const { setIsOpen, setPrefilledMessage } = useCart();
     // Use initialProjects directly since we are not filtering/fetching more client-side yet
     const projects = initialProjects;
 
@@ -68,17 +68,13 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                                         <Button
                                             className="translate-y-4 group-hover:translate-y-0 transition-transform duration-300 gap-2 bg-white text-black hover:bg-gray-100"
                                             onClick={() => {
-                                                addItem({
-                                                    id: project.id.toString(),
-                                                    name: project.title,
-                                                    image: getImageUrl(project.thumbnail_path),
-                                                    category: 'Project'
-                                                });
-                                                toast.success("Item added to the quotation");
+                                                setPrefilledMessage(`Requesting a system similar to "${project.title}"`);
+                                                setIsOpen(true);
+                                                toast.success("Opening quotation form");
                                             }}
                                         >
-                                            <Plus className="h-4 w-4" />
-                                            Add to Quote
+                                            <MessageSquare className="h-4 w-4" />
+                                            Request Similar System
                                         </Button>
                                     </div>
                                     {/* Status Badge */}

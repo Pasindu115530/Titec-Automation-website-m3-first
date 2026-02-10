@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, ShoppingBag, Send } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export default function CartDrawer() {
-    const { isOpen, setIsOpen, items, removeItem, updateQuantity, submitQuotationRequest } = useCart();
+    const { isOpen, setIsOpen, items, removeItem, updateQuantity, submitQuotationRequest, prefilledMessage, setPrefilledMessage } = useCart();
     const router = useRouter();
 
     // Form State
@@ -23,7 +23,13 @@ export default function CartDrawer() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-
+    // Auto-populate message when prefilledMessage is set
+    useEffect(() => {
+        if (isOpen && prefilledMessage) {
+            setFormData(prev => ({ ...prev, message: prefilledMessage }));
+            setPrefilledMessage(''); // Clear after using
+        }
+    }, [isOpen, prefilledMessage, setPrefilledMessage]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;

@@ -11,10 +11,13 @@ import { Project } from '@/types';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { getImageUrl } from '@/utils/image-utils';
+import { useCart } from '@/context/CartContext';
+import { toast } from 'sonner';
 
 export default function ProjectDetailsPage() {
     const params = useParams();
     const id = params.id as string;
+    const { setIsOpen, setPrefilledMessage } = useCart();
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState<string>('');
@@ -159,7 +162,15 @@ export default function ProjectDetailsPage() {
                             )}
 
                             <div className="pt-8 border-t border-gray-100">
-                                <Button size="lg" className="w-full sm:w-auto cursor-pointer button-1">
+                                <Button
+                                    size="lg"
+                                    className="w-full sm:w-auto cursor-pointer button-1"
+                                    onClick={() => {
+                                        setPrefilledMessage(`Requesting a system similar to "${project.title}"`);
+                                        setIsOpen(true);
+                                        toast.success("Opening quotation form");
+                                    }}
+                                >
                                     Request Similar Solution
                                 </Button>
                             </div>

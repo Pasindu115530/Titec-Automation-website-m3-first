@@ -34,6 +34,8 @@ interface CartContextType {
     clearCart: () => void;
     totalItems: number;
     submitQuotationRequest: (data: { name: string; email: string; phone: string; message: string }) => Promise<void>;
+    prefilledMessage: string;
+    setPrefilledMessage: (message: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,6 +44,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [prefilledMessage, setPrefilledMessage] = useState<string>('');
 
     useEffect(() => {
         setIsMounted(true);
@@ -130,6 +133,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             clearCart,
             totalItems,
             submitQuotationRequest,
+            prefilledMessage,
+            setPrefilledMessage,
         }}>
             {children}
         </CartContext.Provider>
