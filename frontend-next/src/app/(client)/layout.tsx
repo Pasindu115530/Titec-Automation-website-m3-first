@@ -36,6 +36,11 @@ export const metadata: Metadata = {
         address: false,
         telephone: false,
     },
+    icons: {
+        icon: '/icon.svg',
+        shortcut: '/icon.svg',
+        apple: '/icon.svg',
+    },
     openGraph: {
         title: "TiTEC Automation | Industrial Automation Solutions",
         description: "Expert industrial automation solutions including PLC, SCADA, and robotics. Transform your manufacturing with TiTEC Automation.",

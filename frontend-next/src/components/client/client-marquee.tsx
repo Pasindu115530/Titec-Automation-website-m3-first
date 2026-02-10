@@ -16,6 +16,9 @@ function MarqueeItem({ client, index }: { client: Project, index: number }) {
     const itemRef = useRef<HTMLAnchorElement>(null);
     const [isCenter, setIsCenter] = useState(false);
 
+    // Safety check for client object
+    if (!client) return null; // Prevent rendering if client is undefined/null
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -62,11 +65,13 @@ function MarqueeItem({ client, index }: { client: Project, index: number }) {
 export default function ClientMarquee({ projects }: ClientMarqueeProps) {
     // Extract unique clients with logos
     const uniqueClients = React.useMemo(() => {
+        if (!Array.isArray(projects)) return [];
+
         const seen = new Set();
         return projects.filter(project => {
-            if (!project.logo_path) return false;
+            if (!project || !project.logo_path) return false;
             // Use client name as unique key, or combined with logo path if client has multiple representations
-            const key = project.client;
+            const key = project.client || project.title; // Fallback to title if client name missing
             if (seen.has(key)) return false;
             seen.add(key);
             return true;

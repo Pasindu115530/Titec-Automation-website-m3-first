@@ -53,7 +53,12 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                 if (projects.length === 0) {
                     setIsProjectsLoading(true);
                     const data = await projectService.getProjects();
-                    setProjects(data);
+                    if (Array.isArray(data)) {
+                        setProjects(data);
+                    } else {
+                        console.error("Invalid projects data received:", data);
+                        setProjects([]);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch projects client-side:", error);
