@@ -29,7 +29,8 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
     // If initialProjects is empty (SSR fetch failed), fetch client-side
     useEffect(() => {
         const fetchProjects = async () => {
-            if (projects.length === 0) {
+            // Only fetch if we received empty initial data from SSR
+            if (initialProjects.length === 0 && projects.length === 0) {
                 setIsLoading(true);
                 try {
                     const data = await projectService.getProjects();
@@ -43,7 +44,8 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
         };
 
         fetchProjects();
-    }, []);
+    }, []); // Empty dependency - only run on mount
+
 
     if (isLoading) {
         return <Loader />;
