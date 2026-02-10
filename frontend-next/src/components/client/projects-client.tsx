@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare, ArrowRight, Zap, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -9,6 +10,8 @@ import { useCart } from "@/context/CartContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Project } from "@/types";
 import Footer from "@/components/footer";
+import Loader from "@/components/loader";
+import { projectService } from "@/services/projectService";
 
 import { getImageUrl } from "@/utils/image-utils";
 
@@ -20,8 +23,31 @@ interface ProjectsClientProps {
 
 export default function ProjectsClient({ initialProjects }: ProjectsClientProps) {
     const { setIsOpen, setPrefilledMessage } = useCart();
-    // Use initialProjects directly since we are not filtering/fetching more client-side yet
-    const projects = initialProjects;
+    const [projects, setProjects] = useState<Project[]>(initialProjects);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // If initialProjects is empty (SSR fetch failed), fetch client-side
+    useEffect(() => {
+        const fetchProjects = async () => {
+            if (projects.length === 0) {
+                setIsLoading(true);
+                try {
+                    const data = await projectService.getProjects();
+                    setProjects(data);
+                } catch (error) {
+                    console.error("Failed to fetch projects client-side:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    if (isLoading) {
+        return <Loader />;
+    }
 
     return (
         <>
