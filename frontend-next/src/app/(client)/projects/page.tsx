@@ -16,7 +16,13 @@ export const metadata: Metadata = {
 export default async function ProjectsPage() {
     let projects: any[] = [];
     try {
-        projects = await projectService.getProjects();
+        const result = await projectService.getProjects();
+        if (Array.isArray(result)) {
+            projects = result;
+        } else {
+            console.error("Invalid projects data received in ProjectsPage:", result);
+            projects = [];
+        }
     } catch (error) {
         // Silently fail during build, log only in development client-side
         if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {

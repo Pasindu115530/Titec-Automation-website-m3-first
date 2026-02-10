@@ -33,7 +33,12 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                 setIsLoading(true);
                 try {
                     const data = await projectService.getProjects();
-                    setProjects(data);
+                    if (Array.isArray(data)) {
+                        setProjects(data);
+                    } else {
+                        console.error("Invalid projects data received in ProjectsClient:", data);
+                        setProjects([]);
+                    }
                 } catch (error) {
                     console.error("Failed to fetch projects client-side:", error);
                 } finally {
