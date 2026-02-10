@@ -12,6 +12,7 @@ import { SERVICES } from "@/data/serviceData";
 import { useCart } from "@/context/CartContext";
 import { getImageUrl } from "@/utils/image-utils";
 import { projectService } from "@/services/projectService";
+import ClientMarquee from "@/components/client/client-marquee";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -267,52 +268,8 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
             </section>
 
             {/* Our Clients Section */}
-            <section className="w-full bg-white py-12">
-                <div className="w-full">
-                    <div className="text-center mb-10">
-                        <h1 className="text-4xl font-bold text-gray-800 section-title">Our <span className="text-(--secondary-blue)">CLIENTS</span></h1>
-                        <p className="mt-2 text-gray-600">Trusted by industry leaders.</p>
-                    </div>
+            <ClientMarquee projects={projects} />
 
-                    <div className="max-w-7xl mx-auto px-6">
-                        {isProjectsLoading ? (
-                            <div className="flex items-center justify-center w-full h-32">
-                                <Loader variant="inline" />
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 items-center justify-items-center">
-                                {projects.length > 0 ? (
-                                    projects.map((project) => (
-                                        <Link
-                                            key={project.id}
-                                            href={`/projects/${project.id}`}
-                                            className="group relative flex items-center justify-center w-full h-32 bg-gray-50/50 rounded-xl border border-gray-100 p-6 hover:shadow-lg hover:border-gray-200 transition-all duration-300"
-                                        >
-                                            <div className="relative w-full h-full flex items-center justify-center">
-                                                {project.logo_path ? (
-                                                    <img
-                                                        src={getImageUrl(project.logo_path, '')}
-                                                        alt={project.client}
-                                                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 transform group-hover:scale-110"
-                                                    />
-                                                ) : (
-                                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
-                                                        {(project.client || project.title).substring(0, 2).toUpperCase()}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <div className="col-span-full text-center text-gray-500 py-12">
-                                        <p>No projects to display.</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
 
             {/* What We Do Section */}
             <section className="py-12">

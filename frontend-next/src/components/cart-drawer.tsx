@@ -113,7 +113,7 @@ export default function CartDrawer() {
                                             value={formData.name}
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                                            placeholder="John Doe"
+                                            placeholder="Your Name"
                                         />
                                     </div>
 
@@ -127,7 +127,7 @@ export default function CartDrawer() {
                                                 value={formData.email}
                                                 onChange={handleInputChange}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                                                placeholder="john@example.com"
+                                                placeholder="your@email.com"
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -139,7 +139,7 @@ export default function CartDrawer() {
                                                 value={formData.phone}
                                                 onChange={handleInputChange}
                                                 className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                                                placeholder="+1 (555) 000-0000"
+                                                placeholder="+94 00 000 0000"
                                             />
                                         </div>
                                     </div>
