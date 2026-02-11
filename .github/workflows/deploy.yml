@@ -38,8 +38,6 @@ jobs:
       run: |
         cd frontend-next
         npm install
-        # Generate favicon.ico from icon.svg (simple copy)
-        cp public/icon.svg public/favicon.ico
         npm run build
         rm -rf node_modules
 
