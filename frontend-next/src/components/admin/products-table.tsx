@@ -73,6 +73,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                 <th className="px-6 py-3 font-medium text-gray-500">Category</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Brand</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Price</th>
+                                <th className="px-6 py-3 font-medium text-gray-500">Unit</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Stock</th>
                                 <th className="px-6 py-3 font-medium text-gray-500">Spec</th>
                                 <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
@@ -81,13 +82,13 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                         <tbody className="divide-y">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={6} className="h-64 bg-gray-50/50">
+                                    <td colSpan={7} className="h-64 bg-gray-50/50">
                                         <Loader variant="inline" size={80} />
                                     </td>
                                 </tr>
                             ) : products.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                                         No products found.
                                     </td>
                                 </tr>
@@ -123,6 +124,9 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                             </td>
                                             <td className="px-6 py-4 font-medium text-gray-900">
                                                 LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {product.unit || 'nos'}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 

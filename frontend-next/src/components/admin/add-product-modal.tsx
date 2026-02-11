@@ -1,33 +1,24 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Package, Tag, DollarSign, Package2, Image as ImageIcon, Grid3x3, Upload, FileText } from 'lucide-react';
+import { X, Package, Tag, DollarSign, Package2, Upload, FileText, Grid3x3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
-import { getImageUrl } from '@/utils/image-utils';
 
-import { Product } from '@/types';
-
-interface EditProductModalProps {
+interface AddProductModalProps {
     isOpen: boolean;
     onClose: () => void;
-    product: Product | null;
     onSuccess: () => void;
 }
 
-export default function EditProductModal({ isOpen, onClose, product, onSuccess }: EditProductModalProps) {
+export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProductModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-
-
     // Gallery State
-    const [existingImages, setExistingImages] = useState<string[]>([]);
-    const [deletedImages, setDeletedImages] = useState<string[]>([]);
-    const [newImages, setNewImages] = useState<File[]>([]);
-    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [datasheetFile, setDatasheetFile] = useState<File | null>(null);
 
     const [formData, setFormData] = useState({
@@ -42,28 +33,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         on_store: true,
     });
 
-    useEffect(() => {
-        if (product) {
-            setFormData({
-                name: product.name || '',
-                description: product.description || '',
-                price: product.price ? String(product.price) : '',
-                category: product.category || '',
-                brand: product.brand || '',
-                stock: product.stock ? String(product.stock) : '',
-                unit: product.unit || 'nos',
-                sku: product.sku || '',
-                on_store: product.on_store !== undefined ? product.on_store : true,
-            });
-            // Initialize Gallery
-            setExistingImages(product.images || []);
-            setDeletedImages([]);
-            setNewImages([]);
-            setNewImagePreviews([]);
-            setDatasheetFile(null);
-        }
-    }, [product]);
-
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
@@ -74,30 +43,23 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         }));
     };
 
-    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
-            setNewImages(prev => [...prev, ...files]);
+            setImageFiles(prev => [...prev, ...files]);
 
             const newPreviews = files.map(file => URL.createObjectURL(file));
-            setNewImagePreviews(prev => [...prev, ...newPreviews]);
+            setImagePreviews(prev => [...prev, ...newPreviews]);
         }
     };
 
-    const removeExistingImage = (path: string) => {
-        setExistingImages(prev => prev.filter(p => p !== path));
-        setDeletedImages(prev => [...prev, path]);
-    };
-
-    const removeNewImage = (index: number) => {
-        setNewImages(prev => prev.filter((_, i) => i !== index));
-        setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+    const removeImage = (index: number) => {
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!product) return;
-
         setError('');
         setIsLoading(true);
 
@@ -112,19 +74,10 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
-            // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
-            // Standard workaround is sending POST with _method=PUT
-            data.append('_method', 'PUT');
 
-            if (newImages.length > 0) {
-                newImages.forEach((image, index) => {
+            if (imageFiles.length > 0) {
+                imageFiles.forEach((image, index) => {
                     data.append(`images[${index}]`, image);
-                });
-            }
-
-            if (deletedImages.length > 0) {
-                deletedImages.forEach((path, index) => {
-                    data.append(`deleted_images[${index}]`, path);
                 });
             }
 
@@ -132,20 +85,36 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 data.append('datasheet', datasheetFile);
             }
 
-            // Using POST with _method=PUT
-            await api.post(`/api/products/${product.id}`, data, {
+            await api.post('/api/products', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            toast.success('Product updated successfully');
+            toast.success('Product created successfully');
+
+            // Reset Form state
+            setFormData({
+                name: '',
+                description: '',
+                price: '',
+                category: '',
+                brand: '',
+                stock: '',
+                unit: 'nos',
+                sku: '',
+                on_store: true,
+            });
+            setImageFiles([]);
+            setImagePreviews([]);
+            setDatasheetFile(null);
+
             onSuccess();
             onClose();
         } catch (err: any) {
             const errorMessage = err.response?.data?.message ||
                 err.message ||
-                'Failed to update product';
+                'Failed to create product';
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {
@@ -165,7 +134,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                     className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
                 >
                     <div className="flex items-center justify-between p-6 border-b">
-                        <h2 className="text-xl font-semibold">Edit Product</h2>
+                        <h2 className="text-xl font-semibold">Add New Product</h2>
                         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                             <X className="h-5 w-5" />
                         </button>
@@ -188,6 +157,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         value={formData.name}
                                         onChange={handleInputChange}
                                         className="pl-9"
+                                        placeholder="Product Name"
                                     />
                                 </div>
                             </div>
@@ -200,6 +170,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         value={formData.sku}
                                         onChange={handleInputChange}
                                         className="pl-9"
+                                        placeholder="Optional"
                                     />
                                 </div>
                             </div>
@@ -212,6 +183,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                 className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 value={formData.description}
                                 onChange={handleInputChange}
+                                placeholder="Product details..."
                             />
                         </div>
 
@@ -227,6 +199,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         className="pl-9"
                                         value={formData.price}
                                         onChange={handleInputChange}
+                                        placeholder="0.00"
                                     />
                                 </div>
                             </div>
@@ -240,6 +213,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         className="pl-9"
                                         value={formData.stock}
                                         onChange={handleInputChange}
+                                        placeholder="Qty"
                                     />
                                 </div>
                             </div>
@@ -251,10 +225,10 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         className="pl-3"
                                         value={formData.unit}
                                         onChange={handleInputChange}
-                                        placeholder="nos"
-                                        list="edit-units-list"
+                                        placeholder="nos, m, kg..."
+                                        list="units-list"
                                     />
-                                    <datalist id="edit-units-list">
+                                    <datalist id="units-list">
                                         <option value="nos" />
                                         <option value="m" />
                                         <option value="cm" />
@@ -277,10 +251,10 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         value={formData.category}
                                         onChange={handleInputChange}
                                         placeholder="Select or Type..."
-                                        list="edit-categories"
+                                        list="add-categories"
                                         className="pl-9"
                                     />
-                                    <datalist id="edit-categories">
+                                    <datalist id="add-categories">
                                         <option value="PLC" />
                                         <option value="VFD" />
                                         <option value="Relay" />
@@ -302,75 +276,47 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2 col-span-2">
-                                <label className="text-sm font-medium">Product Images</label>
-                                <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
-                                    {/* Existing Images */}
-                                    {existingImages.map((path, index) => (
-                                        <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
-                                            <img
-                                                src={getImageUrl(path, '')}
-                                                alt="Product"
-                                                className="w-full h-full object-contain"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeExistingImage(path)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <X className="h-3 w-3" />
-                                            </button>
-                                        </div>
-                                    ))}
+                        </div>
 
-                                    {/* New Images Previews */}
-                                    {newImagePreviews.map((preview, index) => (
-                                        <div key={`new-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
-                                            <img src={preview} alt="New Product" className="w-full h-full object-contain" />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeNewImage(index)}
-                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <X className="h-3 w-3" />
-                                            </button>
-                                            <div className="absolute bottom-0 inset-x-0 bg-indigo-500/80 text-white text-[10px] text-center p-0.5">
-                                                New
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {/* Add Button */}
-                                    <div
-                                        className="aspect-square border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-center hover:bg-white hover:border-indigo-500 transition-all cursor-pointer"
-                                        onClick={() => document.getElementById('edit-product-gallery-input')?.click()}
-                                    >
-                                        <Upload className="h-5 w-5 text-gray-400 mb-1" />
-                                        <span className="text-xs text-gray-500">Add</span>
+                        <div className="space-y-2 col-span-2">
+                            <label className="text-sm font-medium">Product Images</label>
+                            <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
+                                {/* New Images Previews */}
+                                {imagePreviews.map((preview, index) => (
+                                    <div key={`new-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                        <img src={preview} alt="New Product" className="w-full h-full object-contain" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
                                     </div>
+                                ))}
+
+                                {/* Add Button */}
+                                <div
+                                    className="aspect-square border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-center hover:bg-white hover:border-indigo-500 transition-all cursor-pointer"
+                                    onClick={() => document.getElementById('add-product-gallery-input')?.click()}
+                                >
+                                    <Upload className="h-5 w-5 text-gray-400 mb-1" />
+                                    <span className="text-xs text-gray-500">Add</span>
                                 </div>
-                                <input
-                                    id="edit-product-gallery-input"
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleGalleryChange}
-                                    className="hidden"
-                                />
                             </div>
+                            <input
+                                id="add-product-gallery-input"
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleImageChange}
+                                className="hidden"
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium">Datasheet (PDF)</label>
                             <div className="flex flex-col gap-2">
-                                {product?.datasheet_path && (
-                                    <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-2 rounded w-fit">
-                                        <FileText className="h-4 w-4" />
-                                        <a href={getImageUrl(product.datasheet_path, '')} target="_blank" rel="noreferrer" className="underline">
-                                            View Current Datasheet
-                                        </a>
-                                    </div>
-                                )}
                                 <div className="flex items-center gap-2">
                                     <Input
                                         type="file"
@@ -380,11 +326,10 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     />
                                     {datasheetFile && <FileText className="w-5 h-5 text-green-600" />}
                                 </div>
-                                <p className="text-[10px] text-gray-400">Upload new to replace existing.</p>
                             </div>
 
                             {/* On Store Toggle */}
-                            <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border col-span-2">
+                            <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border mt-2">
                                 <label className="flex items-center gap-3 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -405,7 +350,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                     <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
                         <Button variant="outline" onClick={onClose}>Cancel</Button>
                         <Button onClick={handleSubmit} disabled={isLoading}>
-                            {isLoading ? 'Saving...' : 'Save Changes'}
+                            {isLoading ? 'Creating...' : 'Create Product'}
                         </Button>
                     </div>
                 </motion.div>

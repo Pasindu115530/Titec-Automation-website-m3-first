@@ -16,6 +16,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
+        'unit',
         'category',
         'brand',
         'sku',

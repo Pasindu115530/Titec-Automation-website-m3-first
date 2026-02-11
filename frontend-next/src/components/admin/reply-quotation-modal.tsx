@@ -247,6 +247,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                     <tr>
                                                         <th className="px-4 py-2 text-left">Item Name</th>
                                                         <th className="px-4 py-2 w-24">Qty</th>
+                                                        <th className="px-4 py-2 w-20">Unit</th>
                                                         <th className="px-4 py-2 w-32">Price (LKR)</th>
                                                         <th className="px-4 py-2 w-32 text-right">Total</th>
                                                         <th className="px-4 py-2 w-10"></th>
@@ -269,6 +270,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                                             newItems[index] = {
                                                                                 ...newItems[index],
                                                                                 name: product.name,
+                                                                                unit: product.unit || 'nos',
                                                                                 price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
                                                                             };
                                                                             setItems(newItems);
@@ -284,6 +286,15 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                                     value={item.quantity}
                                                                     onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
                                                                     className="h-8"
+                                                                />
+                                                            </td>
+                                                            <td className="p-2">
+                                                                <Input
+                                                                    type="text"
+                                                                    value={item.unit || 'nos'}
+                                                                    onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
+                                                                    className="h-8 w-20"
+                                                                    placeholder="nos"
                                                                 />
                                                             </td>
                                                             <td className="p-2">

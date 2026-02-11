@@ -26,6 +26,7 @@ export interface Product {
     datasheet_path?: string;
     stock?: number;
     sku?: string;
+    unit?: string;
     model_number?: string;
     on_store?: boolean; // Visibility toggle for client store
 }
