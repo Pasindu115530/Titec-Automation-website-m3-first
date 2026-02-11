@@ -38,6 +38,8 @@ jobs:
       run: |
         cd frontend-next
         npm install
+        # Generate favicon.ico from icon.svg (simple copy)
+        cp public/icon.svg public/favicon.ico
         npm run build
         rm -rf node_modules
 
@@ -87,6 +89,9 @@ jobs:
         script: |
           cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
           
+          # Clean old build artifacts to prevent stale chunks
+          rm -rf frontend-next/.next
+
           # Extract and Overwrite
           tar -xzf deploy_package.tar.gz
           rm deploy_package.tar.gz

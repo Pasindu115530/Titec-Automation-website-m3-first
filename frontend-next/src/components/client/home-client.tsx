@@ -216,7 +216,7 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         {/* Badge (Welcome) */}
                         <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <span className="w-2 h-2 rounded-full bg-red-500 mr-3 animate-pulse"></span>
-                            <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC AUTOMATION SYSTEMS</span>
+                            <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC AUTOMATION Solutions</span>
                         </div>
 
                         {/* Headline */}
