@@ -3,6 +3,8 @@ import StoreClient from "@/components/client/store-client";
 
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: "Store - Titec Automation",
     description: "Explore our range of industrial automation products including PLCs, HMIs, VFDs, and more.",

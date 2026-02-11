@@ -3,6 +3,8 @@ import ProjectsClient from "@/components/client/projects-client";
 
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: "Our Projects - Titec Automation",
     description: "Explore our portfolio of successful industrial automation projects including PLC programming, HMI design, SCADA systems, and manufacturing automation solutions.",
