@@ -4,7 +4,7 @@ import StoreClient from "@/components/client/store-client";
 import { Metadata } from "next";
 
 // Enable ISR with 60-second revalidation
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: "Store - Titec Automation",
