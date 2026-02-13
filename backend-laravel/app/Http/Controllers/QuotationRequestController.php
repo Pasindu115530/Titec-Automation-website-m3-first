@@ -117,6 +117,7 @@ class QuotationRequestController extends Controller
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240', // Max 10MB
             'vat' => 'nullable|numeric|min:0',
+            'terms' => 'nullable|array',
         ]);
 
         try {
@@ -149,7 +150,8 @@ class QuotationRequestController extends Controller
                         'request' => $quoteRequest,
                         'items' => $validated['items'] ?? [],
                         'message' => $validated['message'] ?? '',
-                        'vat' => $validated['vat'] ?? 18
+                        'vat' => $validated['vat'] ?? 18,
+                        'terms' => $validated['terms'] ?? null,
                     ]);
                     $pdfContent = $pdf->output();
                     
@@ -246,6 +248,7 @@ class QuotationRequestController extends Controller
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240',
             'vat' => 'nullable|numeric|min:0',
+            'terms' => 'nullable|array',
         ]);
 
         $mode = $request->input('mode', 'create');
@@ -273,7 +276,8 @@ class QuotationRequestController extends Controller
                 'request' => $quoteRequestForPdf,
                 'items' => $items,
                 'message' => $validated['message'] ?? '',
-                'vat' => $validated['vat'] ?? 18
+                'vat' => $validated['vat'] ?? 18,
+                'terms' => $validated['terms'] ?? null,
             ]);
             $pdfContent = $pdf->output();
             

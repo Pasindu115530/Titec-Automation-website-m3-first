@@ -180,7 +180,7 @@
             <tr>
                 <td class="col-desc">{{ $item['name'] }}</td>
                 <td class="col-qty">{{ number_format($qty, 2) }}</td>
-                <td class="col-unit">Nos</td> <!-- Hardcoded as Nos per image, or could be dynamic -->
+                <td class="col-unit">{{ $item['unit'] ?? 'Nos' }}</td>
                 <td class="col-price">{{ number_format($price, 2) }}</td>
                 <td class="col-total">{{ number_format($lineTotal, 2) }}</td>
             </tr>
@@ -213,10 +213,16 @@
     <div class="footer-section">
         <div class="section-title">Terms and Conditions</div>
         <ul class="terms-list">
-            <li><strong>Advance Payment</strong> – 70% of the total project value is required as an advance payment to initiate work.</li>
-            <li><strong>Delivery Time</strong> – Standard delivery time is 30 days after receiving the Purchase Order (PO). However, this may vary depending on the project scope.</li>
-            <li><strong>Payment Terms</strong> – The remaining payment is to be made within 30 days from the date of delivery of the completed work.</li>
-            <li><strong>Warranty</strong> – A 1-year warranty is provided for manufacturing defects. This does not cover damages due to misuse, improper handling, or external factors.</li>
+            @if(isset($terms) && is_array($terms))
+                @foreach($terms as $term)
+                    <li>{!! $term !!}</li>
+                @endforeach
+            @else
+                <li><strong>Advance Payment</strong> – 70% of the total project value is required as an advance payment to initiate work.</li>
+                <li><strong>Delivery Time</strong> – Standard delivery time is 30 days after receiving the Purchase Order (PO). However, this may vary depending on the project scope.</li>
+                <li><strong>Payment Terms</strong> – The remaining payment is to be made within 30 days from the date of delivery of the completed work.</li>
+                <li><strong>Warranty</strong> – A 1-year warranty is provided for manufacturing defects. This does not cover damages due to misuse, improper handling, or external factors.</li>
+            @endif
         </ul>
 
         <div class="section-title" style="margin-top: 15px;">Payment details</div>

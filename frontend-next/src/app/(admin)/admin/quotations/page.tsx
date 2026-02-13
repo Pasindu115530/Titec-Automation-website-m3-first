@@ -86,7 +86,7 @@ export default function AdminQuotationsPage() {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number }) => {
+    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number, terms?: string[] }) => {
         if (!selectedRequest) return;
         const toastId = toast.loading('Sending reply...');
         try {
@@ -109,7 +109,7 @@ export default function AdminQuotationsPage() {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendDirectQuote = async (data: { name: string, email: string, phone: string, items: any[], message: string }) => {
+    const handleSendDirectQuote = async (data: { name: string, email: string, phone: string, items: any[], message: string, terms?: string[] }) => {
         const toastId = toast.loading('Sending direct quote...');
         try {
             await quotationService.sendDirectQuote(data);

@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Quotation routes (admin only)
     Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
+    Route::post('/quotations/preview', [App\Http\Controllers\QuotationController::class, 'preview']);
     Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
     Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
     

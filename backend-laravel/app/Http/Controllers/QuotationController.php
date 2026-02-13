@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Quotation;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationController extends Controller
 {
@@ -44,5 +45,29 @@ class QuotationController extends Controller
         
         $quotation = Quotation::create($validatedData);
         return response()->json($quotation, 201);
+    }
+    public function preview(Request $request)
+    {
+        $validatedData = $request->validate([
+            'items' => 'required|array',
+            'vat' => 'required|numeric',
+            'terms' => 'nullable|array',
+            'message' => 'nullable|string',
+            'request_id' => 'required|exists:quotation_requests,id', // Needed for customer details
+        ]);
+
+        $quotationRequest = \App\Models\QuotationRequest::findOrFail($request->request_id);
+        
+        $data = [
+            'request' => $quotationRequest,
+            'items' => $request->items,
+            'vat' => $request->vat,
+            'terms' => $request->terms,
+            'message' => $request->message,
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.quotation', $data);
+
+        return $pdf->stream('quotation-preview.pdf');
     }
 }
