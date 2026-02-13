@@ -17,6 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Titec Admin",
     description: "Admin Dashboard",
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export default function AdminRootLayout({
