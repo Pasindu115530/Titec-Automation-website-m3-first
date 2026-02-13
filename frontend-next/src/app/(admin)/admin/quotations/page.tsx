@@ -6,8 +6,7 @@ import { Quotation } from '@/types/quotation';
 import QuotationsTable from '@/components/admin/quotations-table';
 import Loader from '@/components/loader';
 
-import ReplyModal from '@/components/admin/reply-quotation-modal';
-import DirectQuoteModal from '@/components/admin/direct-quote-modal';
+import QuotationModal from '@/components/admin/quotation-modal';
 
 import { toast } from 'sonner';
 
@@ -24,8 +23,8 @@ export default function AdminQuotationsPage() {
     // Modal State
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedRequest, setSelectedRequest] = useState<any>(null);
-    const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
-    const [isDirectQuoteModalOpen, setIsDirectQuoteModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'reply' | 'direct'>('reply');
 
     // Race condition handling
     const activeStatus = React.useRef(statusFilter);
@@ -79,49 +78,40 @@ export default function AdminQuotationsPage() {
         loadQuotations(nextPage, statusFilter, false);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleReplyClick = (request: any) => {
         setSelectedRequest(request);
-        setIsReplyModalOpen(true);
+        setModalMode('reply');
+        setIsModalOpen(true);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendReply = async (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number, terms?: string[] }) => {
-        if (!selectedRequest) return;
-        const toastId = toast.loading('Sending reply...');
+    const handleSendQuotation = async (data: any) => {
+        const toastId = toast.loading('Sending quotation...');
         try {
-            await quotationService.replyToRequest(selectedRequest.id, data);
-            // Refresh list (reset to page 1 to see updated status if needed, or just remove item)
-            // Simpler to just remove it from the list if we are in 'pending' view and it became 'quoted'
-            if (statusFilter === 'pending') {
-                setQuotations(prev => prev.filter(q => q.id !== selectedRequest.id));
+            if (modalMode === 'reply') {
+                if (!selectedRequest) return;
+                await quotationService.replyToRequest(selectedRequest.id, data);
+
+                if (statusFilter === 'pending') {
+                    setQuotations(prev => prev.filter(q => q.id !== selectedRequest.id));
+                } else {
+                    setPage(1);
+                    loadQuotations(1, statusFilter, true);
+                }
+                toast.success('Reply sent successfully', { id: toastId });
             } else {
-                // Refresh current view
-                setPage(1);
-                loadQuotations(1, statusFilter, true);
+                // Direct Quote
+                await quotationService.sendDirectQuote(data);
+                if (statusFilter === 'quoted') {
+                    setPage(1);
+                    loadQuotations(1, 'quoted', true);
+                }
+                toast.success('Direct quote sent successfully', { id: toastId });
             }
-            setIsReplyModalOpen(false);
-            toast.success('Reply sent successfully', { id: toastId });
+            setIsModalOpen(false);
         } catch (error) {
-            console.error('Failed to send reply', error);
+            console.error('Failed to send quotation', error);
             toast.error('Failed to send quotation.', { id: toastId });
-        }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendDirectQuote = async (data: { name: string, email: string, phone: string, items: any[], message: string, terms?: string[] }) => {
-        const toastId = toast.loading('Sending direct quote...');
-        try {
-            await quotationService.sendDirectQuote(data);
-            if (statusFilter === 'quoted') {
-                setPage(1);
-                loadQuotations(1, 'quoted', true);
-            }
-            setIsDirectQuoteModalOpen(false);
-            toast.success('Direct quote sent successfully', { id: toastId });
-        } catch (error) {
-            console.error('Failed to send direct quote', error);
-            toast.error('Failed to send direct quotation.', { id: toastId });
         }
     };
 
@@ -140,7 +130,11 @@ export default function AdminQuotationsPage() {
                         Refresh
                     </button>
                     <button
-                        onClick={() => setIsDirectQuoteModalOpen(true)}
+                        onClick={() => {
+                            setModalMode('direct');
+                            setSelectedRequest(null); // Clear selected request for direct mode
+                            setIsModalOpen(true);
+                        }}
                         className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
                     >
                         Create Direct Quote
@@ -283,18 +277,13 @@ export default function AdminQuotationsPage() {
                 </div>
             )}
 
-            <ReplyModal
-                key={selectedRequest?.id}
-                isOpen={isReplyModalOpen}
-                onClose={() => setIsReplyModalOpen(false)}
+            <QuotationModal
+                key={modalMode === 'reply' ? selectedRequest?.id : 'new-direct'}
+                isOpen={isModalOpen}
+                mode={modalMode}
+                onClose={() => setIsModalOpen(false)}
                 request={selectedRequest}
-                onSend={handleSendReply}
-            />
-
-            <DirectQuoteModal
-                isOpen={isDirectQuoteModalOpen}
-                onClose={() => setIsDirectQuoteModalOpen(false)}
-                onSend={handleSendDirectQuote}
+                onSend={handleSendQuotation}
             />
         </div>
     );

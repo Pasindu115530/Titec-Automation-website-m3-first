@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash, Send, FileText, Eye, Edit2, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,55 +6,73 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { toast } from 'sonner';
-import { api } from '@/lib/api'; // For preview call
 import { ProductAutocomplete } from './product-autocomplete';
 import { Product } from '@/types';
 import QuotationPreview from './quotation-preview';
 
-interface ReplyModalProps {
+type ModalMode = 'reply' | 'direct';
+
+interface QuotationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    request: any; // Using any for now to match flexible backend response
-    onSend: (data: { items?: any[], message: string, mode?: 'create' | 'upload', file?: File, vat?: number, includePdf?: boolean, terms?: string[] }) => Promise<void>;
+    mode: ModalMode;
+    request?: any; // For 'reply' mode
+    onSend: (data: any) => Promise<void>;
 }
 
-export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyModalProps) {
-    // Generate initial items from request if available
-    const initialItems = request?.products?.map((p: any) => ({
+export default function QuotationModal({ isOpen, onClose, mode, request, onSend }: QuotationModalProps) {
+    // Unique key for local storage persistence based on mode and request ID
+    const storageKeyInfo = mode === 'reply' ? `reply_${request?.id}` : 'direct_new';
+    const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
+
+    // --- State: Customer Info (Editable for Direct, Read-only/Derived for Reply) ---
+    const [customerName, setCustomerName] = useLocalStorage(`admin_quote_name_${storageKeyInfo}`, '', expirationMinutes);
+    const [customerEmail, setCustomerEmail] = useLocalStorage(`admin_quote_email_${storageKeyInfo}`, '', expirationMinutes);
+    const [customerPhone, setCustomerPhone] = useLocalStorage(`admin_quote_phone_${storageKeyInfo}`, '', expirationMinutes);
+
+    // Initialize customer info from request in reply mode
+    useEffect(() => {
+        if (isOpen && mode === 'reply' && request) {
+            setCustomerName(request.name || 'Guest');
+            setCustomerEmail(request.email || '');
+            setCustomerPhone(request.phone || '');
+        }
+    }, [isOpen, mode, request, setCustomerName, setCustomerEmail, setCustomerPhone]);
+
+    // --- State: Items & Calculations ---
+    const initialItems = (mode === 'reply' && request?.products) ? request.products.map((p: any) => ({
         name: p.name,
         quantity: p.pivot?.quantity || 1,
         price: p.price || 0,
-        isOriginal: true
-    })) || [];
+        isOriginal: true,
+        isUnitEditable: true
+    })) : [];
 
-    // Use persistence keyed by request ID
-    // Note: Parent must provide key={request.id} to ensure this remounts and re-initializes for new requests
-    const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
-    const [items, setItems] = useLocalStorage<any[]>(`admin_reply_items_${request?.id || 'new'}_v2`, initialItems.length ? initialItems : [{ name: '', quantity: 1, price: 0 }], expirationMinutes);
-    const [message, setMessage] = useLocalStorage(`admin_reply_message_${request?.id || 'new'}_v2`, '', expirationMinutes);
-    const [vat, setVat] = useLocalStorage(`admin_reply_vat_${request?.id || 'new'}`, 18, expirationMinutes);
-    const [isSending, setIsSending] = useState(false);
+    const [items, setItems] = useLocalStorage<any[]>(`admin_quote_items_${storageKeyInfo}`, initialItems.length ? initialItems : [{ name: '', quantity: 1, price: 0, isUnitEditable: true }], expirationMinutes);
+    const [vat, setVat] = useLocalStorage(`admin_quote_vat_${storageKeyInfo}`, 18, expirationMinutes);
 
-    // New state for tabs and file
-    const [activeTab, setActiveTab] = useState<'create' | 'upload'>('create');
-    const [pdfFile, setPdfFile] = useState<File | null>(null);
-    const [includePdf, setIncludePdf] = useLocalStorage(`admin_reply_include_pdf_${request?.id || 'new'}`, true, expirationMinutes);
-
-    // Terms State
+    // --- State: Message & Terms ---
+    const [message, setMessage] = useLocalStorage(`admin_quote_message_${storageKeyInfo}`, '', expirationMinutes);
     const defaultTerms = [
         "Advance Payment – 70% of the total project value is required as an advance payment to initiate work.",
         "Delivery Time – Standard delivery time is 30 days after receiving the Purchase Order (PO). However, this may vary depending on the project scope.",
         "Payment Terms – The remaining payment is to be made within 30 days from the date of delivery of the completed work.",
         "Warranty – A 1-year warranty is provided for manufacturing defects. This does not cover damages due to misuse, improper handling, or external factors."
     ];
-    const [terms, setTerms] = useLocalStorage<string[]>(`admin_reply_terms_${request?.id || 'new'}`, defaultTerms, expirationMinutes);
+    const [terms, setTerms] = useLocalStorage<string[]>(`admin_quote_terms_${storageKeyInfo}`, defaultTerms, expirationMinutes);
     const [isEditingTerms, setIsEditingTerms] = useState(false);
     const [termsInput, setTermsInput] = useState(defaultTerms.join('\n'));
 
-    // Preview State
+    // --- State: UI & Tabs ---
+    const [activeTab, setActiveTab] = useState<'create' | 'upload'>('create');
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [includePdf, setIncludePdf] = useLocalStorage(`admin_quote_include_pdf_${storageKeyInfo}`, true, expirationMinutes);
+    const [isSending, setIsSending] = useState(false);
+
+    // --- State: Preview ---
     const [isPreviewMode, setIsPreviewMode] = useState(false);
-    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+
+    // --- Handlers ---
 
     const handleItemChange = (index: number, field: string, value: any) => {
         const newItems = [...items];
@@ -63,7 +81,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
     };
 
     const addItem = () => {
-        setItems([...items, { name: '', quantity: 1, price: 0 }]);
+        setItems([...items, { name: '', quantity: 1, price: 0, isUnitEditable: true }]);
     };
 
     const removeItem = (index: number) => {
@@ -78,22 +96,23 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
 
     const toggleEditTerms = () => {
         if (isEditingTerms) {
-            // Save: Split by newline and filter empty
             const newTerms = termsInput.split('\n').filter(t => t.trim() !== '');
             setTerms(newTerms);
         } else {
-            // Edit: Join by newline
             setTermsInput(terms.join('\n'));
         }
         setIsEditingTerms(!isEditingTerms);
     };
 
-    const handlePreview = () => {
-        if (!validateForm()) return;
-        setIsPreviewMode(true);
-    };
-
     const validateForm = () => {
+        // Direct Mode Specific Validation
+        if (mode === 'direct') {
+            if (!customerName.trim() || !customerEmail.trim()) {
+                toast.warning('Customer name and email are required.');
+                return false;
+            }
+        }
+
         if (includePdf && activeTab === 'create') {
             if (!items.length) {
                 toast.warning('Please add items before sending.');
@@ -118,70 +137,82 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
         return true;
     };
 
-    // Original handleSubmit adjusted to use validateForm
+    const handlePreview = () => {
+        if (!validateForm()) return;
+        setIsPreviewMode(true);
+    };
+
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
         setIsSending(true);
         try {
-            if (includePdf) {
-                if (activeTab === 'create') {
-                    await onSend({ items, message, mode: 'create', vat, includePdf, terms });
-                } else {
-                    await onSend({ file: pdfFile!, message, mode: 'upload', includePdf });
-                }
-            } else {
-                await onSend({ message, includePdf });
+            const payload: any = {
+                message,
+                includePdf,
+                vat,
+                terms
+            };
+
+            if (mode === 'direct') {
+                payload.name = customerName;
+                payload.email = customerEmail;
+                payload.phone = customerPhone;
             }
+
+            if (includePdf) {
+                payload.mode = activeTab;
+                if (activeTab === 'create') {
+                    payload.items = items;
+                } else {
+                    payload.file = pdfFile!;
+                }
+            }
+
+            await onSend(payload);
             onCloseAndReset();
         } catch (error: any) {
-            handleError(error);
+            console.error('Send Error:', error);
+            toast.error('Failed to send quotation.');
         } finally {
             setIsSending(false);
         }
     };
 
-    // Extracted helper
     const onCloseAndReset = () => {
         onClose();
-        setItems([{ name: '', quantity: 1, price: 0 }]);
-        setMessage('');
-        setVat(18);
+        // Reset Logic - consider if we want to clear local storage or keep it for drafts?
+        // For now, let's minimally reset current session state
         setPdfFile(null);
-        setTerms(defaultTerms);
-        setPdfUrl(null);
         setIsPreviewMode(false);
-    };
-
-    const handleError = (error: any) => {
-        // Re-use logic from original handleSubmit catch block
-        console.error('Reply Error:', error);
-        if (error.response?.status === 422) {
-            const validationErrors = error.response?.data?.errors;
-            if (validationErrors) {
-                const errorMessages = Object.entries(validationErrors)
-                    .map(([field, messages]: [string, any]) => `${field}: ${messages.join(', ')}`)
-                    .join('\n');
-                toast.error(`Validation failed:\n${errorMessages}`, { duration: 6000 });
-            } else {
-                toast.error('Validation failed. Please check all fields.');
-            }
-        } else {
-            toast.error('Failed to send reply.');
+        // We typically don't clear the form data here to allow "drafts" via local storage, 
+        // but if it's sent successfully, maybe we should?
+        // Let's reset items for 'direct-new' to generic default
+        if (mode === 'direct') {
+            setItems([{ name: '', quantity: 1, price: 0, isUnitEditable: true }]);
+            setCustomerName('');
+            setCustomerEmail('');
+            setCustomerPhone('');
+            setMessage('');
         }
     };
+
+    // Calculations
+    const subTotal = items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.price)), 0);
+    const vatAmount = subTotal * (vat / 100);
+    const grandTotal = subTotal + vatAmount;
 
     if (!isOpen) return null;
 
     if (isPreviewMode) {
         return (
             <AnimatePresence>
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-white rounded-xl shadow-xl w-full max-w-4xl h-[90vh] flex flex-col"
+                        className="bg-white rounded-xl shadow-xl w-full max-w-4xl min-h-[90vh] flex flex-col my-8"
                     >
                         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10 rounded-t-xl">
                             <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -195,10 +226,9 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                         <div className="flex-1 bg-gray-100 p-8 overflow-y-auto">
                             <QuotationPreview
                                 customer={{
-                                    name: request?.name || 'Guest',
-                                    email: request?.email || '',
-                                    phone: request?.phone,
-                                    // Add company/address if available in request object later
+                                    name: customerName || 'Guest',
+                                    email: customerEmail || '',
+                                    phone: customerPhone,
                                 }}
                                 items={items}
                                 vat={vat}
@@ -227,10 +257,6 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
         );
     }
 
-    const subTotal = items.reduce((sum, item) => sum + (Number(item.quantity) * Number(item.price)), 0);
-    const vatAmount = subTotal * (vat / 100);
-    const grandTotal = subTotal + vatAmount;
-
     return (
         <AnimatePresence>
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -244,9 +270,11 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                         <div>
                             <h2 className="text-xl font-semibold flex items-center gap-2">
                                 <FileText className="h-5 w-5 text-indigo-600" />
-                                Reply to Quotation
+                                {mode === 'reply' ? 'Reply to Quotation' : 'Create Direct Quotation'}
                             </h2>
-                            <p className="text-sm text-gray-500">Replying to Request #{request?.id}</p>
+                            <p className="text-sm text-gray-500">
+                                {mode === 'reply' ? `Replying to Request #${request?.id}` : 'Send a quotation directly to a customer'}
+                            </p>
                         </div>
                         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                             <X className="h-5 w-5" />
@@ -296,21 +324,53 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                     </div>
 
                     <div className="px-6 flex-1 overflow-y-auto space-y-6">
-                        {/* Customer Info */}
-                        <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p><span className="font-medium">Customer:</span> {request?.name || 'Guest'}</p>
-                                    <p><span className="font-medium">Email:</span> {request?.email || '-'}</p>
-                                    <p><span className="font-medium">Phone:</span> {request?.phone || '-'}</p>
-                                </div>
-                                <div>
-                                    <p><span className="font-medium">Original Request:</span></p>
-                                    <div className="text-gray-600 mt-1 max-h-32 overflow-y-auto bg-white p-2 rounded border border-gray-200 text-sm whitespace-pre-wrap">
-                                        {request?.customer_notes || 'No message provided.'}
+                        {/* Customer Info Section */}
+                        <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-4">
+                            {mode === 'reply' ? (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p><span className="font-medium">Customer:</span> {customerName}</p>
+                                        <p><span className="font-medium">Email:</span> {customerEmail}</p>
+                                        <p><span className="font-medium">Phone:</span> {customerPhone || '-'}</p>
+                                    </div>
+                                    <div>
+                                        <p><span className="font-medium">Original Request:</span></p>
+                                        <div className="text-gray-600 mt-1 max-h-32 overflow-y-auto bg-white p-2 rounded border border-gray-200 text-sm whitespace-pre-wrap">
+                                            {request?.customer_notes || 'No message provided.'}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="font-medium text-gray-700">Customer Name <span className="text-red-500">*</span></label>
+                                        <Input
+                                            value={customerName}
+                                            onChange={(e) => setCustomerName(e.target.value)}
+                                            placeholder="John Doe"
+                                            className="bg-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
+                                        <Input
+                                            value={customerEmail}
+                                            onChange={(e) => setCustomerEmail(e.target.value)}
+                                            placeholder="john@example.com"
+                                            className="bg-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="font-medium text-gray-700">Phone</label>
+                                        <Input
+                                            value={customerPhone}
+                                            onChange={(e) => setCustomerPhone(e.target.value)}
+                                            placeholder="+94 77..."
+                                            className="bg-white"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {includePdf && (
@@ -355,6 +415,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                                                 name: product.name,
                                                                                 unit: product.unit || 'nos',
                                                                                 price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+                                                                                isUnitEditable: false // Lock unit for selected products
                                                                             };
                                                                             setItems(newItems);
                                                                         }}
@@ -366,7 +427,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                             <td className="p-2">
                                                                 <Input
                                                                     type="number"
-                                                                    value={item.quantity}
+                                                                    value={item.quantity || ""}
                                                                     onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
                                                                     className="h-8"
                                                                 />
@@ -374,10 +435,11 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                             <td className="p-2">
                                                                 <Input
                                                                     type="text"
-                                                                    value={item.unit || 'nos'}
+                                                                    value={item.unit || ''}
                                                                     onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
-                                                                    className="h-8 w-20"
+                                                                    className={`h-8 w-20 ${!item.isUnitEditable ? 'bg-gray-100 text-gray-500' : ''}`}
                                                                     placeholder="nos"
+                                                                    readOnly={!item.isUnitEditable}
                                                                 />
                                                             </td>
                                                             <td className="p-2">
@@ -389,7 +451,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                                 />
                                                             </td>
                                                             <td className="p-2 text-right font-medium">
-                                                                {(item.quantity * item.price).toFixed(2)} LKR
+                                                                {((item.quantity || 0) * (item.price || 0)).toFixed(2)} LKR
                                                             </td>
                                                             <td className="p-2 text-center">
                                                                 <button onClick={() => removeItem(index)} className="text-red-400 hover:text-red-600">
@@ -400,7 +462,7 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                                                     ))}
                                                     {items.length === 0 && (
                                                         <tr>
-                                                            <td colSpan={5} className="p-8 text-center text-gray-400">
+                                                            <td colSpan={6} className="p-8 text-center text-gray-400">
                                                                 No items added. Click "Add Item" to start.
                                                             </td>
                                                         </tr>
@@ -501,8 +563,8 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                         {/* Message Section */}
                         <div className="space-y-2 pb-6">
                             <label className="text-sm font-medium">Message to Customer</label>
-                            <textarea
-                                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            <Textarea
+                                className="min-h-[100px]"
                                 placeholder="Add a personal note..."
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
@@ -516,10 +578,10 @@ export default function ReplyModal({ isOpen, onClose, request, onSend }: ReplyMo
                             <Button
                                 variant="secondary"
                                 onClick={handlePreview}
-                                disabled={isPreviewLoading || items.length === 0}
+                                disabled={items.length === 0}
                                 className="gap-2"
                             >
-                                {isPreviewLoading ? 'Generating...' : <><Eye className="h-4 w-4" /> Preview</>}
+                                <Eye className="h-4 w-4" /> Preview
                             </Button>
                         )}
                         <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="gap-2">

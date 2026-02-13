@@ -113,6 +113,7 @@ class QuotationRequestController extends Controller
             'items' => 'required_if:mode,create|array',
             'items.*.name' => 'required_if:mode,create|string',
             'items.*.quantity' => 'required_if:mode,create|numeric',
+            'items.*.unit' => 'nullable|string',
             'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240', // Max 10MB
@@ -244,6 +245,7 @@ class QuotationRequestController extends Controller
             'items' => 'required_if:mode,create|array',
             'items.*.name' => 'required_if:mode,create|string',
             'items.*.quantity' => 'required_if:mode,create|numeric',
+            'items.*.unit' => 'nullable|string',
             'items.*.price' => 'required_if:mode,create|numeric',
             'message' => 'nullable|string',
             'file' => 'required_if:mode,upload|file|mimes:pdf|max:10240',
