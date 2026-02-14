@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ShoppingBag, Send } from 'lucide-react';
+import { X, Trash2, ShoppingBag, Send, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 import { Button } from '@/components/ui/button';
@@ -210,7 +210,27 @@ export default function CartDrawer() {
                                                 </div>
                                                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                                                     <h4 className="font-medium text-gray-900 truncate text-sm">{item.name}</h4>
-                                                    <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                                                    <div className="flex items-center gap-1 mt-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                if (item.quantity <= 1) {
+                                                                    removeItem(item.id);
+                                                                } else {
+                                                                    updateQuantity(item.id, item.quantity - 1);
+                                                                }
+                                                            }}
+                                                            className="h-6 w-6 rounded-md bg-gray-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center text-gray-500 transition-colors"
+                                                        >
+                                                            <Minus className="h-3 w-3" />
+                                                        </button>
+                                                        <span className="text-xs font-semibold text-gray-700 w-6 text-center">{item.quantity}</span>
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                            className="h-6 w-6 rounded-md bg-gray-100 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center text-gray-500 transition-colors"
+                                                        >
+                                                            <Plus className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <Button
                                                     variant="ghost"
