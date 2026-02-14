@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Package, Tag, DollarSign, Package2, Upload, FileText, Grid3x3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Brand } from '@/types';
+import { brandService } from '@/services/brandService';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -15,6 +17,21 @@ interface AddProductModalProps {
 export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProductModalProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [brands, setBrands] = useState<Brand[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            const fetchBrands = async () => {
+                try {
+                    const data = await brandService.getBrands();
+                    setBrands(data);
+                } catch (error) {
+                    console.error('Failed to fetch brands', error);
+                }
+            };
+            fetchBrands();
+        }
+    }, [isOpen]);
 
     // Gallery State
     const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -26,7 +43,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
         description: '',
         price: '',
         category: '',
-        brand: '',
+        brand_id: '',
         stock: '',
         unit: 'nos',
         sku: '',
@@ -69,7 +86,10 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
             data.append('description', formData.description);
             data.append('price', formData.price);
             data.append('category', formData.category);
-            data.append('brand', formData.brand || '');
+            data.append('category', formData.category);
+            if (formData.brand_id) {
+                data.append('brand_id', formData.brand_id);
+            }
             data.append('stock', formData.stock);
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
@@ -99,7 +119,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 description: '',
                 price: '',
                 category: '',
-                brand: '',
+                brand_id: '',
                 stock: '',
                 unit: 'nos',
                 sku: '',
@@ -264,16 +284,25 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Brand</label>
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-medium">Brand</label>
+                                    <a href="/admin/brands" target="_blank" className="text-xs text-indigo-600 hover:underline">+ New Brand</a>
+                                </div>
                                 <div className="relative">
                                     <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        name="brand"
-                                        value={formData.brand}
+                                    <select
+                                        name="brand_id"
+                                        value={formData.brand_id}
                                         onChange={handleInputChange}
-                                        placeholder="Omron, Siemens, etc."
-                                        className="pl-9"
-                                    />
+                                        className="flex h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        <option value="">Select Brand (Optional)</option>
+                                        {brands.map((b) => (
+                                            <option key={b.id} value={b.id}>
+                                                {b.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         </div>
