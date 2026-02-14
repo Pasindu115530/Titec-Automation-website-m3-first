@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Get Code
     - name: 🚚 Get Latest Code
       uses: actions/checkout@v4
 
@@ -41,7 +40,7 @@ jobs:
         npm run build
         rm -rf node_modules
 
-    # --- PART C: COMPRESS FILES (The Fix for No Rsync) ---
+    # --- PART C: COMPRESS FILES ---
     - name: 📦 Create Deployment Archive
       run: |
         tar -czf deploy_package.tar.gz \
@@ -53,8 +52,6 @@ jobs:
           backend-laravel frontend-next
 
     # --- PART D: UPLOAD & DEPLOY ---
-    
-    # 1. Ensure Folder Exists on Server
     - name: 📂 Prepare Server Directory
       uses: appleboy/ssh-action@master
       with:
@@ -65,7 +62,6 @@ jobs:
         script: |
           mkdir -p /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
 
-    # 2. Upload the Zip File (SCP)
     - name: 🚀 Upload Archive
       uses: appleboy/scp-action@master
       with:
@@ -76,8 +72,7 @@ jobs:
         source: "deploy_package.tar.gz"
         target: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
 
-    # 3. Unzip & Restart
-    - name: 🧹 Extract & Restart
+    - name: 🧹 Extract, Clean & Force Restart
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST_IP }}
@@ -87,23 +82,28 @@ jobs:
         script: |
           cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
           
-          # Clean old build artifacts to prevent stale chunks
+          # 1. Force Kill - පරණ Node processes සම්පූර්ණයෙන්ම නවත්වන්න (Ghost Processes අයින් කිරීමට)
+          pkill -u ${{ secrets.CPANEL_USER }} node || true
+          
+          # 2. පරණ build artifacts අයින් කිරීම
           rm -rf frontend-next/.next
 
-          # Extract and Overwrite
+          # 3. Extract and Overwrite
           tar -xzf deploy_package.tar.gz
           rm deploy_package.tar.gz
           
-          # Finalize Laravel
+          # 4. Finalize Laravel (Cache clear කර අලුත් config load කිරීම)
           cd backend-laravel
           php artisan migrate --force
+          php artisan config:clear
+          php artisan cache:clear
           php artisan config:cache
           
-          # Finalize Frontend
+          # 5. Finalize Frontend
           cd ../frontend-next
           export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
           npm install --production
           
-          # Restart App
+          # 6. Restart App (Passenger trigger)
           mkdir -p tmp
           touch tmp/restart.txt
