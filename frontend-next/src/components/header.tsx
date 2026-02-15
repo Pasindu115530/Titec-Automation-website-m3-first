@@ -21,59 +21,67 @@ export default function Header() {
   return (
     <>
       <header
-        className={`site-header ${pathname === '/' ? 'fixed top-6 left-1/2 z-50 -translate-x-1/2' : 'sticky top-4 z-50 mx-auto my-4'}`}
+        className={`site-header w-fit ${pathname === '/' ? 'fixed top-2 left-10/20 -translate-x-1/2 z-50' : 'sticky top-4 z-50 mx-auto my-4'}`}
       >
-        <div className="bg-white rounded-full shadow-lg px-8 py-3 flex items-center justify-between w-full relative z-50">
-
-          {/* Logo */}
-          <div className="shrink-0">
+        <div className="flex items-center justify-center max-w-[98%] xl:max-w-[1400px] mx-auto px-4">
+          {/* Logo - Sibling Element */}
+          <div className="shrink-0 mr-6 relative z-60">
             <Link href="/">
-              <Image src={logo} alt="TiTEC Automation" width={200} height={80} className="object-contain h-20 w-auto" priority />
+              <Image
+                src={logo}
+                alt="TiTEC Automation"
+                width={360}
+                height={180}
+                className="object-contain h-32 md:h-40 w-auto drop-shadow-4xl hover:scale-105 transition-transform duration-300"
+                priority
+              />
             </Link>
           </div>
 
-          {/* Navigation - desktop */}
-          <nav className="hidden md:flex flex-1 justify-center ml-8">
-            <ul className="flex gap-8 items-center text-gray-600 font-medium text-sm">
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/' ? 'text-blue-900 font-semibold' : ''}`} href="/">Home</Link></li>
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/projects' ? 'text-blue-900 font-semibold' : ''}`} href="/projects">Projects</Link></li>
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/store' ? 'text-blue-900 font-semibold' : ''}`} href="/store">Store</Link></li>
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/about' ? 'text-blue-900 font-semibold' : ''}`} href="/about">About</Link></li>
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/contact' ? 'text-blue-900 font-semibold' : ''}`} href="/contact">Contact</Link></li>
-              <li><Link className={`hover:text-blue-900 transition-colors ${pathname === '/faq' ? 'text-blue-900 font-semibold' : ''}`} href="/faq">FAQ</Link></li>
-            </ul>
-          </nav>
+          {/* Navigation Ribbon - Sibling Element */}
+          <div className="bg-(--background) rounded-full gap-20 shadow-lg px-8 py-4 flex flex-1 items-center justify-between relative z-50 min-h-[70px]">
 
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            {/* Cart - visible to everyone */}
-            <button
-              onClick={() => setIsOpen(true)}
-              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
-              aria-label="Quotation Cart"
-            >
-              <ShoppingBag className="w-5 h-5" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {totalItems}
-                </span>
-              )}
-            </button>
+            {/* Navigation - desktop */}
+            <nav className="hidden md:flex flex-1 justify-center">
+              <ul className="flex gap-10 items-center text-(--neutral-gray) font-medium text-base">
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/' ? 'text-(--primary-blue) font-bold' : ''}`} href="/">Home</Link></li>
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/projects' ? 'text-(--primary-blue) font-bold' : ''}`} href="/projects">Projects</Link></li>
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/store' ? 'text-(--primary-blue) font-bold' : ''}`} href="/store">Store</Link></li>
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/about' ? 'text-(--primary-blue) font-bold' : ''}`} href="/about">About</Link></li>
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/contact' ? 'text-(--primary-blue) font-bold' : ''}`} href="/contact">Contact</Link></li>
+                <li><Link className={`hover:text-(--blue-hover) transition-colors ${pathname === '/faq' ? 'text-(--primary-blue) font-bold' : ''}`} href="/faq">FAQ</Link></li>
+              </ul>
+            </nav>
 
-            {/* Mobile hamburger */}
-            <button
-              aria-label="menu"
-              className="md:hidden p-2 rounded-md hover:bg-gray-100 text-gray-600 z-50"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            {/* Actions */}
+            <div className="flex items-center gap-4 ml-auto">
+              <button
+                onClick={() => setIsOpen(true)}
+                className="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors text-(--neutral-gray)"
+                aria-label="Quotation Cart"
+              >
+                <ShoppingBag className="w-6 h-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-(--indicator-red) text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+                    {totalItems}
+                  </span>
                 )}
-              </svg>
-            </button>
+              </button>
+
+              <button
+                aria-label="menu"
+                className="md:hidden p-2 rounded-md hover:bg-gray-100 text-(--neutral-gray) z-50"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -104,42 +112,42 @@ export default function Header() {
                   <Link
                     href="/"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     Home
                   </Link>
                   <Link
                     href="/projects"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/projects' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/projects' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     Projects
                   </Link>
                   <Link
                     href="/store"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/store' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/store' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     Store
                   </Link>
                   <Link
                     href="/about"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/about' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/about' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     About
                   </Link>
                   <Link
                     href="/contact"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/contact' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/contact' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     Contact
                   </Link>
                   <Link
                     href="/faq"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`p-3 rounded-lg transition-colors ${pathname === '/faq' ? 'bg-blue-50 text-blue-900 font-semibold' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`p-3 rounded-lg transition-colors ${pathname === '/faq' ? 'bg-(--blue-hover)/10 text-(--primary-blue) font-semibold' : 'text-(--neutral-gray) hover:bg-(--neutral-gray-light)'}`}
                   >
                     FAQ
                   </Link>

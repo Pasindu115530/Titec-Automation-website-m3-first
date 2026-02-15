@@ -149,6 +149,24 @@
 	--blue-hover: #1A3A5F;
 	--cta-hover-red: #ff0008;
 	--background: #FFFFFF;
+
+	/* Tech / Status Colors */
+	--status-live: #f97316;
+	--status-online: #2563eb;
+	--tech-accent-blue: #60a5fa;
+	--tech-accent-red: #f87171;
+	--indicator-red: #ef4444;
+}
+
+@layer components {
+	.btn-gradient-primary {
+		@apply bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all;
+	}
+
+	.text-glow-blue {
+		@apply text-blue-400;
+		filter: drop-shadow(0 0 15px rgba(96, 165, 250, 0.5));
+	}
 }
 
 /* Small global adjustments and component helpers */

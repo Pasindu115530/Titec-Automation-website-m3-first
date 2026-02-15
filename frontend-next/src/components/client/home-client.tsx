@@ -100,9 +100,9 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                 }}
             >
                 {/* Background Grid Pattern (Parallax Layer 1) */}
-                <div className="absolute inset-0 z-0 opacity-[0.4]" style={{
-                    backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
-                    backgroundSize: '32px 32px',
+                <div className="absolute inset-0 z-0 opacity-[0.6]" style={{
+                    backgroundImage: `radial-gradient(rgba(59, 130, 246, 0.3) 1.5px, transparent 1.5px)`,
+                    backgroundSize: '40px 40px',
                     transform: 'translate(var(--mouse-x), var(--mouse-y))',
                     transition: 'transform 0.1s ease-out'
                 }}></div>
@@ -112,47 +112,46 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                     transform: 'translate(calc(var(--mouse-x) * -2), calc(var(--mouse-y) * -2))',
                     transition: 'transform 0.1s ease-out'
                 }}>
-                    <div className="absolute top-1/4 left-1/4 w-4 h-4 border-2 border-gray-300 rounded-full animate-float opacity-60"></div>
-                    <div className="absolute top-1/3 right-1/4 w-6 h-6 border border-blue-200 rotate-45 animate-float-delay opacity-50"></div>
-                    <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-red-400 rounded-full animate-float opacity-40"></div>
-                    <div className="absolute top-10 right-10 text-gray-200 text-6xl opacity-20 font-orbitron font-bold select-none">+</div>
-                    <div className="absolute bottom-20 left-10 text-gray-200 text-8xl opacity-10 font-michroma font-bold select-none">01</div>
+                    <div className="absolute top-1/4 left-1/4 w-4 h-4 border-2 border-(--neutral-gray)/60 rounded-full animate-float opacity-80 shadow-[0_0_10px_rgba(0,0,0,0.1)]"></div>
+                    <div className="absolute top-1/3 right-1/4 w-8 h-8 border-2 rotate-45 animate-float-delay opacity-70 border-(--tech-accent-blue) shadow-[0_0_15px_rgba(59,130,246,0.4)]"></div>
+                    <div className="absolute bottom-1/4 left-1/3 w-3 h-3 rounded-full animate-float opacity-90 bg-(--indicator-red) shadow-[0_0_10px_rgba(239,68,68,0.6)]"></div>
+                    <div className="absolute top-10 right-10 text-(--tech-accent-blue)/20 text-8xl font-orbitron font-bold select-none blur-[1px]">+</div>
+                    <div className="absolute bottom-20 left-10 text-(--neutral-gray)/10 text-9xl font-michroma font-bold select-none">01</div>
                 </div>
 
                 {/* Live System Widgets */}
-                <div className="absolute top-34 right-6 hidden md:flex flex-col items-end z-20 opacity-40 pointer-events-none">
-                    <div className="font-mono text-xs text-orange-500 font-bold tracking-widest mb-1 flex items-center">
-                        <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
+                <div className="absolute top-34 right-6 hidden md:flex flex-col items-end z-20 opacity-100 pointer-events-none p-4 rounded-xl border border-white/40 bg-white/20 backdrop-blur-md shadow-lg">
+                    <div className="font-mono text-xs font-bold tracking-widest mb-1 flex items-center text-(--status-live) drop-shadow-sm scale-110 origin-right">
+                        <span className="w-2 h-2 rounded-full mr-2 animate-pulse bg-(--status-live) shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
                         LIVE SYSTEM
                     </div>
-                    <div className="font-mono text-xs text-gray-400">
-                        SYS.STATUS: <span className="text-blue-600">ONLINE</span>
+                    <div className="font-mono text-xs text-(--neutral-gray)">
+                        SYS.STATUS: <span className="text-(--status-online) font-bold">ONLINE</span>
                     </div>
-                    <div className="font-mono text-xs text-gray-400 mt-1">
-                        COORDS: <span className="text-gray-600">34.05N, 118.24W</span>
+                    <div className="font-mono text-xs text-(--neutral-gray)/80 mt-1">
+                        COORDS: <span className="text-(--primary-blue) font-semibold">34.05N, 118.24W</span>
                     </div>
                 </div>
 
-                {/* Decorative Vertical Ruler/Dash Pattern (Left Side) */}
-                <div className="absolute left-6 top-1/3 flex-col gap-2 opacity-50 z-0 hidden md:flex">
-                    <div className="w-6 h-[2px] bg-gray-500"></div>
-                    <div className="w-4 h-[2px] bg-gray-600"></div>
-                    <div className="w-12 h-[3px] bg-black-900"></div>
-                    <div className="w-4 h-[2px] bg-gray-600"></div>
-                    <div className="w-6 h-[2px] bg-gray-600"></div>
-                    <div className="w-3 h-[2px] bg-gray-600"></div>
-                    <div className="w-8 h-[2px] bg-gray-600"></div>
+                {/* Decorative Vertical Ruler/Dash Pattern (Left Side) - Enhanced */}
+                <div className="absolute left-6 top-1/3 flex-col gap-2 opacity-70 z-0 hidden md:flex mix-blend-multiply">
+                    <div className="w-4 h-[2px] bg-(--primary-blue)"></div>
+                    <div className="w-12 h-[3px] bg-(--neutral-gray)"></div>
+                    <div className="w-4 h-[2px] bg-(--neutral-gray)"></div>
+                    <div className="w-6 h-[2px] bg-(--tech-accent-blue)"></div>
+                    <div className="w-3 h-[2px] bg-(--neutral-gray)"></div>
+                    <div className="w-10 h-[3px] bg-(--neutral-gray)"></div>
                 </div>
 
-                {/* Decorative Vertical Ruler (Right Side - Mirrored) */}
-                <div className="absolute right-6 bottom-1/3 flex-col gap-2 items-end opacity-80 z-0 hidden md:flex">
-                    <div className="w-8 h-[2px] bg-blue-400"></div>
-                    <div className="w-3 h-[2px] bg-blue-500"></div>
-                    <div className="w-6 h-[2px] bg-gray-500"></div>
-                    <div className="w-4 h-[2px] bg-blue-500"></div>
-                    <div className="w-10 h-[3px] bg-gray-500"></div>
-                    <div className="w-4 h-[2px] bg-blue-500"></div>
-                    <div className="w-6 h-[2px] bg-gray-400"></div>
+                {/* Decorative Vertical Ruler (Right Side - Mirrored) - Enhanced */}
+                <div className="absolute right-6 bottom-1/3 flex-col gap-2 items-end opacity-90 z-0 hidden md:flex">
+                    <div className="w-10 h-[3px] bg-(--tech-accent-blue) shadow-[0_0_10px_rgba(59,130,246,0.3)]"></div>
+                    <div className="w-3 h-[2px] bg-(--primary-blue)"></div>
+                    <div className="w-6 h-[2px] bg-(--neutral-gray)"></div>
+                    <div className="w-4 h-[2px] bg-(--primary-blue)"></div>
+                    <div className="w-12 h-[3px] bg-(--neutral-gray)"></div>
+                    <div className="w-4 h-[2px] bg-(--tech-accent-red)"></div>
+                    <div className="w-8 h-[3px] bg-(--neutral-gray)"></div>
                 </div>
 
                 {/* Decorative Horizontal Scale (Bottom Left) */}
@@ -179,31 +178,32 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                 </div>
 
                 {/* Soft Ambient Glows */}
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-linear-to-r from-blue-100/50 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
-                <div className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-linear-to-b from-gray-200/50 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-multiply"></div>
+                {/* Soft Ambient Glows - Enhanced */}
+                <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-linear-to-r from-(--primary-blue)/20 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-multiply opacity-80"></div>
+                <div className="absolute bottom-[-10%] right-[-5%] w-[700px] h-[700px] bg-linear-to-b from-(--neutral-gray)/10 to-transparent rounded-full blur-3xl pointer-events-none mix-blend-multiply opacity-70"></div>
 
                 {/* Tech Decor: Circuit Paths */}
                 <div className="absolute inset-x-0 top-1/4 h-px bg-linear-to-r from-transparent via-gray-300 to-transparent opacity-20"></div>
                 <div className="absolute inset-y-0 right-1/3 w-px bg-linear-to-b from-transparent via-gray-300 to-transparent opacity-20"></div>
 
                 {/* Tech Decor: Small Data Points */}
-                <div className="absolute top-[22%] left-[15%] font-mono text-[10px] text-blue-400 opacity-60 tracking-widest uppercase">
+                <div className="absolute top-[22%] left-[15%] font-mono text-[10px] opacity-60 tracking-widest uppercase text-(--tech-accent-blue)">
                     sys_opt :: <span className="text-gray-400">active</span>
                 </div>
                 <div className="absolute bottom-[35%] right-[20%] font-mono text-[10px] text-gray-400 opacity-60 tracking-widest hidden md:block">
-                    {'>>'} <span className="text-red-400">init_sequence</span>
+                    {'>>'} <span className="text-(--tech-accent-red)">init_sequence</span>
                 </div>
                 <div className="absolute top-[40%] right-[5%] font-mono text-[10px] text-gray-300 opacity-40 -rotate-90 origin-bottom-right hidden lg:block">
                     EST_CONN_SECURE
                 </div>
 
                 {/* Tech Decor: Corner Accents */}
-                <div className="absolute top-40 left-8 w-6 h-6 border-l-2 border-t-2 border-red-500/30"></div>
-                <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-blue-500/30"></div>
+                <div className="absolute top-40 left-8 w-6 h-6 border-l-2 border-t-2 border-(--indicator-red)/30"></div>
+                <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-(--secondary-blue)"></div>
                 <div className="absolute top-1/2 left-4 w-1 h-8 bg-gray-200 rounded-full"></div>
 
-                {/* Ambient Light Overlay */}
-                <div className="absolute inset-0 bg-white/60 pointer-events-none z-0"></div>
+                {/* Ambient Light Overlay - Reduced for vibrancy */}
+                <div className="absolute inset-0 bg-white/30 pointer-events-none z-0"></div>
 
                 <div className="container mx-auto px-6 lg:px-12 relative z-10 h-full flex flex-col md:flex-row items-center justify-between pt-14">
 
@@ -215,8 +215,8 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
 
                         {/* Badge (Welcome) */}
                         <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-                            <span className="w-2 h-2 rounded-full bg-red-500 mr-3 animate-pulse"></span>
-                            <span className="text-xs font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC Solutions</span>
+                            <span className="w-4 h-4 rounded-full mr-3 animate-pulse bg-(--indicator-red)"></span>
+                            <span className="text-xl font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC Automation Solutions</span>
                         </div>
 
                         {/* Headline */}
@@ -238,11 +238,13 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <button
                                 onClick={() => setIsOpen(true)}
-                                className="px-8 py-4 bg-blue-900 text-white font-bold rounded-none hover:bg-blue-800 transition-colors shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
+                                className="px-8 py-4 bg-(--primary-blue) hover:bg-(--blue-hover) text-white font-bold rounded-none transition-colors shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
                             >
                                 GET QUOTE
                             </button>
-                            <a href="/store" className="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center">
+                            <a href="/store"
+                                className="px-8 py-4 bg-white text-(--primary-blue) border-2 border-(--primary-blue) font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center"
+                            >
                                 VISIT STORE
                             </a>
                         </div>
@@ -298,13 +300,13 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                                 />
                                 <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-gray-900/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
                                 <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end h-full">
-                                    <h3 className="text-xl font-bold text-white mb-2 font-orbitron tracking-wide group-hover:text-blue-400 transition-colors">
+                                    <h3 className="text-xl font-bold text-white mb-2 font-orbitron tracking-wide transition-colors group-hover:text-(--tech-accent-blue)">
                                         {service.title}
                                     </h3>
                                     <p className="text-gray-300 text-sm mb-4 line-clamp-2 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">
                                         {service.description}
                                     </p>
-                                    <div className="flex items-center text-blue-400 font-bold text-sm tracking-wider uppercase opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-200">
+                                    <div className="flex items-center font-bold text-sm tracking-wider uppercase opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-200 text-(--tech-accent-blue)">
                                         Explore <span className="ml-2 text-lg">→</span>
                                     </div>
                                     <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500">
