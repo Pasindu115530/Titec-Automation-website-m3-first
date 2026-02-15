@@ -214,9 +214,9 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                     >
 
                         {/* Badge (Welcome) */}
-                        <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-3 py-1 md:px-4 md:py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-                            <span className="w-2 h-2 md:w-4 md:h-4 rounded-full mr-2 md:mr-3 animate-pulse bg-(--indicator-red)"></span>
-                            <span className="text-[10px] sm:text-sm md:text-xl font-bold text-gray-600 tracking-widest md:tracking-[0.2em] uppercase font-orbitron">TITEC Automation Solutions</span>
+                        <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+                            <span className="w-4 h-4 rounded-full mr-3 animate-pulse bg-(--indicator-red)"></span>
+                            <span className="text-xl font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC Automation Solutions</span>
                         </div>
 
                         {/* Headline */}

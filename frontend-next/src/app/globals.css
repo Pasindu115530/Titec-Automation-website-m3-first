@@ -181,8 +181,8 @@
 	.site-header {
 		background: transparent;
 		font-family: 'Poppins', sans-serif;
-		width: 100%;
-		max-width: none;
+		max-width: 95%;
+		width: 1200px;
 	}
 
 	/* Logo: constrain huge images while keeping aspect ratio */
