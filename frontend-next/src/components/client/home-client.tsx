@@ -214,9 +214,9 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                     >
 
                         {/* Badge (Welcome) */}
-                        <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
-                            <span className="w-4 h-4 rounded-full mr-3 animate-pulse bg-(--indicator-red)"></span>
-                            <span className="text-xl font-bold text-gray-600 tracking-[0.2em] uppercase font-orbitron">TITEC Automation Solutions</span>
+                        <div className={`inline-flex items-center mb-8 bg-white/80 backdrop-blur-sm px-3 py-1 md:px-4 md:py-1.5 rounded-full border border-gray-100 shadow-sm transition-all duration-700 ease-in delay-0 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+                            <span className="w-2 h-2 md:w-4 md:h-4 rounded-full mr-2 md:mr-3 animate-pulse bg-(--indicator-red)"></span>
+                            <span className="text-[10px] sm:text-sm md:text-xl font-bold text-gray-600 tracking-widest md:tracking-[0.2em] uppercase font-orbitron">TITEC Automation Solutions</span>
                         </div>
 
                         {/* Headline */}
@@ -238,12 +238,12 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <button
                                 onClick={() => setIsOpen(true)}
-                                className="px-8 py-4 bg-(--primary-blue) hover:bg-(--blue-hover) text-white font-bold rounded-none transition-colors shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
+                                className="px-8 py-4 bg-(--secondary-blue) hover:bg-(--blue-hover) text-white font-bold rounded-none transition-colors shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
                             >
                                 GET QUOTE
                             </button>
                             <a href="/store"
-                                className="px-8 py-4 bg-white text-(--primary-blue) border-2 border-(--primary-blue) font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center"
+                                className="px-8 py-4 bg-white text-(--secondary-blue) border-2 border-(--secondary-blue) font-bold rounded-none hover:bg-blue-50 transition-colors tracking-wider font-orbitron text-sm flex items-center justify-center"
                             >
                                 VISIT STORE
                             </a>

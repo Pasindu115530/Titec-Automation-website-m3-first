@@ -21,25 +21,25 @@ export default function Header() {
   return (
     <>
       <header
-        className={`site-header w-fit ${pathname === '/' ? 'fixed top-2 left-10/20 -translate-x-1/2 z-50' : 'sticky top-4 z-50 mx-auto my-4'}`}
+        className={`site-header w-full ${pathname === '/' ? 'fixed top-0 left-0 right-0 z-50' : 'sticky top-0 z-50'}`}
       >
-        <div className="flex items-center justify-center max-w-[98%] xl:max-w-[1400px] mx-auto px-4">
-          {/* Logo - Sibling Element */}
-          <div className="shrink-0 mr-6 relative z-60">
-            <Link href="/">
-              <Image
-                src={logo}
-                alt="TiTEC Automation"
-                width={360}
-                height={180}
-                className="object-contain h-32 md:h-40 w-auto drop-shadow-4xl hover:scale-105 transition-transform duration-300"
-                priority
-              />
-            </Link>
-          </div>
+        <div className="w-full">
+          {/* Navigation Ribbon - Full Width */}
+          <div className="bg-(--background) shadow-md px-6 md:px-12 py-3 flex w-full items-center justify-between relative z-50 min-h-[80px]">
+            {/* Logo */}
+            <div className="shrink-0 flex items-center justify-center mr-8">
+              <Link href="/" className="block">
+                <Image
+                  src={logo}
+                  alt="TiTEC Automation"
+                  width={380}
+                  height={200}
+                  className="object-contain h-20 md:h-24 w-auto drop-shadow-lg hover:scale-105 transition-transform duration-300"
+                  priority
+                />
+              </Link>
+            </div>
 
-          {/* Navigation Ribbon - Sibling Element */}
-          <div className="bg-(--background) rounded-full gap-20 shadow-lg px-8 py-4 flex flex-1 items-center justify-between relative z-50 min-h-[70px]">
 
             {/* Navigation - desktop */}
             <nav className="hidden md:flex flex-1 justify-center">
