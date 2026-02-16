@@ -245,24 +245,33 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Delete images
-        if ($product->images) {
-            foreach ($product->images as $img) {
-                if (file_exists(public_path($img))) {
-                    File::delete(public_path($img));
+        try {
+            // Delete images
+            if ($product->images) {
+                foreach ($product->images as $img) {
+                    if (file_exists(public_path($img))) {
+                        File::delete(public_path($img));
+                    }
                 }
             }
+
+            // Delete datasheet
+            if ($product->datasheet_path && file_exists(public_path($product->datasheet_path))) {
+                File::delete(public_path($product->datasheet_path));
+            }
+
+            $product->delete();
+
+            return response()->json([
+                'message' => 'Product deleted successfully'
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                return response()->json([
+                    'message' => 'Cannot delete this product because it is referenced by one or more quotation requests.'
+                ], 409);
+            }
+            throw $e;
         }
-
-        // Delete datasheet
-        if ($product->datasheet_path && file_exists(public_path($product->datasheet_path))) {
-            File::delete(public_path($product->datasheet_path));
-        }
-
-        $product->delete();
-
-        return response()->json([
-            'message' => 'Product deleted successfully'
-        ]);
     }
 }
