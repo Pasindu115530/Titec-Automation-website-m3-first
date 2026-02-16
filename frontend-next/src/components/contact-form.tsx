@@ -13,10 +13,34 @@ export default function ContactForm() {
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({
+        name: false,
+        company: false,
+        email: false,
+        phone: false,
+        message: false
+    });
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+
+        // Validate fields
+        const newErrors = {
+            name: !name.trim(),
+            company: !company.trim(),
+            email: !email.trim(),
+            phone: !phone.trim(),
+            message: !message.trim()
+        };
+
+        if (Object.values(newErrors).some(error => error)) {
+            setErrors(newErrors);
+            toast.error('Please fill in all required fields.');
+            return;
+        }
+
         setIsSubmitting(true);
+        setErrors({ name: false, company: false, email: false, phone: false, message: false });
 
         try {
             await api.post('/api/contact', {
@@ -106,62 +130,69 @@ export default function ContactForm() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">Full Name</label>
+                                <label className="block text-sm font-medium text-slate-700">Full Name <span className="text-red-500">*</span></label>
                                 <input
                                     value={name}
-                                    onChange={e => setName(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                                    onChange={e => { setName(e.target.value); if (errors.name) setErrors({ ...errors, name: false }); }}
+                                    className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.name ? 'border-red-500' : 'border-slate-200'}`}
                                     placeholder="Full Name"
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">Company</label>
+                                <label className="block text-sm font-medium text-slate-700">Company <span className="text-red-500">*</span></label>
                                 <input
                                     value={company}
-                                    onChange={e => setCompany(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                                    onChange={e => { setCompany(e.target.value); if (errors.company) setErrors({ ...errors, company: false }); }}
+                                    className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.company ? 'border-red-500' : 'border-slate-200'}`}
                                     placeholder="Company Name"
+                                    required
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">Email</label>
+                                <label className="block text-sm font-medium text-slate-700">Email <span className="text-red-500">*</span></label>
                                 <input
+                                    type="email"
                                     value={email}
-                                    onChange={e => setEmail(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
-                                    placeholder="email@titecautomation.com"
+                                    onChange={e => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: false }); }}
+                                    className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.email ? 'border-red-500' : 'border-slate-200'}`}
+                                    placeholder="your@email.com"
+                                    required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">Phone Number</label>
+                                <label className="block text-sm font-medium text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                                 <input
+                                    type="tel"
                                     value={phone}
-                                    onChange={e => setPhone(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                                    onChange={e => { setPhone(e.target.value); if (errors.phone) setErrors({ ...errors, phone: false }); }}
+                                    className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.phone ? 'border-red-500' : 'border-slate-200'}`}
                                     placeholder="+94 000-000-000"
+                                    required
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-slate-700">Message</label>
+                            <label className="block text-sm font-medium text-slate-700">Message <span className="text-red-500">*</span></label>
                             <textarea
                                 value={message}
-                                onChange={e => setMessage(e.target.value)}
-                                className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 min-h-[120px] resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+                                onChange={e => { setMessage(e.target.value); if (errors.message) setErrors({ ...errors, message: false }); }}
+                                className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 min-h-[120px] resize-y focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.message ? 'border-red-500' : 'border-slate-200'}`}
                                 placeholder="Type your message here..."
+                                required
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full bg-[#000619] hover:bg-[#021C74] text-white font-medium py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full btn-gradient-primary py-3.5 shadow-lg tracking-wider font-orbitron text-sm cursor-pointer flex items-center justify-center gap-2 mt-4 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                            {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
                         </button>
                     </form>
                 </div>
