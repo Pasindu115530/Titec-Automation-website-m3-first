@@ -112,7 +112,7 @@ export default function CartDrawer() {
                                             required
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-(--secondary-blue) focus:ring-2 focus:ring-(--secondary-blue)/20 outline-none transition-all"
                                             placeholder="Your Name"
                                         />
                                     </div>
@@ -126,7 +126,7 @@ export default function CartDrawer() {
                                                 required
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-(--secondary-blue) focus:ring-2 focus:ring-(--secondary-blue)/20 outline-none transition-all"
                                                 placeholder="your@email.com"
                                             />
                                         </div>
@@ -138,7 +138,7 @@ export default function CartDrawer() {
                                                 required
                                                 value={formData.phone}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-(--secondary-blue) focus:ring-2 focus:ring-(--secondary-blue)/20 outline-none transition-all"
                                                 placeholder="+94 00 000 0000"
                                             />
                                         </div>
@@ -151,14 +151,14 @@ export default function CartDrawer() {
                                             value={formData.message}
                                             onChange={handleInputChange}
                                             rows={2} // Reduced rows for mobile
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-(--secondary-blue) focus:ring-2 focus:ring-(--secondary-blue)/20 outline-none transition-all resize-none"
                                             placeholder="Any specific requirements?"
                                         />
                                     </div>
 
                                     <Button
                                         type="submit"
-                                        className="w-full h-12 text-lg bg-(--secondary-blue) hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 mt-4 sticky bottom-0"
+                                        className="w-full h-12 text-lg btn-gradient-primary mt-4 sticky bottom-0"
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? (
@@ -179,7 +179,7 @@ export default function CartDrawer() {
                             {/* Right Side: Cart Items */}
                             <div className="md:w-1/2 p-6 md:p-8 bg-gray-50/50 flex flex-col h-[30vh] md:h-auto order-2"> {/* order-2 ensures it is bottom on mobile */}
                                 <div className="flex items-center gap-2 mb-4">
-                                    <ShoppingBag className="h-5 w-5 text-indigo-600" />
+                                    <ShoppingBag className="h-5 w-5 text-(--secondary-blue)" />
                                     <h3 className="font-semibold text-gray-900">Items ({items.length})</h3>
                                 </div>
 
@@ -193,7 +193,7 @@ export default function CartDrawer() {
                                                     setIsOpen(false);
                                                     router.push('/store');
                                                 }}
-                                                className='text-sm text-indigo-600 font-medium underline mt-2'
+                                                className='text-sm text-(--secondary-blue) font-medium underline mt-2'
                                             >
                                                 Visit Store
                                             </button>

@@ -11,10 +11,11 @@ export default function SectionHeader({ title, highlightedText, highlightPositio
     return (
         <div className="text-center pb-6">
             <h2 className="section-title">
-                {highlightPosition === 'prefix' && highlightedText && <span className="text-(--secondary-blue)">{highlightedText} </span>}
+                {highlightPosition === 'prefix' && highlightedText && <span className="text-gradient-tech font-extrabold">{highlightedText} </span>}
                 {title}
-                {highlightPosition === 'suffix' && highlightedText && <span className="text-(--secondary-blue)"> {highlightedText}</span>}
+                {highlightPosition === 'suffix' && highlightedText && <span className="text-gradient-tech font-extrabold"> {highlightedText}</span>}
             </h2>
+            <div className="w-24 h-1 bg-linear-to-r from-blue-500 to-transparent mx-auto mt-4 rounded-full"></div>
             {subtitle && <p className="mt-2 text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
         </div>
     );

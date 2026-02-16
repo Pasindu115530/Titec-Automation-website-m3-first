@@ -20,7 +20,7 @@ export default function Contact(): JSX.Element {
                 <div className='flex flex-col gap-5 mt-12'>
                     <SectionHeader
                         title="Our"
-                        highlightedText='Office'
+                        highlightedText='OFFICE'
                         subtitle=""
                     />
                     <MapSection />
