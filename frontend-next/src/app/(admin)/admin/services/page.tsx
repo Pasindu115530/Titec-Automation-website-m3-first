@@ -232,8 +232,15 @@ export default function AdminServicesPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
                                 <label className="flex items-center gap-2 px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition text-sm text-gray-600">
                                     <Upload className="h-4 w-4" />
+                                    <span className="sr-only">Upload service category image</span>
                                     {imageFile ? imageFile.name : 'Choose file...'}
-                                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                        aria-label="Upload service category image"
+                                    />
                                 </label>
                             </div>
                             {imagePreview && (
