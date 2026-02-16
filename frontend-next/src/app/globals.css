@@ -185,6 +185,21 @@
 		@apply bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all tracking-wider;
 		font-family: 'Orbitron', sans-serif;
 	}
+
+	/* Product Detail Page */
+	.quantity-selector {
+		border-radius: 0.5rem;
+		overflow: hidden;
+	}
+
+	.similar-products-scroll {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.similar-products-scroll::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 /* Small global adjustments and component helpers */

@@ -41,3 +41,23 @@ export interface Product {
     model_number?: string;
     on_store?: boolean; // Visibility toggle for client store
 }
+
+export interface ServiceItem {
+    id: number;
+    service_category_id: number;
+    title: string;
+    description: string;
+    sort_order: number;
+}
+
+export interface ServiceCategory {
+    id: number;
+    title: string;
+    description: string;
+    image_path: string | null;
+    slug: string;
+    sort_order: number;
+    items: ServiceItem[];
+    created_at?: string;
+    updated_at?: string;
+}
