@@ -55,7 +55,7 @@ export default function AdminProductsPage() {
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">Product Management</h1>
           <p className="text-gray-500 mt-1">Manage your product catalog.</p>
         </div>
-        <Button onClick={() => setIsAddModalOpen(true)} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={() => setIsAddModalOpen(true)} className="gap-2 btn-gradient-primary border-0">
           <Plus className="h-4 w-4" />
           <span>Add New Product</span>
         </Button>

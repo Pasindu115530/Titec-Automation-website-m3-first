@@ -76,7 +76,7 @@ export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps
                                 e.stopPropagation();
                                 onAddToQuote();
                             }}
-                            className="w-full gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+                            className="w-full gap-2 btn-gradient-primary"
                         >
                             <ShoppingBag className="w-4 h-4" />
                             Add to Quotation

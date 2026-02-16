@@ -87,7 +87,8 @@ export default function BrandMarquee() {
                 {/* Centered Heading - Matched to "What We Do" Section */}
                 <div className="text-center mb-12 relative z-20">
                     <h2 className="text-4xl font-bold text-gray-800 section-title">
-                        Our <span className="text-(--secondary-blue)">BRANDS</span>
+                        Our <span className="text-gradient-tech font-extrabold">BRANDS</span>
+                        <div className="w-24 h-1 bg-linear-to-l from-blue-500 to-transparent mx-auto mt-4 rounded-full"></div>
                     </h2>
                     <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
                         We offer a wide range of intelligent electronics and automation products for modern living.

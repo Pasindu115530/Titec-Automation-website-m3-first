@@ -149,6 +149,42 @@
 	--blue-hover: #1A3A5F;
 	--cta-hover-red: #ff0008;
 	--background: #FFFFFF;
+
+	/* Tech / Status Colors */
+	--status-live: #f97316;
+	--status-online: #2563eb;
+	--tech-accent-blue: #60a5fa;
+	--tech-accent-red: #f87171;
+	--indicator-red: #ef4444;
+}
+
+@layer components {
+	.btn-gradient-primary {
+		@apply bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all;
+	}
+
+	.text-glow-blue {
+		@apply text-blue-400;
+		filter: drop-shadow(0 0 15px rgba(96, 165, 250, 0.5));
+	}
+
+	/* Tech Style Enhancements */
+	.tech-card-hover {
+		@apply hover:border-blue-400/50 transition-all duration-300;
+	}
+
+	.tech-card-hover:hover {
+		box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
+	}
+
+	.text-gradient-tech {
+		@apply bg-clip-text text-transparent bg-linear-to-r from-blue-500 to-indigo-600 drop-shadow-sm;
+	}
+
+	.btn-glass {
+		@apply bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all tracking-wider;
+		font-family: 'Orbitron', sans-serif;
+	}
 }
 
 /* Small global adjustments and component helpers */

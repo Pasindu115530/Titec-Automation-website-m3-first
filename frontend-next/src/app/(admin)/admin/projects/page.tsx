@@ -51,7 +51,7 @@ export default function ProjectsPage() {
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">Projects Management</h1>
                     <p className="text-gray-500 mt-1">Manage your portfolio of industrial automation projects.</p>
                 </div>
-                <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
+                <Button onClick={() => setIsAddModalOpen(true)} className="gap-2 btn-gradient-primary border-0">
                     <FolderPlus className="h-4 w-4" />
                     <span>Add New Project</span>
                 </Button>
