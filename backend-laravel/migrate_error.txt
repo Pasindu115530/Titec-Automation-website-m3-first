@@ -1,25 +1,25 @@
-
+﻿
    INFO  Running migrations.  
 
-  2026_02_14_234920_create_brands_table  490.60ms FAIL
+  2026_02_16_create_services_tables  487.69ms FAIL
 
    Illuminate\Database\QueryException 
 
-  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'brands' already exists (Connection: mysql, SQL: create table `brands` (`id` bigint unsigned not null auto_increment primary key, `name` varchar(255) not null, `slug` varchar(255) not null, `logo_path` varchar(255) null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'service_categories' already exists (Connection: mysql, SQL: create table `service_categories` (`id` bigint unsigned not null auto_increment primary key, `title` varchar(255) not null, `description` text null, `image_path` varchar(255) null, `slug` varchar(255) not null, `sort_order` int not null default '0', `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
 
   at vendor\laravel\framework\src\Illuminate\Database\Connection.php:826
-    822???                     $this->getName(), $query, $this->prepareBindings($bindings), $e
-    823???                 );
-    824???             }
-    825??? 
-  ??? 826???             throw new QueryException(
-    827???                 $this->getName(), $query, $this->prepareBindings($bindings), $e
-    828???             );
-    829???         }
-    830???     }
+    822Γûò                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    823Γûò                 );
+    824Γûò             }
+    825Γûò 
+  Γ₧£ 826Γûò             throw new QueryException(
+    827Γûò                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    828Γûò             );
+    829Γûò         }
+    830Γûò     }
 
   1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
-      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'brands' already exists")
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'service_categories' already exists")
 
   2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
       PDOStatement::execute()

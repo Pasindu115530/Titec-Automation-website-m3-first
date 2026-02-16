@@ -13,7 +13,8 @@ import {
     X,
     Package,
     FileText,
-    LayoutGrid
+    LayoutGrid,
+    Wrench
 } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming you have utils
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,9 @@ export default function AdminLayout({
         // Products
         { name: 'Products Management', icon: Package, href: '/admin/products' },
         { name: 'Brands Management', icon: LayoutGrid, href: '/admin/brands' },
+
+        // Services
+        { name: 'Services Management', icon: Wrench, href: '/admin/services' },
 
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
     ];
