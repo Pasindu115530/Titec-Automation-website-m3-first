@@ -9,7 +9,7 @@ export const productService = {
             if (admin) params.admin = 'true'; // Include all products for admin
 
             const response = await api.get<{ data: Product[] }>('/api/products', { params });
-            return response.data.data;
+            return response.data?.data ?? [];
         } catch (error) {
             // Only log errors in development, not during build
             if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
