@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class BrandController extends Controller
 {
@@ -24,14 +24,17 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|max:2048', // 2MB Max
+            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm|max:10240', // 10MB Max
         ]);
 
         $slug = Str::slug($request->name);
         $logoPath = null;
 
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('brands', 'public');
+            $file = $request->file('logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('brands'), $filename);
+            $logoPath = 'brands/' . $filename;
         }
 
         $brand = Brand::create([
@@ -58,7 +61,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm|max:10240',
         ]);
 
         $brand->name = $request->name;
@@ -66,10 +69,14 @@ class BrandController extends Controller
 
         if ($request->hasFile('logo')) {
             // Delete old logo if exists
-            if ($brand->logo_path) {
-                Storage::disk('public')->delete($brand->logo_path);
+            if ($brand->logo_path && File::exists(public_path($brand->logo_path))) {
+                File::delete(public_path($brand->logo_path));
             }
-            $brand->logo_path = $request->file('logo')->store('brands', 'public');
+            
+            $file = $request->file('logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('brands'), $filename);
+            $brand->logo_path = 'brands/' . $filename;
         }
 
         $brand->save();
@@ -82,8 +89,8 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
-        if ($brand->logo_path) {
-             Storage::disk('public')->delete($brand->logo_path);
+        if ($brand->logo_path && File::exists(public_path($brand->logo_path))) {
+             File::delete(public_path($brand->logo_path));
         }
         $brand->delete();
 
