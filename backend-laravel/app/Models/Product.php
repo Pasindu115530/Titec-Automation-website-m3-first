@@ -24,6 +24,7 @@ class Product extends Model
         'datasheet_path',
         'stock_status',
         'on_store',
+        'brand_id',
     ];
 
     protected $casts = [
@@ -31,6 +32,10 @@ class Product extends Model
         'price' => 'decimal:2',
         'on_store' => 'boolean',
     ];
+
+    public function brand() {
+        return $this->belongsTo(Brand::class);
+    }
 
     // Relationship: A product can belong to many quotation requests
     public function quotationRequests()

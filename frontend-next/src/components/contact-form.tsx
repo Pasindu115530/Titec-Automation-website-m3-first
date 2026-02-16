@@ -166,6 +166,7 @@ export default function ContactForm() {
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                                 <input
+                                    required
                                     type="tel"
                                     value={phone}
                                     onChange={e => { setPhone(e.target.value); if (errors.phone) setErrors({ ...errors, phone: false }); }}

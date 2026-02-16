@@ -1,0 +1,26 @@
+
+   INFO  Running migrations.  
+
+  2026_02_14_234920_create_brands_table  490.60ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'brands' already exists (Connection: mysql, SQL: create table `brands` (`id` bigint unsigned not null auto_increment primary key, `name` varchar(255) not null, `slug` varchar(255) not null, `logo_path` varchar(255) null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:826
+    822???                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    823???                 );
+    824???             }
+    825??? 
+  ??? 826???             throw new QueryException(
+    827???                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    828???             );
+    829???         }
+    830???     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'brands' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOStatement::execute()
+
