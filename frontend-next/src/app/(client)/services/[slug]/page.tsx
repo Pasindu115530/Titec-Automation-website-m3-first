@@ -1,40 +1,70 @@
-import { SERVICES } from "@/data/serviceData";
-import { notFound } from "next/navigation";
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { serviceService } from "@/services/serviceService";
+import { ServiceCategory } from "@/types";
 import Footer from "@/components/footer";
+import Loader from "@/components/loader";
 
-interface PageProps {
-    params: Promise<{
-        slug: string;
-    }>;
-}
+export default function ServiceDetailPage() {
+    const params = useParams();
+    const slug = params.slug as string;
 
-export async function generateStaticParams() {
-    return SERVICES.map((service) => ({
-        slug: service.slug,
-    }));
-}
+    const [service, setService] = useState<ServiceCategory | null>(null);
+    const [loading, setLoading] = useState(true);
 
-export default async function ServiceDetailPage({ params }: PageProps) {
-    const { slug } = await params;
-    const service = SERVICES.find((s) => s.slug === slug);
+    useEffect(() => {
+        const fetchService = async () => {
+            setLoading(true);
+            try {
+                const data = await serviceService.getServiceBySlug(slug);
+                setService(data);
+            } catch (error) {
+                console.error("Failed to fetch service:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (slug) {
+            fetchService();
+        }
+    }, [slug]);
+
+    if (loading) {
+        return <Loader />;
+    }
 
     if (!service) {
-        notFound();
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Service Not Found</h1>
+                    <p className="text-gray-600">The service you are looking for does not exist.</p>
+                    <a href="/" className="mt-4 inline-block text-blue-600 hover:underline">Go back home</a>
+                </div>
+            </div>
+        );
     }
+
+    const imageUrl = service.image_path
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${service.image_path}`
+        : null;
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
             {/* Hero Section */}
             <section className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center">
-                <Image
-                    src={service.image}
-                    alt={service.title}
-                    fill
-                    sizes="100vw"
-                    className="object-cover"
-                    priority
-                />
+                {imageUrl ? (
+                    <img
+                        src={imageUrl}
+                        alt={service.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-gray-800" />
+                )}
                 <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"></div>
                 <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
                     <h1 className="text-4xl md:text-6xl font-black text-white font-orbitron tracking-widest drop-shadow-lg mb-4 uppercase">
@@ -74,7 +104,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {service.items.map((item, index) => (
                             <div
-                                key={index}
+                                key={item.id}
                                 className="bg-white p-8 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group"
                             >
                                 <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300">
