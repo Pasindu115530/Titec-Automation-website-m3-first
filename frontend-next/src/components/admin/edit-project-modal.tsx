@@ -338,7 +338,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                 )}
                                 <input
                                     type="file"
-                                    accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif, image/webp"
+                                    accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif, image/webp, video/webm, .svg, .xml, .webm"
                                     onChange={handleLogoChange}
                                     className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                                 />
@@ -406,7 +406,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
 
                     <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
                         <Button variant="outline" onClick={onClose}>Cancel</Button>
-                        <Button onClick={handleSubmit} disabled={isLoading}>
+                        <Button onClick={handleSubmit} disabled={isLoading} className="btn-gradient-primary border-0">
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>

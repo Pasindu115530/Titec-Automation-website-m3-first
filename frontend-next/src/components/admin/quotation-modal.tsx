@@ -241,7 +241,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 <ArrowLeft className="h-4 w-4" /> Back to Edit
                             </Button>
                             <div className="flex gap-2">
-                                <Button onClick={handleSubmit} disabled={isSending} className="gap-2">
+                                <Button onClick={handleSubmit} disabled={isSending} className="gap-2 btn-gradient-primary border-0">
                                     {isSending ? 'Sending...' : (
                                         <>
                                             <Send className="h-4 w-4" />
@@ -584,7 +584,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 <Eye className="h-4 w-4" /> Preview
                             </Button>
                         )}
-                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="gap-2">
+                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="gap-2 btn-gradient-primary border-0">
                             {isSending ? 'Sending...' : (
                                 <>
                                     <Send className="h-4 w-4" />

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, ImageIcon } from 'lucide-react';
+import DeleteConfirmationModal from './delete-confirmation-modal';
 import { Brand } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
 import { brandService } from '@/services/brandService';
@@ -15,21 +16,13 @@ interface BrandsTableProps {
 }
 
 export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: BrandsTableProps) {
-    const [deleteId, setDeleteId] = useState<number | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [brandToDelete, setBrandToDelete] = useState<Brand | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const openDeleteConfirm = (brand: Brand) => {
+    const openDeleteModal = (brand: Brand) => {
         setBrandToDelete(brand);
-        setDeleteConfirmOpen(true);
-        setDeleteId(null);
-    };
-
-    const closeDeleteConfirm = () => {
-        setDeleteConfirmOpen(false);
-        setBrandToDelete(null);
-        setDeleteId(null);
+        setDeleteModalOpen(true);
     };
 
     const handleDelete = async () => {
@@ -38,13 +31,14 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
         try {
             await brandService.deleteBrand(brandToDelete.id);
             toast.success('Brand deleted successfully');
-            closeDeleteConfirm();
+            setDeleteModalOpen(false);
             onRefresh();
         } catch (error) {
             console.error(error);
             toast.error('Failed to delete brand');
         } finally {
             setIsDeleting(false);
+            setBrandToDelete(null);
         }
     };
 
@@ -99,10 +93,15 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => openDeleteConfirm(brand)}
+                                                    onClick={() => openDeleteModal(brand)}
                                                     className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    disabled={isDeleting && brandToDelete?.id === brand.id}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    {isDeleting && brandToDelete?.id === brand.id ? (
+                                                        <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        <Trash2 className="h-4 w-4" />
+                                                    )}
                                                 </Button>
                                             </div>
                                         </td>
@@ -112,38 +111,16 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div >
 
-            {/* Delete Confirmation Modal */}
-            {deleteConfirmOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-                        <div className="p-6 border-b">
-                            <h3 className="text-lg font-semibold text-red-600">Delete Brand</h3>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            <p className="text-sm text-gray-700">
-                                Are you sure you want to delete <strong>{brandToDelete?.name}</strong>?
-                            </p>
-                            <p className="text-sm text-red-600 font-medium">
-                                This action cannot be undone.
-                            </p>
-                        </div>
-                        <div className="p-4 bg-gray-50 flex justify-end gap-2 rounded-b-xl">
-                            <Button variant="outline" onClick={closeDeleteConfirm} disabled={isDeleting}>
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={handleDelete}
-                                disabled={isDeleting}
-                                className="bg-red-600 hover:bg-red-700"
-                            >
-                                {isDeleting ? 'Deleting...' : 'Delete'}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                itemName={brandToDelete?.name || ''}
+                itemType="Brand"
+                isDeleting={isDeleting}
+            />
         </>
     );
 }

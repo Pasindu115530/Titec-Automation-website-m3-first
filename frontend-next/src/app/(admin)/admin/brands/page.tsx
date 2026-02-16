@@ -55,7 +55,7 @@ export default function AdminBrandsPage() {
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">Brand Management</h1>
                     <p className="text-gray-500 mt-1">Manage partner brands and logos.</p>
                 </div>
-                <Button onClick={() => setIsModalOpen(true)} className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+                <Button onClick={() => setIsModalOpen(true)} className="gap-2 btn-gradient-primary border-0">
                     <Plus className="h-4 w-4" />
                     <span>Add New Brand</span>
                 </Button>

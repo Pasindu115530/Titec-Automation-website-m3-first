@@ -140,7 +140,7 @@ export default function AddBrandModal({ isOpen, onClose, onSuccess, brandToEdit 
                             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isLoading} className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button type="submit" disabled={isLoading} className="btn-gradient-primary border-0">
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {brandToEdit ? 'Update Brand' : 'Create Brand'}
                             </Button>

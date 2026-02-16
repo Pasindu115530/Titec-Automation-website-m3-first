@@ -135,7 +135,7 @@ export default function AdminQuotationsPage() {
                             setSelectedRequest(null); // Clear selected request for direct mode
                             setIsModalOpen(true);
                         }}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors"
+                        className="px-4 py-2 btn-gradient-primary text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg border-0"
                     >
                         Create Direct Quote
                     </button>
