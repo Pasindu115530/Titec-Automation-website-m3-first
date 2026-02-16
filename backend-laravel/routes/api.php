@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\ServiceController;
 
 // Registration route
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,6 +21,8 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/brands', [BrandController::class, 'index']);
 Route::get('/brands/{brand}', [BrandController::class, 'show']);
+Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services/{slug}', [ServiceController::class, 'show']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -44,6 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/brands', [BrandController::class, 'store']);
     Route::put('/brands/{brand}', [BrandController::class, 'update']);
     Route::delete('/brands/{brand}', [BrandController::class, 'destroy']);
+
+    // Service routes (admin only)
+    Route::post('/services', [ServiceController::class, 'store']);
+    Route::put('/services/{service}', [ServiceController::class, 'update']);
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
 
     // Quotation routes (admin only)
     Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Loader from "@/components/loader";
 import Footer from "@/components/footer";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Search, Package } from "lucide-react";
+import { Search, Package, Tag } from "lucide-react";
 import { Product } from "@/types";
 import { ProductCard } from "@/components/client/product-card";
 import { productService } from "@/services/productService";
@@ -18,19 +18,17 @@ interface StoreClientProps {
 }
 
 export default function StoreClient({ initialProducts }: StoreClientProps) {
-    // We start with initialProducts. 
-    // If the user searches, we might need to fetch manually or filter locally if data is small?
-    // The original code fetched based on debounced search. 
-    // We can keep that behavior: initial fetch is SSR, subsequent searches are CSR.
-
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const { addItem } = useCart();
     const { isAdmin } = useAuth();
 
-    // Maintain filtering logic
+    // Search state
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Brand filter state
+    const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -40,13 +38,7 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
     }, [searchQuery]);
 
     useEffect(() => {
-        // Skip first effect run if we have initial products and no search query?
-        // Actually, if debouncedSearch changes, we fetch. 
-        // If it's empty string initially, do we re-fetch?
-        // Let's avoid re-fetching if query is empty and we have initial products.
-
         if (debouncedSearch === '' && initialProducts.length > 0 && products.length === initialProducts.length) {
-            // This is a naive check. A better way is to check if we just mounted.
             return;
         }
 
@@ -62,20 +54,32 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
             }
         };
 
-        // Only fetch if we have a search query OR if we want to refresh?
-        // For accurate search, we must fetch.
         if (debouncedSearch !== '' || (products.length === 0 && initialProducts.length === 0)) {
             fetchProducts();
         } else if (debouncedSearch === '' && products !== initialProducts) {
-            // If we cleared search, revert to initial? Or re-fetch?
-            // The backend might return different data if we just call getProducts('');
-            // But usually it returns all. 
-            // Let's just fetch to be safe if we are navigating back to empty search from non-empty.
             fetchProducts();
         }
 
     }, [debouncedSearch]);
 
+    // Extract unique brands from products (sorted alphabetically)
+    const uniqueBrands = useMemo(() => {
+        const brands = products
+            .map(p => p.brand)
+            .filter((b): b is string => !!b && b.trim() !== '');
+        return [...new Set(brands)].sort((a, b) => a.localeCompare(b));
+    }, [products]);
+
+    // Filter products by selected brand
+    const filteredProducts = useMemo(() => {
+        if (!selectedBrand) return products;
+        return products.filter(p => p.brand === selectedBrand);
+    }, [products, selectedBrand]);
+
+    // Reset brand filter when search changes
+    useEffect(() => {
+        setSelectedBrand(null);
+    }, [debouncedSearch]);
 
     const handleAddToQuotation = (product: Product) => {
         addItem({
@@ -115,11 +119,48 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                     </div>
                 </div>
 
-                {products.length === 0 && !loading ? (
+                {/* Brand Filter Bar */}
+                {uniqueBrands.length > 0 && (
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Tag className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Filter by Brand</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setSelectedBrand(null)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${selectedBrand === null
+                                        ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
+                                    }`}
+                            >
+                                All
+                            </button>
+                            {uniqueBrands.map(brand => (
+                                <button
+                                    key={brand}
+                                    onClick={() => setSelectedBrand(brand === selectedBrand ? null : brand)}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${selectedBrand === brand
+                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
+                                        }`}
+                                >
+                                    {brand}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {filteredProducts.length === 0 && !loading ? (
                     <div className="text-center py-20 bg-gray-50 rounded-lg">
                         <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-medium text-gray-600">No products found</h3>
-                        <p className="text-gray-500 mt-2">Try adjusting your search terms.</p>
+                        <p className="text-gray-500 mt-2">
+                            {selectedBrand
+                                ? `No products found for brand "${selectedBrand}". Try selecting a different brand.`
+                                : 'Try adjusting your search terms.'}
+                        </p>
                     </div>
                 ) : (
                     loading ? <Loader /> : (
@@ -127,9 +168,12 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                             {debouncedSearch ? (
                                 // Search Results (Flat Grid)
                                 <div className="space-y-6">
-                                    <h2 className="text-xl font-semibold text-gray-700">Search Results</h2>
+                                    <h2 className="text-xl font-semibold text-gray-700">
+                                        Search Results
+                                        {selectedBrand && <span className="text-indigo-600"> — {selectedBrand}</span>}
+                                    </h2>
                                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                        {products.map(p => (
+                                        {filteredProducts.map(p => (
                                             <ProductCard
                                                 key={p.id}
                                                 product={p}
@@ -143,7 +187,7 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                                 // Category Sections
                                 <div className="space-y-12">
                                     {Object.entries(
-                                        products.reduce((acc, product) => {
+                                        filteredProducts.reduce((acc, product) => {
                                             const cat = product.category || 'Uncategorized';
                                             if (!acc[cat]) acc[cat] = [];
                                             acc[cat].push(product);
