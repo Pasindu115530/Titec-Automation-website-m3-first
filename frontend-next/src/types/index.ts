@@ -14,13 +14,24 @@ export interface Project {
     updated_at: string;
 }
 
+export interface Brand {
+    id: number;
+    name: string;
+    slug: string;
+    logo_path?: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface Product {
     id: string;
     name: string;
     price: number;
     description: string; // mapped from 'desc' in backend if needed, or 'description'
     category: string;
-    brand?: string;
+    brand?: string; // Legacy string
+    brand_id?: number; // New relation
+    brand_details?: Brand; // Expanded relation
     image?: string; // Legacy fallback
     images?: string[]; // New multiple images support
     datasheet_path?: string;

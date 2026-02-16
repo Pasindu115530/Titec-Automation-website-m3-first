@@ -136,8 +136,9 @@ export default function ContactForm() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">Phone Number</label>
+                                <label className="block text-sm font-medium text-slate-700">Phone Number <span className="text-red-500">*</span></label>
                                 <input
+                                    required
                                     value={phone}
                                     onChange={e => setPhone(e.target.value)}
                                     className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"

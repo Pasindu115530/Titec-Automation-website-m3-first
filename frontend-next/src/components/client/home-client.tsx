@@ -13,6 +13,7 @@ import { useCart } from "@/context/CartContext";
 import { getImageUrl } from "@/utils/image-utils";
 import { projectService } from "@/services/projectService";
 import ClientMarquee from "@/components/client/client-marquee";
+import BrandMarquee from "./brand-marquee";
 
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
@@ -274,7 +275,8 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
 
             {/* Our Clients Section */}
             <ClientMarquee projects={projects} />
-
+            {/* Our Brands Section */}
+            <BrandMarquee />
 
             {/* What We Do Section */}
             <section className="py-12">
