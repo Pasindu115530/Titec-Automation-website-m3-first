@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Wrench, Plus, Trash2, Edit, Save, X, Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { Wrench, Plus, Trash2, Edit, Save, X, Upload } from 'lucide-react';
 import { serviceService } from '@/services/serviceService';
 import { ServiceCategory } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
