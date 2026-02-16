@@ -266,7 +266,7 @@ class ProductController extends Controller
                 'message' => 'Product deleted successfully'
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() === '23000') {
+            if ((string) $e->getCode() === '23000') {
                 return response()->json([
                     'message' => 'Cannot delete this product because it is referenced by one or more quotation requests.'
                 ], 409);
