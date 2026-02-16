@@ -378,7 +378,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
 
                     <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
                         <Button variant="outline" onClick={onClose}>Cancel</Button>
-                        <Button onClick={handleSubmit} disabled={isLoading}>
+                        <Button onClick={handleSubmit} disabled={isLoading} className="btn-gradient-primary border-0">
                             {isLoading ? 'Creating...' : 'Create Product'}
                         </Button>
                     </div>

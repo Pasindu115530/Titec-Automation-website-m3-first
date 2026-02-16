@@ -76,16 +76,16 @@ export default function AdminLayout({
                     x: isSidebarOpen ? 0 : -100
                 }}
                 className={cn(
-                    "fixed lg:static inset-y-0 left-0 z-30 bg-white border-r border-gray-200 overflow-hidden flex flex-col transition-all duration-300",
+                    "fixed lg:static inset-y-0 left-0 z-30 bg-[#000619] border-r border-white/10 overflow-hidden flex flex-col transition-all duration-300",
                     !isSidebarOpen && "lg:w-0 lg:border-none"
                 )}
             >
-                <div className="p-6 border-b border-gray-100 flex items-center justify-between min-w-[16rem]">
+                <div className="p-6 border-b border-white/10 flex items-center justify-between min-w-[16rem]">
                     <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
+                        <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.5)]">
                             T
                         </div>
-                        <span className="font-bold text-xl text-gray-800">Admin</span>
+                        <span className="font-bold text-xl text-white font-orbitron tracking-wider">Titec Admin</span>
                     </div>
                     <Button variant="ghost" size="icon" onClick={toggleSidebar} className="lg:hidden">
                         <X className="h-5 w-5" />
@@ -99,13 +99,13 @@ export default function AdminLayout({
                             <Link key={item.name} href={item.href}>
                                 <span
                                     className={cn(
-                                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer",
                                         isActive
-                                            ? "bg-indigo-50 text-indigo-600"
-                                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                            ? "bg-blue-900/40 text-blue-400 border-l-2 border-blue-500"
+                                            : "text-gray-400 hover:bg-white/5 hover:text-white"
                                     )}
                                 >
-                                    <item.icon className={cn("h-5 w-5", isActive ? "text-indigo-600" : "text-gray-400")} />
+                                    <item.icon className={cn("h-5 w-5", isActive ? "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" : "text-gray-500")} />
                                     {item.name}
                                 </span>
                             </Link>
@@ -113,7 +113,7 @@ export default function AdminLayout({
                     })}
                 </nav>
 
-                <div className="p-4 border-t border-gray-100 min-w-[16rem]">
+                <div className="p-4 border-t border-white/10 min-w-[16rem]">
                     <button
                         onClick={logout}
                         className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
@@ -127,13 +127,13 @@ export default function AdminLayout({
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Top Header */}
-                <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 justify-between lg:justify-end">
+                <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-16 flex items-center px-6 justify-between lg:justify-end sticky top-0 z-20">
                     <Button variant="ghost" size="icon" onClick={toggleSidebar} className={cn("lg:hidden mr-auto", isSidebarOpen && "hidden")}>
                         <Menu className="h-6 w-6" />
                     </Button>
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-gray-500">{user?.firstName} {user?.lastName}</span>
-                        <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold">
+                        <div className="h-8 w-8 rounded-full bg-linear-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-semibold shadow-md">
                             {user?.firstName?.[0]}{user?.lastName?.[0]}
                         </div>
                     </div>

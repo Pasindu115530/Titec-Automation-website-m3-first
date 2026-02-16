@@ -84,12 +84,12 @@ export default function AdminDashboard() {
         <div className="space-y-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">Dashboard</h1>
+                    <h1 className="text-3xl font-bold text-gradient-tech font-orbitron">Dashboard</h1>
                     <p className="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
                 </div>
                 <div className="flex gap-2">
                     <Link href="/admin/quotations">
-                        <Button>View Quotations</Button>
+                        <Button className="btn-gradient-primary border-0">View Quotations</Button>
                     </Link>
                 </div>
             </div>
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                     >
-                        <Card className="hover:shadow-md transition-shadow">
+                        <Card className="tech-card-hover border-gray-100/50 shadow-sm">
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
                                     <div className={`p-2 rounded-lg ${stat.trend === 'up' ? 'bg-indigo-50 text-indigo-600' : 'bg-red-50 text-red-600'}`}>

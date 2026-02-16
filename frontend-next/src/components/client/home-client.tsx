@@ -231,7 +231,7 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         {/* Subtext */}
                         <div className={`max-w-[800px] hidden md:block transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <p className="text-sm text-gray-600 mb-8 leading-relaxed font-mono">
-                                We deliver high-precision industrial automation solutions that <br/> help
+                                We deliver high-precision industrial automation solutions that help
                                 <strong className="text-gray-900"> Sri Lankan manufacturers </strong>
                                 operate smarter, faster, and with greater reliability. From PLCs to robotics,
                                   and machinery integration, we combine global-grade engineering with Our expertise 

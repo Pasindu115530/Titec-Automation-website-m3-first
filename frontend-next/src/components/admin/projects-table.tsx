@@ -4,6 +4,7 @@ import { Edit2, Trash2, Calendar, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProjectModal from './edit-project-modal';
+import DeleteConfirmationModal from './delete-confirmation-modal';
 import Loader from '@/components/loader';
 import { getImageUrl } from '@/utils/image-utils';
 
@@ -28,28 +29,33 @@ import { toast } from 'sonner';
 export default function ProjectsTable({ projects, onRefresh, isLoading }: ProjectsTableProps) {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
 
+    const openDeleteModal = (project: Project) => {
+        setProjectToDelete(project);
+        setDeleteModalOpen(true);
+    };
 
-    const handleDelete = async (id: number) => {
-        // ... (auth checks omitted for brevity in replacement if unchanged, but I need to include context to replace correctly)
+    const handleDelete = async () => {
+        if (!projectToDelete) return;
+
         // Check for admin role in localStorage
         const userStr = localStorage.getItem('user');
         // ... existing auth logic ...
 
-        if (!window.confirm('Are you sure you want to permanently delete this project?')) {
-            return;
-        }
-
         try {
-            setDeletingId(id);
-            await api.delete(`/api/projects/${id}`);
+            setDeletingId(projectToDelete.id);
+            await api.delete(`/api/projects/${projectToDelete.id}`);
             toast.success('Project deleted successfully');
+            setDeleteModalOpen(false);
             onRefresh();
         } catch (error) {
             console.error('Failed to delete project', error);
             toast.error('Failed to delete project. You might not have permission.');
         } finally {
             setDeletingId(null);
+            setProjectToDelete(null);
         }
     };
 
@@ -112,7 +118,7 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                                 ${(project.status || '').toLowerCase() === 'completed' ? 'bg-green-100 text-green-800' :
                                                     (project.status || '').toLowerCase() === 'in progress' ? 'bg-blue-100 text-blue-600' :
                                                         (project.status || '').toLowerCase() === 'maintenance' ? 'bg-blue-100 text-red-600' :
-                                                        'bg-gray-100 text-gray-800'}`}>
+                                                            'bg-gray-100 text-gray-800'}`}>
                                                 {(project.status || '').toLowerCase() === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
                                                 {project.status}
                                             </span>
@@ -137,7 +143,7 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                                     variant="ghost"
                                                     size="sm"
                                                     className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                    onClick={() => handleDelete(project.id)}
+                                                    onClick={() => openDeleteModal(project)}
                                                     disabled={deletingId === project.id}
                                                 >
                                                     {deletingId === project.id ? (
@@ -161,6 +167,15 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                 onClose={() => setEditingProject(null)}
                 project={editingProject}
                 onSuccess={onRefresh}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                itemName={projectToDelete?.title || ''}
+                itemType="Project"
+                isDeleting={!!deletingId}
             />
         </>
     );
