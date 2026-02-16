@@ -24,7 +24,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm|max:10240', // 10MB Max
+            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm,gif,xml|max:10240',
         ]);
 
         $slug = Str::slug($request->name);
@@ -61,7 +61,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm|max:10240',
+            'logo' => 'nullable|mimes:svg,png,jpg,jpeg,webm,gif,xml|max:10240',
         ]);
 
         $brand->name = $request->name;

@@ -127,7 +127,7 @@ export default function AddBrandModal({ isOpen, onClose, onSuccess, brandToEdit 
                                     <Input
                                         id="logo"
                                         type="file"
-                                        accept=".svg, .png, .jpg, .jpeg, .webm, image/*"
+                                        accept=".svg, .png, .jpg, .jpeg, .webm, .gif, image/*"
                                         onChange={handleFileChange}
                                         className="text-xs"
                                     />
