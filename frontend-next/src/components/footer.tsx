@@ -38,7 +38,9 @@ export default function Footer() {
                     <div>
                         <h4 className="text-xl font-bold mb-4">Titec Automation</h4>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Industrial automation solutions and services.
+                            With a commitment to excellence and a passion for innovation, TiTec Automation Solutions 
+                            ensures that your automation needs are met with precision and expertise. Our goal is to empower 
+                            your business with advanced automation technologies that drive success and growth. 
                         </p>
                     </div>
 

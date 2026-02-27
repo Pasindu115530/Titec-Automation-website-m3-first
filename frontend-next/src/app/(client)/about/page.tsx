@@ -11,48 +11,58 @@ export default function About() {
             <AboutHero />
 
             {/* Mission / Vision / Values Section */}
-            <section className="py-20 px-6 bg-gray-50">
-                <div className="container mx-auto max-w-6xl">
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {/* Mission */}
-                        <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                            <div className="w-14 h-14 bg-[#0C2340] rounded-2xl flex items-center justify-center mb-6 text-white">
-                                <Target className="w-7 h-7" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-[#0C2340] mb-4">Our Mission</h3>
-                            <p className="text-gray-600 leading-relaxed">
-                                Deliver practical automation that drives measurable ROI for customers.
-                            </p>
-                        </div>
-
+            <section className="py-16 px-6 bg-gray-50">
+                <div className="container mx-auto max-w-3xl">
+                    <div className="flex flex-col gap-4">
                         {/* Vision */}
-                        <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                            <div className="w-14 h-14 bg-[#0C2340] rounded-2xl flex items-center justify-center mb-6 text-white">
-                                <Eye className="w-7 h-7" />
+                        <div className="bg-white p-7 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow min-h-[160px] flex flex-col justify-center">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-11 h-11 bg-[#0C2340] rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                                    <Eye className="w-5 h-5" />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#0C2340] tracking-wide">OUR VISION</h3>
                             </div>
-                            <h3 className="text-2xl font-bold text-[#0C2340] mb-4">Our Vision</h3>
-                            <p className="text-gray-600 leading-relaxed">
-                                Be the trusted partner for digital transformation in industrial operations.
+                            <p className="text-gray-600 leading-relaxed text-[15px]">
+                                Empowering Tomorrow&apos;s World through Innovative Automation
                             </p>
                         </div>
 
-                        {/* Values */}
-                        <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                            <div className="w-14 h-14 bg-[#0C2340] rounded-2xl flex items-center justify-center mb-6 text-white">
-                                <Heart className="w-7 h-7" />
+                        {/* Mission */}
+                        <div className="bg-white p-7 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow min-h-[160px] flex flex-col justify-center">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-11 h-11 bg-[#0C2340] rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                                    <Target className="w-5 h-5" />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#0C2340] tracking-wide">OUR MISSION</h3>
                             </div>
-                            <h3 className="text-2xl font-bold text-[#0C2340] mb-4">Core Values</h3>
-                            <ul className="space-y-4">
-                                <li className="flex items-center gap-3 text-gray-600">
-                                    <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                            <p className="text-gray-600 leading-relaxed text-[15px]">
+                                To be the trusted leader in automation and energy solutions, dedicated to
+                                driving innovation, sustainability, and excellence in every project. We aim to
+                                enrich the lives of our clients, employees, and communities while delivering
+                                innovative solutions that adapt to the ever-evolving needs of a rapidly changing
+                                world.
+                            </p>
+                        </div>
+
+                        {/* Core Values */}
+                        <div className="bg-white p-7 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow min-h-[160px] flex flex-col justify-center">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-11 h-11 bg-[#0C2340] rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                                    <Heart className="w-5 h-5" />
+                                </div>
+                                <h3 className="text-xl font-bold text-[#0C2340] tracking-wide">CORE VALUES</h3>
+                            </div>
+                            <ul className="space-y-3">
+                                <li className="flex items-center gap-3 text-gray-600 text-[15px]">
+                                    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                     <span>Safety first</span>
                                 </li>
-                                <li className="flex items-center gap-3 text-gray-600">
-                                    <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                                <li className="flex items-center gap-3 text-gray-600 text-[15px]">
+                                    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                     <span>Customer success</span>
                                 </li>
-                                <li className="flex items-center gap-3 text-gray-600">
-                                    <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                                <li className="flex items-center gap-3 text-gray-600 text-[15px]">
+                                    <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                     <span>Continuous improvement</span>
                                 </li>
                             </ul>

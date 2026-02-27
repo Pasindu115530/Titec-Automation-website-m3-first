@@ -62,7 +62,11 @@ export default function AboutHero() {
                     className="max-w-3xl mx-auto"
                 >
                     <p className="text-lg text-gray-300 leading-relaxed">
-                        We design and deliver industrial automation solutions that help manufacturers improve reliability, efficiency, and safety. Our team blends hardware, controls and software expertise to deliver turnkey systems.
+                        TiTec Automation Solutions is a dynamic and forward-thinking company 
+                        that specializes in providing state-of-the-art automation solutions to clients 
+                        in various industries. With a strong emphasis on innovation and 
+                        sustainability, we offer a comprehensive range of services to meet the 
+                        evolving needs of our clients.
                     </p>
                 </motion.div>
             </div>
