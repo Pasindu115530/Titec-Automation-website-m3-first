@@ -211,7 +211,7 @@ export default function AdminQuotationsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-500">
-                                            {q.products?.length || 0} items
+                                            {q.products?.length || 0}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-500 truncate max-w-xs">
                                             {q.customer_notes || '-'}
