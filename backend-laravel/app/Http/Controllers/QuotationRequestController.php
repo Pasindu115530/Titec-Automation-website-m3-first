@@ -38,7 +38,7 @@ class QuotationRequestController extends Controller
 
         // Concatenate contact info with the message for notes, but also store separately
         // We keep message in notes for now as per original design or just store message
-        $fullMessage = "Message: " . ($validated['message'] ?? '');
+        $fullMessage = ($validated['message'] ?? '');
 
         // 1. Create the Request "Header"
         $quoteRequest = QuotationRequest::create([
