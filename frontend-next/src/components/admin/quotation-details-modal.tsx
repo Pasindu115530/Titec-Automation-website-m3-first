@@ -88,31 +88,31 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
                     </Button>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-4 sm:p-6 space-y-6">
                     {/* Customer Details */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
                             <label className="block text-sm font-medium text-gray-500">Customer Name</label>
-                            <div className="mt-1 text-lg font-medium">{quotation.name}</div>
+                            <div className="text-base sm:text-lg font-medium">{quotation.name}</div>
                         </div>
-                        <div>
+                        <div className="space-y-1">
                             <label className="block text-sm font-medium text-gray-500">Email</label>
-                            <div className="mt-1">{quotation.email}</div>
+                            <div className="break-all">{quotation.email}</div>
                         </div>
-                        <div>
+                        <div className="space-y-1">
                             <label className="block text-sm font-medium text-gray-500">Phone</label>
-                            <div className="mt-1">{quotation.phone || 'N/A'}</div>
+                            <div>{quotation.phone || 'N/A'}</div>
                         </div>
-                        <div>
+                        <div className="space-y-1">
                             <label className="block text-sm font-medium text-gray-500">Date Requested</label>
-                            <div className="mt-1">{new Date(quotation.created_at).toLocaleDateString()}</div>
+                            <div>{new Date(quotation.created_at).toLocaleDateString()}</div>
                         </div>
                     </div>
 
                     <div className="border-t pt-4">
                         <h3 className="font-semibold mb-3">Requested Items (Bill)</h3>
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <table className="w-full text-left">
+                        <div className="bg-gray-50 rounded-lg p-2 sm:p-4 border border-gray-100 overflow-x-auto shadow-sm">
+                            <table className="w-full text-left min-w-[600px]">
                                 <thead>
                                     <tr>
                                         <th className="pb-2 text-sm font-medium text-gray-500">Item</th>
@@ -157,8 +157,8 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 p-4 border-t bg-gray-50">
-                    <Button variant="outline" onClick={onClose}>
+                <div className="flex flex-wrap sm:flex-nowrap justify-end gap-3 p-4 border-t bg-gray-50 rounded-b-lg">
+                    <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-last sm:order-first">
                         Close
                     </Button>
                     {quotation.status === 'pending' && (
@@ -167,7 +167,7 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
                                 variant="destructive"
                                 onClick={handleReject}
                                 disabled={loading}
-                                className="bg-red-600 hover:bg-red-700 text-white"
+                                className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
                             >
                                 <XCircle className="mr-2 h-4 w-4" />
                                 Reject
@@ -175,7 +175,7 @@ export default function QuotationDetailsModal({ isOpen, onClose, quotation, onSu
                             <Button
                                 onClick={handleSend}
                                 disabled={loading}
-                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
                             >
                                 <Send className="mr-2 h-4 w-4" />
                                 Send Quotation

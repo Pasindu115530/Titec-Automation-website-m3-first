@@ -276,14 +276,14 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 {mode === 'reply' ? `Replying to Request #${request?.id}` : 'Send a quotation directly to a customer'}
                             </p>
                         </div>
-                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 shrink-0 p-2">
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
                     <div className="px-6 pt-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 w-fit">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                            <div className="flex flex-wrap gap-2 w-full sm:w-auto bg-gray-100 p-1 rounded-lg">
                                 <button
                                     onClick={() => setActiveTab('create')}
                                     disabled={!includePdf}
@@ -307,7 +307,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                             </div>
 
                             {/* Include PDF Toggle */}
-                            <label className="flex items-center gap-2 cursor-pointer">
+                            <label className="flex items-center justify-between sm:justify-end gap-3 cursor-pointer w-full sm:w-auto bg-gray-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-gray-200">
                                 <span className="text-sm font-medium text-gray-700">Include PDF</span>
                                 <div className="relative inline-block w-11 h-6">
                                     <input
@@ -327,8 +327,8 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         {/* Customer Info Section */}
                         <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-4">
                             {mode === 'reply' ? (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
                                         <p><span className="font-medium">Customer:</span> {customerName}</p>
                                         <p><span className="font-medium">Email:</span> {customerEmail}</p>
                                         <p><span className="font-medium">Phone:</span> {customerPhone || '-'}</p>
@@ -380,12 +380,12 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                     <div>
                                         <div className="flex justify-between items-center mb-2">
                                             <h3 className="font-medium">Items</h3>
-                                            <Button variant="outline" size="sm" onClick={addItem} className="gap-1">
+                                            <Button variant="outline" size="sm" onClick={addItem} className="gap-1 shadow-sm">
                                                 <Plus className="h-4 w-4" /> Add Item
                                             </Button>
                                         </div>
-                                        <div className="border rounded-lg overflow-hidden">
-                                            <table className="w-full text-sm">
+                                        <div className="border rounded-lg overflow-x-auto shadow-sm">
+                                            <table className="w-full text-sm min-w-[700px]">
                                                 <thead className="bg-gray-50 border-b">
                                                     <tr>
                                                         <th className="px-4 py-2 text-left">Item Name</th>
@@ -572,19 +572,19 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         </div>
                     </div>
 
-                    <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
-                        <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <div className="p-4 sm:p-6 border-t bg-gray-50 flex flex-wrap sm:flex-nowrap justify-end gap-3 rounded-b-xl">
+                        <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-last sm:order-first">Cancel</Button>
                         {includePdf && activeTab === 'create' && (
                             <Button
                                 variant="secondary"
                                 onClick={handlePreview}
                                 disabled={items.length === 0}
-                                className="gap-2"
+                                className="w-full sm:w-auto gap-2"
                             >
                                 <Eye className="h-4 w-4" /> Preview
                             </Button>
                         )}
-                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="gap-2 btn-gradient-primary border-0">
+                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="w-full sm:w-auto gap-2 btn-gradient-primary border-0">
                             {isSending ? 'Sending...' : (
                                 <>
                                     <Send className="h-4 w-4" />

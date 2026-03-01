@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Trash2, Edit, GripVertical } from 'lucide-react';
+import { useState } from 'react';
+import DeleteConfirmationModal from './delete-confirmation-modal';
 import { Button } from '@/components/ui/button';
 import { ServiceCategory } from '@/types';
 import { serviceService } from '@/services/serviceService';
@@ -16,19 +18,32 @@ interface ServicesTableProps {
 }
 
 export default function ServicesTable({ services, onRefresh, onEdit, isLoading }: ServicesTableProps) {
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [serviceToDelete, setServiceToDelete] = useState<ServiceCategory | null>(null);
 
-    const handleDelete = async (service: ServiceCategory) => {
-        if (!confirm(`Are you sure you want to delete "${service.title}"? This will also delete all its items.`)) {
-            return;
-        }
+    const openDeleteModal = (service: ServiceCategory) => {
+        setServiceToDelete(service);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!serviceToDelete) return;
 
         try {
-            await serviceService.deleteService(service.id);
-            toast.success('Service deleted successfully');
+            setDeletingId(serviceToDelete.id);
+            await serviceService.deleteService(serviceToDelete.id);
+            toast.success('Service permanently deleted');
             onRefresh();
-        } catch (error) {
+            setDeleteModalOpen(false);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
             console.error('Failed to delete service', error);
-            toast.error('Failed to delete service');
+            const msg = error.response?.data?.message || 'Failed to delete service.';
+            toast.error(msg);
+        } finally {
+            setDeletingId(null);
+            setServiceToDelete(null);
         }
     };
 
@@ -53,82 +68,98 @@ export default function ServicesTable({ services, onRefresh, onEdit, isLoading }
 
     return (
         <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
-            <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                    {services.map((service) => {
-                        const imageUrl = service.image_path
-                            ? getImageUrl(service.image_path, '')
-                            : null;
+            <div className="overflow-x-auto">
+                <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {services.map((service) => {
+                            const imageUrl = service.image_path
+                                ? getImageUrl(service.image_path, '')
+                                : null;
 
-                        return (
-                            <tr key={service.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <div className="h-12 w-20 rounded-lg overflow-hidden bg-gray-100">
-                                        {imageUrl ? (
-                                            <img
-                                                src={imageUrl}
-                                                alt={service.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                <GripVertical className="h-5 w-5" />
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="font-medium text-gray-900">{service.title}</div>
-                                    <div className="text-xs text-gray-400 mt-0.5">{service.slug}</div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">{service.description}</p>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {service.items?.length || 0} items
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className="text-sm text-gray-600">{service.sort_order}</span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => onEdit(service)}
-                                            className="gap-1"
-                                        >
-                                            <Edit className="h-3.5 w-3.5" />
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => handleDelete(service)}
-                                            className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                                        >
-                                            <Trash2 className="h-3.5 w-3.5" />
-                                            Delete
-                                        </Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                            return (
+                                <tr key={service.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="h-12 w-20 rounded-lg overflow-hidden bg-gray-100">
+                                            {imageUrl ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={service.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <GripVertical className="h-5 w-5" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="font-medium text-gray-900">{service.title}</div>
+                                        <div className="text-xs text-gray-400 mt-0.5">{service.slug}</div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">{service.description}</p>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {service.items?.length || 0} items
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-sm text-gray-600">{service.sort_order}</span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => onEdit(service)}
+                                                className="gap-1"
+                                            >
+                                                <Edit className="h-3.5 w-3.5" />
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => openDeleteModal(service)}
+                                                disabled={deletingId === service.id}
+                                                className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                            >
+                                                {deletingId === service.id ? (
+                                                    <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                )}
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                itemName={serviceToDelete?.title || ''}
+                itemType="Service Category"
+                isDeleting={!!deletingId}
+            />
         </div>
     );
 }

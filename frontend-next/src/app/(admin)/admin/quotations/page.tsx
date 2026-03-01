@@ -116,16 +116,16 @@ export default function AdminQuotationsPage() {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6">
-            <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center flex-wrap gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Quotation Requests</h1>
                     <p className="text-gray-500 mt-1">Manage incoming requests from customers.</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                     <button
                         onClick={() => { setPage(1); loadQuotations(1, statusFilter, true); }}
-                        className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium transition-colors"
+                        className="flex-1 sm:flex-none px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-medium transition-colors"
                     >
                         Refresh
                     </button>
@@ -135,7 +135,7 @@ export default function AdminQuotationsPage() {
                             setSelectedRequest(null); // Clear selected request for direct mode
                             setIsModalOpen(true);
                         }}
-                        className="px-4 py-2 btn-gradient-primary text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg border-0"
+                        className="flex-1 sm:flex-none px-4 py-2 btn-gradient-primary text-white rounded-lg font-medium transition-all shadow-md hover:shadow-lg border-0"
                     >
                         Create Direct Quote
                     </button>
@@ -143,8 +143,8 @@ export default function AdminQuotationsPage() {
             </div>
 
             {/* Filter Tabs */}
-            <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <div className="border-b border-gray-200 overflow-x-auto">
+                <nav className="-mb-px flex space-x-6 sm:space-x-8 min-w-max" aria-label="Tabs">
                     <button
                         onClick={() => setStatusFilter('pending')}
                         className={`
