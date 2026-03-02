@@ -221,10 +221,10 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         </div>
 
                         {/* Headline */}
-                        <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 leading-none font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
+                        <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 pb-4 pr-4 leading-tight font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
                             FUTURE
                         </h1>
-                        <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+                        <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             IS NEAR
                         </p>
 
@@ -234,8 +234,8 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                                 We deliver high-precision industrial automation solutions that help
                                 <strong className="text-gray-900"> Sri Lankan manufacturers </strong>
                                 operate smarter, faster, and with greater reliability. From PLCs to robotics,
-                                  and machinery integration, we combine global-grade engineering with Our expertise 
-                                  to reduce downtime, boost efficiency, and keep your business ahead of the technology curve..
+                                and machinery integration, we combine global-grade engineering with Our expertise
+                                to reduce downtime, boost efficiency, and keep your business ahead of the technology curve..
                             </p>
                         </div>
 
