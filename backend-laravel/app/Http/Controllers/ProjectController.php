@@ -140,15 +140,17 @@ class ProjectController extends Controller
         // Handle Gallery Images
         $currentImages = $project->project_image_urls ?? [];
 
-        // 1. Remove deleted images
+        // 1. Remove deleted images (with path traversal protection)
         if ($request->has('deleted_images')) {
             $deletedImages = $request->input('deleted_images');
+            $allowedDir = realpath(public_path('projects'));
             foreach ($deletedImages as $delImg) {
                 // Remove from array
                 if (in_array($delImg, $currentImages)) {
-                    // Delete physical file
-                    if (file_exists(public_path($delImg))) {
-                        File::delete(public_path($delImg));
+                    // Safely delete physical file — only allow files within public/projects/
+                    $realPath = realpath(public_path($delImg));
+                    if ($realPath && $allowedDir && str_starts_with($realPath, $allowedDir)) {
+                        File::delete($realPath);
                     }
                     $currentImages = array_values(array_diff($currentImages, [$delImg]));
                 }

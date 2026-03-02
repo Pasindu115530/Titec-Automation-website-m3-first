@@ -176,17 +176,21 @@ class ProductController extends Controller
         
         $currentImages = $product->images ?? [];
         
-        // Handle deletions
+        // Handle deletions (with path traversal protection)
         if ($request->has('deleted_images')) {
             $deletedImages = $request->deleted_images; // Expected to be array of paths as stored in DB
             $currentImages = array_values(array_filter($currentImages, function($img) use ($deletedImages) {
                 return !in_array($img, $deletedImages);
             }));
 
-            // Optionally delete physical files for deleted images
+            // Safely delete physical files — only allow files within public/products/
+            $allowedDir = realpath(public_path('products'));
             foreach ($deletedImages as $delImg) {
-                if (file_exists(public_path($delImg))) {
-                     File::delete(public_path($delImg));
+                $fullPath = public_path($delImg);
+                $realPath = realpath($fullPath);
+                // Only delete if file exists AND is within the allowed directory
+                if ($realPath && $allowedDir && str_starts_with($realPath, $allowedDir)) {
+                    File::delete($realPath);
                 }
             }
         }

@@ -24,49 +24,51 @@ Route::get('/brands/{brand}', [BrandController::class, 'show']);
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{slug}', [ServiceController::class, 'show']);
 
-// Protected routes
+// Protected routes (any authenticated user)
 Route::middleware('auth:sanctum')->group(function () {
 // Route::group([], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    
-    // Project routes (admin only)
-    Route::post('/projects', [ProjectController::class, 'store']);
-    Route::put('/projects/{project}', [ProjectController::class, 'update']);
-    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 
-    // Product routes (admin only)
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::put('/products/{product}', [ProductController::class, 'update']);
-    Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+    // Admin-only routes — requires 'admin' role
+    Route::middleware('admin')->group(function () {
+        // Project routes (admin only)
+        Route::post('/projects', [ProjectController::class, 'store']);
+        Route::put('/projects/{project}', [ProjectController::class, 'update']);
+        Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
 
-    // Brand routes (admin only)
-    // Brand routes (admin only)
-    Route::post('/brands', [BrandController::class, 'store']);
-    Route::put('/brands/{brand}', [BrandController::class, 'update']);
-    Route::delete('/brands/{brand}', [BrandController::class, 'destroy']);
+        // Product routes (admin only)
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
-    // Service routes (admin only)
-    Route::post('/services', [ServiceController::class, 'store']);
-    Route::put('/services/{service}', [ServiceController::class, 'update']);
-    Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
+        // Brand routes (admin only)
+        Route::post('/brands', [BrandController::class, 'store']);
+        Route::put('/brands/{brand}', [BrandController::class, 'update']);
+        Route::delete('/brands/{brand}', [BrandController::class, 'destroy']);
 
-    // Quotation routes (admin only)
-    Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
-    Route::post('/quotations/preview', [App\Http\Controllers\QuotationController::class, 'preview']);
-    Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
-    Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
-    
-    // Quotation Requests
-    Route::get('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'index']);
-    Route::post('/quotation-requests/{id}/reply', [App\Http\Controllers\QuotationRequestController::class, 'reply']);
-    Route::post('/quotation-requests/direct', [App\Http\Controllers\QuotationRequestController::class, 'sendDirectQuote']);
-    Route::get('/quotation-requests/{id}/download', [App\Http\Controllers\QuotationRequestController::class, 'download']);
-    
-    // Dashboard Stats
-    Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'index']);
+        // Service routes (admin only)
+        Route::post('/services', [ServiceController::class, 'store']);
+        Route::put('/services/{service}', [ServiceController::class, 'update']);
+        Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
+
+        // Quotation routes (admin only)
+        Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
+        Route::post('/quotations/preview', [App\Http\Controllers\QuotationController::class, 'preview']);
+        Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
+        Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
+        
+        // Quotation Requests (admin only)
+        Route::get('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'index']);
+        Route::post('/quotation-requests/{id}/reply', [App\Http\Controllers\QuotationRequestController::class, 'reply']);
+        Route::post('/quotation-requests/direct', [App\Http\Controllers\QuotationRequestController::class, 'sendDirectQuote']);
+        Route::get('/quotation-requests/{id}/download', [App\Http\Controllers\QuotationRequestController::class, 'download']);
+        
+        // Dashboard Stats (admin only)
+        Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'index']);
+    });
 });
 
 // Public store route for requests (can also be auth protected if needed, but currently public for simplicity or user/guest mix)

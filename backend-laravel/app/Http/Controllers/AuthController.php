@@ -21,7 +21,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $request->role ?? 'customer',
+            'role' => 'customer', // Always default to customer — admin accounts must be created via seeders or database
         ]);
 
         return response()->json([
