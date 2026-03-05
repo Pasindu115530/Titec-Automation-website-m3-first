@@ -44,7 +44,8 @@ export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps
                             <div className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wider">{product.brand}</div>
                         )}
                     </div>
-                    {isAdmin && (
+                    {/* Show price if admin, OR if show_price is true (defaulting to true if undefined) */}
+                    {(isAdmin || product.show_price !== false) && (
                         <div className="font-bold text-gray-900">LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price}</div>
                     )}
                 </div>

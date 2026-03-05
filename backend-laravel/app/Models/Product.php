@@ -25,12 +25,14 @@ class Product extends Model
         'stock_status',
         'on_store',
         'brand_id',
+        'show_price',
     ];
 
     protected $casts = [
         'images' => 'array',
         'price' => 'decimal:2',
         'on_store' => 'boolean',
+        'show_price' => 'boolean',
     ];
 
     public function brand() {

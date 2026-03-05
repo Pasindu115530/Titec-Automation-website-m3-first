@@ -40,6 +40,7 @@ export interface Product {
     unit?: string;
     model_number?: string;
     on_store?: boolean; // Visibility toggle for client store
+    show_price?: boolean; // Visibility toggle for product price
 }
 
 export interface ServiceItem {

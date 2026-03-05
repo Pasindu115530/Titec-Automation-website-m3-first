@@ -48,6 +48,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
         unit: 'nos',
         sku: '',
         on_store: true,
+        show_price: true,
     });
 
     const handleInputChange = (
@@ -94,6 +95,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
+            data.append('show_price', formData.show_price ? '1' : '0');
 
             if (imageFiles.length > 0) {
                 imageFiles.forEach((image, index) => {
@@ -124,6 +126,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 unit: 'nos',
                 sku: '',
                 on_store: true,
+                show_price: true,
             });
             setImageFiles([]);
             setImagePreviews([]);
@@ -358,7 +361,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                             </div>
 
                             {/* On Store Toggle */}
-                            <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border mt-2">
+                            <div className="space-y-3 py-3 px-4 bg-gray-50 rounded-lg border mt-2">
                                 <label className="flex items-center gap-3 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -370,6 +373,22 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                                     <div className="flex-1">
                                         <span className="text-sm font-medium">Display in Store</span>
                                         <p className="text-xs text-gray-500">Show this product to customers on the storefront</p>
+                                    </div>
+                                </label>
+
+                                <div className="border-t border-gray-200" />
+
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="show_price"
+                                        checked={formData.show_price}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, show_price: e.target.checked }))}
+                                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="text-sm font-medium">Show Price</span>
+                                        <p className="text-xs text-gray-500">Display the price on the storefront</p>
                                     </div>
                                 </label>
                             </div>
