@@ -40,6 +40,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         unit: 'nos',
         sku: '',
         on_store: true,
+        show_price: true,
     });
 
     useEffect(() => {
@@ -54,6 +55,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 unit: product.unit || 'nos',
                 sku: product.sku || '',
                 on_store: product.on_store !== undefined ? product.on_store : true,
+                show_price: product.show_price !== undefined ? product.show_price : true,
             });
             // Initialize Gallery
             setExistingImages(product.images || []);
@@ -112,6 +114,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
+            data.append('show_price', formData.show_price ? '1' : '0');
             // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
             // Standard workaround is sending POST with _method=PUT
             data.append('_method', 'PUT');
@@ -384,7 +387,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                             </div>
 
                             {/* On Store Toggle */}
-                            <div className="space-y-2 py-3 px-4 bg-gray-50 rounded-lg border col-span-2">
+                            <div className="space-y-3 py-3 px-4 bg-gray-50 rounded-lg border col-span-2">
                                 <label className="flex items-center gap-3 cursor-pointer">
                                     <input
                                         type="checkbox"
@@ -396,6 +399,22 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     <div className="flex-1">
                                         <span className="text-sm font-medium">Display in Store</span>
                                         <p className="text-xs text-gray-500">Show this product to customers on the storefront</p>
+                                    </div>
+                                </label>
+
+                                <div className="border-t border-gray-200" />
+
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="show_price"
+                                        checked={formData.show_price}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, show_price: e.target.checked }))}
+                                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="text-sm font-medium">Show Price</span>
+                                        <p className="text-xs text-gray-500">Display the price on the storefront</p>
                                     </div>
                                 </label>
                             </div>

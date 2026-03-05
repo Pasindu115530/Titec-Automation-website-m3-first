@@ -13,6 +13,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'model_number' => $this->model_number, // Crucial for your automation client
             'description' => $this->description,
+            'show_price' => $this->show_price,
             // Ensure full URL is sent to frontend if images are stored locally
             'images' => $this->images ? array_map(function($img) {
                 return asset('storage/' . $img); 

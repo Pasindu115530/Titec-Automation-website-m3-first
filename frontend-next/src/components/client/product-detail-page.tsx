@@ -229,8 +229,8 @@ export default function ProductDetailPage({
                             </p>
                         )}
 
-                        {/* Price (admin only) */}
-                        {isAdmin && (
+                        {/* Price: Show if admin OR if show_price is explicitly true or undefined */}
+                        {(isAdmin || product.show_price !== false) && (
                             <div className="text-3xl font-bold text-gray-900 mb-5">
                                 LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                             </div>
