@@ -41,7 +41,7 @@ export default function AboutHero() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 font-poppins"
+                    className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 font-orbitron"
                 >
                     About <span className="text-glow-blue">Titec</span>
                 </motion.h1>

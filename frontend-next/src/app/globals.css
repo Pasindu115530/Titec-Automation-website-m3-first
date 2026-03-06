@@ -237,11 +237,11 @@
 	}
 
 	h1 {
-		font-family: 'Poppins', sans-serif;
+		font-family: 'Orbitron', sans-serif;
 	}
 
 	h2 {
-		font-family: 'Poppins', sans-serif;
+		font-family: 'Orbitron', sans-serif;
 		font-size: 24px;
 	}
 
@@ -415,6 +415,7 @@
 	/* Section title utility: larger, responsive headings */
 	/* Section title utility: consistent styling */
 	.section-title {
+		font-family: 'Orbitron', sans-serif;
 		font-size: 2.25rem;
 		/* text-4xl equivalent default */
 		line-height: normal;
