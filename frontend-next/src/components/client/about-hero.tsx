@@ -41,7 +41,7 @@ export default function AboutHero() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="text-5xl md:text-7xl font-bold mb-6 font-poppins"
+                    className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 font-poppins"
                 >
                     About <span className="text-glow-blue">Titec</span>
                 </motion.h1>
@@ -61,11 +61,11 @@ export default function AboutHero() {
                     transition={{ duration: 0.8, delay: 0.6 }}
                     className="max-w-3xl mx-auto"
                 >
-                    <p className="text-lg text-gray-300 leading-relaxed">
-                        TiTec Automation Solutions is a dynamic and forward-thinking company 
-                        that specializes in providing state-of-the-art automation solutions to clients 
-                        in various industries. With a strong emphasis on innovation and 
-                        sustainability, we offer a comprehensive range of services to meet the 
+                    <p className="text-base md:text-lg text-gray-300 leading-relaxed">
+                        TiTec Automation Solutions is a dynamic and forward-thinking company
+                        that specializes in providing state-of-the-art automation solutions to clients
+                        in various industries. With a strong emphasis on innovation and
+                        sustainability, we offer a comprehensive range of services to meet the
                         evolving needs of our clients.
                     </p>
                 </motion.div>

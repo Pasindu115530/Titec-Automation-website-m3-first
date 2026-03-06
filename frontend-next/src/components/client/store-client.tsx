@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import Loader from "@/components/loader";
 import Footer from "@/components/footer";
 import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Search, Package, Tag } from "lucide-react";
@@ -21,7 +20,6 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const { addItem } = useCart();
-    const { isAdmin } = useAuth();
 
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
@@ -105,7 +103,7 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
     return (
         <div className="min-h-screen">
             <main className="max-w-7xl mx-auto px-6 py-12 min-h-screen">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-8 gap-2 md:gap-4">
                     <h1 className="text-3xl font-bold text-gray-800">Product Catalog</h1>
 
                     <div className="relative w-full md:w-96">
@@ -121,17 +119,17 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
 
                 {/* Brand Filter Bar */}
                 {uniqueBrands.length > 0 && (
-                    <div className="mb-8">
+                    <div className="mb-6 md:mb-8">
                         <div className="flex items-center gap-2 mb-3">
                             <Tag className="h-4 w-4 text-gray-500" />
                             <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Filter by Brand</span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto md:max-h-none md:overflow-visible pr-1">
                             <button
                                 onClick={() => setSelectedBrand(null)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${selectedBrand === null
-                                        ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
+                                    ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'
                                     }`}
                             >
                                 All
@@ -141,8 +139,8 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                                     key={brand}
                                     onClick={() => setSelectedBrand(brand === selectedBrand ? null : brand)}
                                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${selectedBrand === brand
-                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                                            : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
+                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50'
                                         }`}
                                 >
                                     {brand}
@@ -177,7 +175,6 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                                             <ProductCard
                                                 key={p.id}
                                                 product={p}
-                                                isAdmin={isAdmin}
                                                 onAddToQuote={() => handleAddToQuotation(p)}
                                             />
                                         ))}
@@ -204,7 +201,6 @@ export default function StoreClient({ initialProducts }: StoreClientProps) {
                                                     <ProductCard
                                                         key={p.id}
                                                         product={p}
-                                                        isAdmin={isAdmin}
                                                         onAddToQuote={() => handleAddToQuotation(p)}
                                                     />
                                                 ))}

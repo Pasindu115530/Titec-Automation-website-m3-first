@@ -221,14 +221,18 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         </div>
 
                         {/* Headline */}
-                        <h1 className={`text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 pb-4 pr-4 leading-tight font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
+                        <h1 className={`text-4xl sm:text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 mb-2 pb-4 pr-4 leading-tight font-orbitron tracking-widest drop-shadow-sm transition-all duration-700 ease-in delay-100 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`} style={{ fontStyle: 'italic' }}>
                             FUTURE
                         </h1>
-                        <p className={`text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.2em] md:tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+                        <p className={`text-lg sm:text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-[0.15em] md:tracking-[0.4em] mb-10 pl-2 font-orbitron transition-all duration-700 ease-in delay-200 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             IS NEAR
                         </p>
 
                         {/* Subtext */}
+                        {/* Mobile short tagline */}
+                        <p className={`block md:hidden text-xs text-gray-500 mb-6 leading-relaxed font-mono transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+                            High-precision industrial automation for Sri Lankan manufacturers.
+                        </p>
                         <div className={`max-w-[800px] hidden md:block transition-all duration-700 ease-in delay-300 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <p className="text-sm text-gray-600 mb-8 leading-relaxed font-mono">
                                 We deliver high-precision industrial automation solutions that help
@@ -243,12 +247,12 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
                         <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ease-in delay-500 ${contentInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
                             <button
                                 onClick={() => setIsOpen(true)}
-                                className="px-8 py-4 btn-gradient-primary rounded-none shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
+                                className="px-8 py-3 sm:py-4 btn-gradient-primary rounded-none shadow-lg tracking-wider font-orbitron text-sm cursor-pointer"
                             >
                                 GET QUOTE
                             </button>
                             <a href="/store"
-                                className="px-8 py-4 bg-white/10 backdrop-blur-md border border-gray-300 text-gray-800 font-bold rounded-none hover:bg-white/20 transition-all tracking-wider font-orbitron text-sm flex items-center justify-center hover:border-gray-400"
+                                className="px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-md border border-gray-300 text-gray-800 font-bold rounded-none hover:bg-white/20 transition-all tracking-wider font-orbitron text-sm flex items-center justify-center hover:border-gray-400"
                             >
                                 VISIT STORE
                             </a>
@@ -297,7 +301,7 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
 
                     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {SERVICES.map((service) => (
-                            <Link href={`/services/${service.slug}`} key={service.id} className="group relative block h-80 rounded-2xl overflow-hidden shadow-lg tech-card-hover transform hover:-translate-y-2 bg-gray-900 border border-gray-800">
+                            <Link href={`/services/${service.slug}`} key={service.id} className="group relative block rounded-2xl overflow-hidden shadow-lg tech-card-hover transform hover:-translate-y-2 bg-gray-900 border border-gray-800 aspect-[4/3]">
                                 <Image
                                     src={service.image}
                                     alt={service.title}

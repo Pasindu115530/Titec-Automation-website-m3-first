@@ -7,11 +7,10 @@ import { createSlug } from "@/utils/slug-utils";
 
 interface ProductCardProps {
     product: Product;
-    isAdmin: boolean;
     onAddToQuote: () => void;
 }
 
-export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps) {
+export function ProductCard({ product, onAddToQuote }: ProductCardProps) {
     // ...
     const imageUrl = product.images && product.images.length > 0
         ? getImageUrl(product.images[0], '')
@@ -22,7 +21,7 @@ export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps
             href={`/store/${createSlug(product.name, product.id)}`} // Use slug
             className="border rounded-xl bg-white hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full group cursor-pointer"
         >
-            <div className="h-48 bg-gray-100 relative overflow-hidden">
+            <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {imageUrl ? (
                     <img
                         src={imageUrl}
@@ -44,8 +43,8 @@ export function ProductCard({ product, isAdmin, onAddToQuote }: ProductCardProps
                             <div className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wider">{product.brand}</div>
                         )}
                     </div>
-                    {/* Show price if admin, OR if show_price is true (defaulting to true if undefined) */}
-                    {(isAdmin || product.show_price !== false) && (
+                    {/* Show price if show_price is true (defaulting to true if undefined) */}
+                    {product.show_price !== false && (
                         <div className="font-bold text-gray-900">LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price}</div>
                     )}
                 </div>

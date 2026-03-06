@@ -9,7 +9,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
 import { getImageUrl } from '@/utils/image-utils';
 import { createSlug } from '@/utils/slug-utils';
 import { toast } from 'sonner';
@@ -29,7 +28,6 @@ export default function ProductDetailPage({
     relatedProducts
 }: ProductDetailPageProps) {
     const { addItem } = useCart();
-    const { isAdmin } = useAuth();
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
@@ -121,10 +119,11 @@ export default function ProductDetailPage({
                         <li>
                             <Link href="/store" className="hover:text-blue-600 transition-colors">Store</Link>
                         </li>
+                        {/* Hide category on mobile to prevent long wrapping chains */}
+                        <li className="text-gray-300 hidden sm:block">/</li>
+                        <li className="text-gray-400 capitalize hidden sm:block">{product.category}</li>
                         <li className="text-gray-300">/</li>
-                        <li className="text-gray-400 capitalize">{product.category}</li>
-                        <li className="text-gray-300">/</li>
-                        <li className="text-gray-800 font-medium truncate max-w-[200px]">{product.name}</li>
+                        <li className="text-gray-800 font-medium truncate max-w-[140px] sm:max-w-[200px]">{product.name}</li>
                     </ol>
                 </nav>
 
@@ -218,7 +217,7 @@ export default function ProductDetailPage({
                         </div>
 
                         {/* Product Name */}
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
                             {product.name}
                         </h1>
 
@@ -229,8 +228,8 @@ export default function ProductDetailPage({
                             </p>
                         )}
 
-                        {/* Price: Show if admin OR if show_price is explicitly true or undefined */}
-                        {(isAdmin || product.show_price !== false) && (
+                        {/* Price: Show if show_price is explicitly true or undefined */}
+                        {product.show_price !== false && (
                             <div className="text-3xl font-bold text-gray-900 mb-5">
                                 LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                             </div>
@@ -291,13 +290,13 @@ export default function ProductDetailPage({
                                 Add to Quotation
                             </Button>
 
-                            <div className="flex gap-3">
+                            <div className="flex flex-wrap gap-2">
                                 {product.datasheet_path && (
                                     <a
                                         href={getImageUrl(product.datasheet_path, '')}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all"
+                                        className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all"
                                     >
                                         <FileText className="w-4 h-4" />
                                         Datasheet
@@ -305,7 +304,7 @@ export default function ProductDetailPage({
                                 )}
                                 <Button
                                     variant="outline"
-                                    className="flex-1 gap-2 border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl h-auto py-3"
+                                    className="flex-1 min-w-[100px] gap-2 border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl h-auto py-3"
                                     onClick={() => window.location.href = '/contact'}
                                 >
                                     <MessageCircle className="w-4 h-4" />

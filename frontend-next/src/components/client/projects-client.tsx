@@ -59,7 +59,7 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
         <>
             <div className="min-h-screen bg-white">
                 {/* Hero Section */}
-                <section className="relative py-20 bg-gray-900 text-white overflow-hidden">
+                <section className="relative py-12 md:py-20 bg-gray-900 text-white overflow-hidden">
                     <div className="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1531297461136-82ae8ce1cf75?auto=format&fit=crop&q=80')] bg-cover bg-center" />
                     <div className="container relative z-10 mx-auto px-6 text-center">
                         <motion.h1
@@ -98,7 +98,8 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                                             alt={project.title}
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         />
-                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                        {/* Desktop hover overlay CTA */}
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center">
                                             <Button
                                                 className="translate-y-4 group-hover:translate-y-0 transition-transform duration-300 gap-2 bg-white text-black hover:bg-gray-100"
                                                 onClick={() => {
@@ -157,7 +158,19 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                                         <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3">
                                             {project.description}
                                         </p>
-                                        <div className="mt-auto pt-4 border-t border-gray-100">
+                                        <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col gap-3">
+                                            {/* Mobile-only always-visible CTA */}
+                                            <Button
+                                                className="w-full gap-2 bg-indigo-600 hover:bg-indigo-700 text-white md:hidden"
+                                                onClick={() => {
+                                                    setPrefilledMessage(`Requesting a system similar to "${project.title}"`);
+                                                    setIsOpen(true);
+                                                    toast.success("Opening quotation form");
+                                                }}
+                                            >
+                                                <MessageSquare className="h-4 w-4" />
+                                                Request Similar System
+                                            </Button>
                                             <Link href={`/projects/${project.id}`} className="flex items-center text-indigo-600 font-medium text-sm group/link">
                                                 View Details
                                                 <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
@@ -171,7 +184,7 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                 </div>
 
                 {/* CTA Section */}
-                <section className="bg-indigo-600 py-20 text-white">
+                <section className="bg-indigo-600 py-12 md:py-20 text-white">
                     <div className="container mx-auto px-6 text-center">
                         <h2 className="text-3xl font-bold mb-4">Have a Custom Project in Mind?</h2>
                         <p className="text-indigo-100 mb-8 max-w-2xl mx-auto">We specialize in tailored automation solutions. Contact our engineering team for a free consultation.</p>
