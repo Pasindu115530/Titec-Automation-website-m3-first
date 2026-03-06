@@ -48,8 +48,8 @@ export async function generateMetadata(
     const brandName = product.brand || "Titec Automation";
     const title = `${product.name} | ${brandName}`;
     const cleanDesc = stripHtml(product.description || "");
-    const priceText = product.price ? `Price: LKR ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}` : '';
-    const description = `${cleanDesc.substring(0, 130)}... ${priceText}`.trim();
+    const priceText = product.show_price !== false && product.price ? `Price: LKR ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}` : '';
+    const description = priceText ? `${cleanDesc.substring(0, 130)}... ${priceText}`.trim() : `${cleanDesc.substring(0, 150)}...`.trim();
 
     const canonicalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk'}/store/${slug}`;
 
@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: Props) {
     const cleanDesc = stripHtml(product.description || "");
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk';
 
-    const productJsonLd = {
+    const productJsonLd: any = {
         "@context": "https://schema.org",
         "@type": "Product",
         "name": product.name,
@@ -147,15 +147,18 @@ export default async function ProductPage({ params }: Props) {
         },
         "sku": product.sku || undefined,
         "mpn": product.model_number || undefined,
-        "offers": {
+    };
+
+    if (product.show_price !== false) {
+        productJsonLd.offers = {
             "@type": "Offer",
             "url": `${baseUrl}/store/${slug}`,
             "priceCurrency": "LKR",
             "price": product.price,
             "availability": stockStatus,
             "itemCondition": "https://schema.org/NewCondition"
-        }
-    };
+        };
+    }
 
     // ── JSON-LD: BreadcrumbList Schema ──
     const breadcrumbJsonLd = {

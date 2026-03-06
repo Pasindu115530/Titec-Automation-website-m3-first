@@ -3,8 +3,8 @@ import StoreClient from "@/components/client/store-client";
 
 import { Metadata } from "next";
 
-// Enable ISR with 60-second revalidation
-export const revalidate = 60;
+// Fetch products on every request (fully dynamic)
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: "Store - Titec Automation",
