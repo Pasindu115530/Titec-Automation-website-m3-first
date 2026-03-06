@@ -123,7 +123,7 @@
             <td width="60%" class="info-cell">
                 <div class="company-name">TiTec Automation Solutions</div>
                 <div class="address-block">
-                    190/3, Hukugahalanda,<br>
+                    190/3, Bulugahalanda,<br>
                     Yatiyana, Minuwangoda,<br>
                     Sri Lanka.<br>
                     Phone: 0770417564<br>

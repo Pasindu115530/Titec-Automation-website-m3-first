@@ -33,7 +33,7 @@ export default function QuotationPreview({ customer, items, vat, terms, quotatio
                 <div style={{ width: '60%' }} className="pr-4">
                     <div className="text-2xl font-bold mb-1.5" style={{ color: themeColor }}>TiTec Automation Solutions</div>
                     <div className="mb-5">
-                        190/3, Hukugahalanda,<br />
+                        190/3, Bulugahalanda,<br />
                         Yatiyana, Minuwangoda,<br />
                         Sri Lanka.<br />
                         Phone: 0770417564<br />

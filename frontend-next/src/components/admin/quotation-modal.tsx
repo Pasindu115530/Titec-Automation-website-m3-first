@@ -207,12 +207,12 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
     if (isPreviewMode) {
         return (
             <AnimatePresence>
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-white rounded-xl shadow-xl w-full max-w-4xl min-h-[90vh] flex flex-col my-8"
+                        className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col my-8"
                     >
                         <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10 rounded-t-xl">
                             <h2 className="text-xl font-semibold flex items-center gap-2">
