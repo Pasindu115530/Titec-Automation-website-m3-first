@@ -107,8 +107,8 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
     const validateForm = () => {
         // Direct Mode Specific Validation
         if (mode === 'direct') {
-            if (!customerName.trim() || !customerEmail.trim()) {
-                toast.warning('Customer name and email are required.');
+            if (!customerName.trim()) {
+                toast.warning('Customer name is required.');
                 return false;
             }
         }
