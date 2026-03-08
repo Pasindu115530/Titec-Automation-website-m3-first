@@ -75,7 +75,7 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                             transition={{ delay: 0.1 }}
                             className="text-xl text-gray-300 max-w-2xl mx-auto"
                         >
-                            Explore our portfolio of cutting-edge automation solutions delivered to industry leaders worldwide.
+                            Explore our portfolio of cutting-edge automation solutions delivered to industry leaders islandwide.
                         </motion.p>
                     </div>
                 </section>

@@ -91,7 +91,7 @@ export default function BrandMarquee() {
                         <div className="w-24 h-1 bg-linear-to-l from-blue-500 to-transparent mx-auto mt-4 rounded-full"></div>
                     </h2>
                     <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
-                        We offer a wide range of intelligent electronics and automation products for modern living.
+                        We offer a wide range of intelligent electronics and automation products for Your Automation Needs.
                     </p>
                 </div>
 
