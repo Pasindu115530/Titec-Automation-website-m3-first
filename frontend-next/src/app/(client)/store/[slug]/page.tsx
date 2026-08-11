@@ -155,14 +155,8 @@ export default async function ProductPage({ params }: Props) {
             "url": `${baseUrl}/store/${slug}`,
             "priceCurrency": "LKR",
             "price": product.price,
-            "priceValidUntil": new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             "availability": stockStatus,
-            "itemCondition": "https://schema.org/NewCondition",
-            "seller": {
-                "@type": "Organization",
-                "name": "TiTEC Automation",
-                "url": baseUrl,
-            },
+            "itemCondition": "https://schema.org/NewCondition"
         };
     }
 
