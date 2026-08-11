@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
 import { productService } from '@/services/productService'
+import { projectService } from '@/services/projectService'
 import { createSlug } from '@/utils/slug-utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk'
 
     // Static pages
     const staticPages: MetadataRoute.Sitemap = [
@@ -56,11 +57,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.7,
         }))
     } catch (error) {
-        // Silently fail during build if API is unreachable
         if (process.env.NODE_ENV === 'development') {
             console.error('Failed to fetch products for sitemap:', error)
         }
     }
 
-    return [...staticPages, ...productPages]
+    // Dynamic project pages
+    let projectPages: MetadataRoute.Sitemap = []
+    try {
+        const projects = await projectService.getProjects()
+        projectPages = projects.map(project => ({
+            url: `${baseUrl}/projects/${project.id}`,
+            lastModified: new Date(project.updated_at || project.completion_date || Date.now()),
+            changeFrequency: 'monthly' as const,
+            priority: 0.7,
+        }))
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to fetch projects for sitemap:', error)
+        }
+    }
+
+    return [...staticPages, ...productPages, ...projectPages]
 }
+
