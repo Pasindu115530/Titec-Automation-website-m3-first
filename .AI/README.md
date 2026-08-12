@@ -6,12 +6,13 @@
 ## 📋 Documentation Index
 
 | File | Contents |
-|------|----------|
+|------|-----------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system overview, tech stack, entity relationships, environment setup, deployment |
 | [FRONTEND.md](./FRONTEND.md) | Next.js App Router structure, components, state management, API communication, styling |
 | [BACKEND.md](./BACKEND.md) | Laravel models, controllers, auth (Sanctum), mail system, file storage, database |
 | [API-REFERENCE.md](./API-REFERENCE.md) | Complete REST API endpoint reference with request/response examples |
 | [BEST-PRACTICES.md](./BEST-PRACTICES.md) | Coding conventions, security warnings, deployment checklist, common pitfalls |
+| [SEO.md](./SEO.md) | SEO & AI search optimization: JSON-LD schemas, metadata conventions, robots.txt bot rules, sitemap strategy, ISR |
 
 ## 🚀 Quick Start for AI Agents
 
@@ -19,6 +20,7 @@
 2. **For frontend changes** → Read `FRONTEND.md` then `API-REFERENCE.md`
 3. **For backend changes** → Read `BACKEND.md` then `API-REFERENCE.md`
 4. **Before any change** → Check `BEST-PRACTICES.md` for conventions and pitfalls
+5. **For SEO / metadata / JSON-LD changes** → Read `SEO.md` first
 
 ## ⚡ Key Facts
 
