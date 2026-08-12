@@ -4,11 +4,10 @@ import { createSlug } from "@/utils/slug-utils";
 import { Metadata } from "next";
 import { Product } from "@/types";
 
-// ISR: revalidate every 5 minutes instead of force-dynamic
-// This makes the store resilient if the API is briefly down during a Googlebot crawl
-export const revalidate = 300;
+import { Metadata } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
+// Fetch products on every request (fully dynamic)
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: "Industrial Automation Products Store | TiTEC Automation Sri Lanka",
@@ -29,8 +28,8 @@ export const metadata: Metadata = {
         canonical: `${baseUrl}/store`,
     },
     openGraph: {
-        title: "Industrial Automation Products Store | TiTEC Automation Sri Lanka",
-        description: "Buy PLCs, HMIs, VFDs, inverters, sensors and industrial automation components in Sri Lanka.",
+        title: "Store - Titec Automation",
+        description: "Explore our range of industrial automation products including PLCs, HMIs, VFDs, and more.",
         type: "website",
         url: `${baseUrl}/store`,
         siteName: "TiTEC Automation",

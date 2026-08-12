@@ -3,10 +3,9 @@ import ProjectsClient from "@/components/client/projects-client";
 import { Metadata } from "next";
 import { Project } from "@/types";
 
-// ISR: revalidate every 5 minutes
-export const revalidate = 300;
+import { Metadata } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
     title: "Industrial Automation Projects Portfolio | TiTEC Automation Sri Lanka",
@@ -25,8 +24,8 @@ export const metadata: Metadata = {
         canonical: `${baseUrl}/projects`,
     },
     openGraph: {
-        title: "Industrial Automation Projects Portfolio | TiTEC Automation Sri Lanka",
-        description: "Explore TiTEC Automation's portfolio of completed industrial projects across Sri Lanka.",
+        title: "Our Projects - Titec Automation",
+        description: "Explore our portfolio of successful industrial automation projects including PLC programming, HMI design, SCADA systems, and manufacturing automation solutions.",
         type: "website",
         url: `${baseUrl}/projects`,
         siteName: "TiTEC Automation",
