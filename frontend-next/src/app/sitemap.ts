@@ -5,79 +5,90 @@ import { createSlug } from '@/utils/slug-utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk'
+    const now = new Date()
 
-    // Static pages
+    // ── Static pages ──
+    // Ordered by business priority / crawl importance
     const staticPages: MetadataRoute.Sitemap = [
         {
             url: baseUrl,
-            lastModified: new Date(),
+            lastModified: now,
             changeFrequency: 'monthly',
-            priority: 1,
+            priority: 1.0,
+        },
+        {
+            url: `${baseUrl}/store`,
+            lastModified: now,
+            changeFrequency: 'daily',    // Products added/updated frequently
+            priority: 0.9,
         },
         {
             url: `${baseUrl}/projects`,
-            lastModified: new Date(),
+            lastModified: now,
             changeFrequency: 'weekly',
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/store`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly',
+            url: `${baseUrl}/services`,
+            lastModified: now,
+            changeFrequency: 'monthly',
             priority: 0.8,
         },
         {
             url: `${baseUrl}/about`,
-            lastModified: new Date(),
+            lastModified: now,
             changeFrequency: 'yearly',
-            priority: 0.5,
+            priority: 0.6,
+        },
+        {
+            url: `${baseUrl}/clients`,
+            lastModified: now,
+            changeFrequency: 'monthly',
+            priority: 0.6,
         },
         {
             url: `${baseUrl}/contact`,
-            lastModified: new Date(),
+            lastModified: now,
             changeFrequency: 'yearly',
             priority: 0.5,
         },
         {
             url: `${baseUrl}/faq`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
+            lastModified: now,
+            changeFrequency: 'monthly',
             priority: 0.5,
         },
     ]
 
-    // Dynamic product pages
+    // ── Dynamic product pages ──
     let productPages: MetadataRoute.Sitemap = []
     try {
         const products = await productService.getProducts()
         productPages = products.map(product => ({
             url: `${baseUrl}/store/${createSlug(product.name, product.id)}`,
-            lastModified: new Date(),
+            lastModified: new Date((product as any).updated_at || now),
             changeFrequency: 'weekly' as const,
             priority: 0.7,
         }))
-    } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error('Failed to fetch products for sitemap:', error)
-        }
+    } catch {
+        // Silently skip — sitemap will still include static pages
     }
 
-    // Dynamic project pages
+    // ── Dynamic project pages ──
     let projectPages: MetadataRoute.Sitemap = []
     try {
         const projects = await projectService.getProjects()
         projectPages = projects.map(project => ({
             url: `${baseUrl}/projects/${project.id}`,
-            lastModified: new Date(project.updated_at || project.completion_date || Date.now()),
+            lastModified: new Date(
+                (project as any).updated_at || project.completion_date || now
+            ),
             changeFrequency: 'monthly' as const,
             priority: 0.7,
         }))
-    } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error('Failed to fetch projects for sitemap:', error)
-        }
+    } catch {
+        // Silently skip — sitemap will still include static pages
     }
 
     return [...staticPages, ...productPages, ...projectPages]
 }
-

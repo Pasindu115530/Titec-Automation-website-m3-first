@@ -13,28 +13,42 @@ type Props = {
 // Enable ISR – revalidate every 60 seconds
 export const revalidate = 60;
 
+// ── Pre-render known product pages at build time ──
+// Falls back gracefully if the API is unreachable during build
+export async function generateStaticParams() {
+    try {
+        const products = await productService.getProducts();
+        return (Array.isArray(products) ? products : []).map((product: Product) => ({
+            slug: createSlug(product.name, product.id),
+        }));
+    } catch {
+        return [];
+    }
+}
+
 // Helper to strip HTML tags for description
 function stripHtml(html: string) {
-    return html.replace(/<[^>]*>?/gm, '');
+    return html.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
 }
 
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
+    _parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { slug } = await params;
     const id = extractIdFromSlug(slug);
-    let product = null;
+    let product: Product | null = null;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
     try {
         product = await productService.getProductById(id);
-    } catch (e) {
-        console.error("Failed to fetch product for metadata", e);
+    } catch {
+        // Fail silently — return minimal fallback metadata
     }
 
     if (!product) {
         return {
-            title: "Product Not Found | Titec Automation",
+            title: "Product Not Found | TiTEC Automation",
             description: "The requested product could not be found."
         };
     }
@@ -43,34 +57,58 @@ export async function generateMetadata(
         ? getImageUrl(product.images[0])
         : product.image
             ? getImageUrl(product.image)
-            : '/placeholder-product.jpg';
+            : `${baseUrl}/og-image.jpg`;
 
-    const brandName = product.brand || "Titec Automation";
-    const title = `${product.name} | ${brandName}`;
+    const brandName = product.brand || "TiTEC Automation";
+    const title = `${product.name} | ${brandName} | TiTEC Automation`;
     const cleanDesc = stripHtml(product.description || "");
-    const priceText = product.show_price !== false && product.price ? `Price: LKR ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}` : '';
-    const description = priceText ? `${cleanDesc.substring(0, 130)}... ${priceText}`.trim() : `${cleanDesc.substring(0, 150)}...`.trim();
+    const priceText = product.show_price !== false && product.price
+        ? ` Price: LKR ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}.`
+        : '';
+    const description = cleanDesc.length > 10
+        ? `${cleanDesc.substring(0, 145)}...${priceText}`.trim()
+        : `${product.name} by ${brandName}. Industrial automation product available in Sri Lanka.${priceText}`;
 
-    const canonicalUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk'}/store/${slug}`;
+    const canonicalUrl = `${baseUrl}/store/${slug}`;
+
+    // Build keyword list from product attributes
+    const keywords: string[] = [
+        product.name,
+        brandName,
+        product.category,
+        product.model_number,
+        'industrial automation Sri Lanka',
+        'TiTEC Automation',
+        'buy automation product Sri Lanka',
+    ].filter(Boolean) as string[];
 
     return {
-        title: title,
-        description: description,
+        title,
+        description,
+        keywords,
         alternates: {
             canonical: canonicalUrl,
         },
         openGraph: {
-            title: title,
-            description: description,
+            title,
+            description,
             type: "website",
             url: canonicalUrl,
-            images: [imageUrl],
-            siteName: "Titec Automation",
+            images: [
+                {
+                    url: imageUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: product.name,
+                },
+            ],
+            siteName: "TiTEC Automation",
+            locale: "en_US",
         },
         twitter: {
             card: "summary_large_image",
-            title: title,
-            description: description,
+            title,
+            description,
             images: [imageUrl],
         }
     };
@@ -90,8 +128,8 @@ export default async function ProductPage({ params }: Props) {
         ]);
         product = productData;
         allProducts = productsData;
-    } catch (error) {
-        console.error("Failed to fetch product data server-side:", error);
+    } catch {
+        // Will render not-found state below
     }
 
     if (!product) {
@@ -128,40 +166,78 @@ export default async function ProductPage({ params }: Props) {
         ? getImageUrl(product.images[0])
         : product.image
             ? getImageUrl(product.image)
-            : '/placeholder-product.jpg';
+            : null;
 
-    const brandName = product.brand || "Titec Automation";
-    const stockStatus = (product.stock || 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+    // Collect all product images for the schema (Google supports multiple)
+    const allImageUrls: string[] = product.images && product.images.length > 0
+        ? product.images.map((img: string) => getImageUrl(img)).filter(Boolean)
+        : imageUrl
+            ? [imageUrl]
+            : [];
+
+    const brandName = product.brand || "TiTEC Automation";
+    const stockStatus = (product.stock || 0) > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
     const cleanDesc = stripHtml(product.description || "");
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
+    const canonicalUrl = `${baseUrl}/store/${slug}`;
 
-    const productJsonLd: any = {
+    const productJsonLd: Record<string, unknown> = {
         "@context": "https://schema.org",
         "@type": "Product",
+        "@id": canonicalUrl,
         "name": product.name,
-        "image": [imageUrl],
+        "image": allImageUrls.length > 0 ? allImageUrls : undefined,
         "description": cleanDesc,
         "brand": {
             "@type": "Brand",
-            "name": brandName
+            "name": brandName,
         },
         "sku": product.sku || undefined,
         "mpn": product.model_number || undefined,
+        "category": product.category || undefined,
+        "url": canonicalUrl,
+        // Seller is always TiTEC — surfaces in AI-powered shopping results
+        "seller": {
+            "@type": "Organization",
+            "name": "TiTEC Automation",
+            "url": baseUrl,
+        },
     };
 
     if (product.show_price !== false) {
-        productJsonLd.offers = {
+        productJsonLd["offers"] = {
             "@type": "Offer",
-            "url": `${baseUrl}/store/${slug}`,
+            "@id": `${canonicalUrl}#offer`,
+            "url": canonicalUrl,
             "priceCurrency": "LKR",
             "price": product.price,
-            "priceValidUntil": new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            "priceValidUntil": new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
+                .toISOString().split('T')[0],
             "availability": stockStatus,
             "itemCondition": "https://schema.org/NewCondition",
             "seller": {
                 "@type": "Organization",
                 "name": "TiTEC Automation",
                 "url": baseUrl,
+            },
+            "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingDestination": {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "LK",
+                },
+                "deliveryTime": {
+                    "@type": "ShippingDeliveryTime",
+                    "businessDays": {
+                        "@type": "OpeningHoursSpecification",
+                        "dayOfWeek": [
+                            "Monday", "Tuesday", "Wednesday",
+                            "Thursday", "Friday",
+                        ],
+                    },
+                },
             },
         };
     }
@@ -183,16 +259,17 @@ export default async function ProductPage({ params }: Props) {
                 "name": "Store",
                 "item": `${baseUrl}/store`
             },
-            {
+            ...(product.category ? [{
                 "@type": "ListItem",
                 "position": 3,
                 "name": product.category,
                 "item": `${baseUrl}/store?category=${encodeURIComponent(product.category)}`
-            },
+            }] : []),
             {
                 "@type": "ListItem",
-                "position": 4,
-                "name": product.name
+                "position": product.category ? 4 : 3,
+                "name": product.name,
+                "item": canonicalUrl,
             }
         ]
     };
