@@ -3,9 +3,9 @@ import ProjectsClient from "@/components/client/projects-client";
 import { Metadata } from "next";
 import { Project } from "@/types";
 
-import { Metadata } from "next";
+export const revalidate = 300;
 
-export const dynamic = 'force-dynamic';
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
 export const metadata: Metadata = {
     title: "Industrial Automation Projects Portfolio | TiTEC Automation Sri Lanka",

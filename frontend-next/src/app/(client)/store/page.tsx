@@ -4,10 +4,9 @@ import { createSlug } from "@/utils/slug-utils";
 import { Metadata } from "next";
 import { Product } from "@/types";
 
-import { Metadata } from "next";
+export const revalidate = 300;
 
-// Fetch products on every request (fully dynamic)
-export const dynamic = 'force-dynamic';
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
 export const metadata: Metadata = {
     title: "Industrial Automation Products Store | TiTEC Automation Sri Lanka",

@@ -22,7 +22,7 @@ import CartDrawer from "@/components/cart-drawer";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk'),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk'),
     title: {
         default: "TiTEC Automation | Industrial Automation Solutions in Sri Lanka",
         template: "%s | TiTEC Automation"
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "TiTEC Automation | Industrial Automation Solutions",
         description: "Expert industrial automation solutions including PLC, SCADA, and robotics. Transform your manufacturing with TiTEC Automation.",
-        url: process.env.NEXT_PUBLIC_APP_URL || 'https://titecautomation.lk',
+        url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk',
         siteName: "TiTEC Automation",
         locale: "en_US",
         type: "website",
