@@ -50,7 +50,7 @@ export function ProductCard({ product, onAddToQuote }: ProductCardProps) {
                 </div>
 
                 <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1" title={product.name}>{product.name}</h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2 grow">{product.description}</p>
+                <p className="text-gray-500 text-sm mb-4 line-clamp-2 grow whitespace-pre-wrap">{product.description}</p>
 
                 <div className="space-y-3 mt-auto">
                     {/* Prevent Link navigation when clicking internal buttons */}

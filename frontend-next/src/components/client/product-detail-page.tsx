@@ -236,7 +236,7 @@ export default function ProductDetailPage({
                         )}
 
                         {/* Description */}
-                        <div className="prose prose-sm text-gray-600 mb-6 leading-relaxed max-w-none">
+                        <div className="prose prose-sm text-gray-600 mb-6 leading-relaxed max-w-none whitespace-pre-wrap">
                             <p>{product.description}</p>
                         </div>
 
