@@ -104,6 +104,12 @@ Titec-Automation-website-m3-first/
 | clsx + tailwind-merge |       | Conditional className merging (`cn`)|
 | Google Maps         | -       | `@vis.gl/react-google-maps`          |
 
+### SEO & Performance (Frontend)
+
+- **Server-Side Rendering (SSR) & Static Params**: Client pages (e.g. `/projects`, `/projects/[id]`) are server-rendered or statically generated for crawler indexing.
+- **Dynamic Metadata**: Use `generateMetadata` to populate page-specific titles, descriptions, Open Graph, and Twitter card tags.
+- **JSON-LD Schema**: Embedded structured data schemas (`CreativeWork`, `ItemList`, `BreadcrumbList`) in client pages to achieve rich snippet presence in search results.
+
 ### Backend (`backend-laravel`)
 
 | Technology       | Version | Purpose                           |
@@ -174,9 +180,9 @@ erDiagram
 | Model              | Key Fields                                    | Relationships                          |
 |--------------------|-----------------------------------------------|----------------------------------------|
 | `User`             | name, email, password, role                   | hasMany QuotationRequests              |
-| `Product`          | name, price, images[], brand_id, on_store     | belongsTo Brand, belongsToMany QuotationRequest |
+| `Product`          | name, slug, price, stock, sku, images, brand_id, on_store, show_price | belongsTo Brand, belongsToMany QuotationRequest |
 | `Brand`            | name, slug, logo_path                         | hasMany Products                       |
-| `Project`          | title, client, description, thumbnail_path    | —                                      |
+| `Project`          | title, client, location, status, technologies, completion_date, thumbnail_path, project_image_urls | —                                      |
 | `ServiceCategory`  | title, slug, image_path, sort_order           | hasMany ServiceItems                   |
 | `ServiceItem`      | title, description, sort_order                | belongsTo ServiceCategory              |
 | `QuotationRequest` | name, email, phone, status, customer_notes    | belongsToMany Products, hasOne Quotation|
@@ -214,3 +220,25 @@ SANCTUM_STATEFUL_DOMAINS=             # Allowed SPA domains
 - **Build**: `next build --webpack` (webpack mode, not turbopack)
 - **Image optimization**: Disabled (`unoptimized: true`) due to missing Sharp on cPanel
 - **Cache headers**: `no-store, must-revalidate` on all frontend pages
+
+---
+
+## CI/CD Pipeline (GitHub Actions)
+
+A fully automated "Zip & Ship" deployment pipeline is configured via `.github/workflows/deploy.yml`. It triggers automatically on pushes to the `main` branch.
+
+### Pipeline Stages:
+1. **Build Phase**:
+   - **Backend**: Runs `composer install --no-dev --optimize-autoloader` via PHP 8.2.
+   - **Frontend**: Runs `npm install` and `npm run build` via Node 20 (injects `NEXT_PUBLIC_BACKEND_URL`).
+2. **Package Phase**:
+   - Compresses the built `backend-laravel` and `frontend-next` folders into `deploy_package.tar.gz`, excluding `.git`, `.env` files, and logs.
+3. **Upload Phase**:
+   - Uploads the archive to the cPanel server via SCP (`appleboy/scp-action`).
+4. **Deploy & Restart Phase**:
+   - Executes remote SSH commands to:
+     - Force kill old Node processes (`pkill node`).
+     - Extract the archive and overwrite existing files.
+     - Run Laravel migrations and clear caches (`migrate --force`, `config:cache`).
+     - Install frontend production dependencies (`npm install --production`).
+     - Trigger Phusion Passenger restart (`touch tmp/restart.txt`).
