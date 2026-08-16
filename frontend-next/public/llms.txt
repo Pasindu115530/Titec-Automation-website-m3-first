@@ -1,0 +1,36 @@
+# TiTEC Automation
+
+> TiTEC Automation is a leading industrial automation solutions provider in Sri Lanka,
+> offering PLC programming, SCADA systems, electrical design, robotic integration,
+> and a full catalog of industrial automation products.
+
+## About
+- Company: TiTEC Automation (Pvt) Ltd
+- Location: Sri Lanka
+- Industry: Industrial Automation & Control Systems
+- Website: https://www.titecautomation.lk
+
+## What We Offer
+- Industrial automation product catalog (PLCs, HMIs, VFDs, sensors, control panel components)
+- PLC programming and integration services
+- SCADA system design and implementation
+- Electrical panel design and wiring
+- Robotic arm programming (Kawasaki, KUKA, Borunte)
+- Industrial IoT solutions
+- Quotation request system for bulk/custom orders
+
+## Key Pages
+- Store (Product Catalog): https://www.titecautomation.lk/store
+- Services: https://www.titecautomation.lk/services
+- Projects Portfolio: https://www.titecautomation.lk/projects
+- About Us: https://www.titecautomation.lk/about
+- Contact: https://www.titecautomation.lk/contact
+- FAQ: https://www.titecautomation.lk/faq
+
+## Product Data Feed
+- Full product catalog (plain text): https://www.titecautomation.lk/llms-full.txt
+- Sitemap: https://www.titecautomation.lk/sitemap.xml
+
+## Contact
+- Email: info@titecautomation.lk
+- Country: Sri Lanka (LK)
