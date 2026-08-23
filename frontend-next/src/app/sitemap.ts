@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { productService } from '@/services/productService'
+import { projectService } from '@/services/projectService'
 import { createSlug } from '@/utils/slug-utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
