@@ -39,7 +39,17 @@ jobs:
         cd frontend-next
         npm install
         npm run build
-        rm -rf node_modules
+        
+        # Next.js standalone output doesn't copy static files automatically
+        cp -r public .next/standalone/
+        cp -r .next/static .next/standalone/.next/
+        
+        # Replace the entire frontend-next directory with the standalone build
+        # This contains everything needed to run (server.js, node_modules, .next)
+        cd ..
+        mv frontend-next/.next/standalone frontend-next-standalone
+        rm -rf frontend-next
+        mv frontend-next-standalone frontend-next
 
     # --- PART C: COMPRESS FILES ---
     - name: 📦 Create Deployment Archive
@@ -87,7 +97,7 @@ jobs:
           pkill -u ${{ secrets.CPANEL_USER }} node || true
           
           # 2. පරණ build artifacts අයින් කිරීම
-          rm -rf frontend-next/.next
+          rm -rf frontend-next/.next frontend-next/node_modules
 
           # 3. Extract and Overwrite
           tar -xzf deploy_package.tar.gz

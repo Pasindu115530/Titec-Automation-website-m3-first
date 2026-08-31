@@ -3,11 +3,7 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
-    experimental: {
-        instantInsights: {
-            validationLevel: 'warning',
-        },
-    },
+    output: "standalone",
 
     images: {
         remotePatterns: [
