@@ -34,6 +34,7 @@ jobs:
     - name: 🔨 Build Frontend
       env:
         NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+        NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
       run: |
         cd frontend-next
         npm install
@@ -99,11 +100,9 @@ jobs:
           php artisan cache:clear
           php artisan config:cache
           
-          # 5. Finalize Frontend
+          # 5. Restart App (Passenger trigger)
+          # NOTE: No npm install needed — the .next build is self-contained.
+          # Running npm install here caused postinstall hooks to overwrite src/ files.
           cd ../frontend-next
-          export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
-          npm install --production
-          
-          # 6. Restart App (Passenger trigger)
           mkdir -p tmp
           touch tmp/restart.txt
