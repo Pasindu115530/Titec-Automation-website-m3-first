@@ -172,7 +172,6 @@ export default function ContactForm() {
                                     onChange={e => { setPhone(e.target.value); if (errors.phone) setErrors({ ...errors, phone: false }); }}
                                     className={`w-full bg-white border rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-(--secondary-blue)/20 focus:border-(--secondary-blue) transition-all placeholder:text-slate-400 ${errors.phone ? 'border-red-500' : 'border-slate-200'}`}
                                     placeholder="+94 000-000-000"
-                                    required
                                 />
                             </div>
                         </div>

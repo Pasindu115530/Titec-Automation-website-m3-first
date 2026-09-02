@@ -10,7 +10,7 @@ import { POSSummary } from '@/components/erp/pos-summary';
 import { POSConfirmModal } from '@/components/erp/pos-confirm-modal';
 import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
-import { FileText, Save, History, Printer } from 'lucide-react';
+import { FileText, Save, History, Printer, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 

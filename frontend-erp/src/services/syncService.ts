@@ -1,5 +1,5 @@
 import { offlineDb, PendingInvoice, PendingServiceLog } from '@/lib/offline-db';
-import api from '@/services/api';
+import { api } from '@/lib/api';
 
 class SyncService {
   private isSyncing = false;

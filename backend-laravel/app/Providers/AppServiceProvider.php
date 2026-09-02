@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,5 +27,9 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
         Schema::defaultStringLength(191);
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super Admin') ? true : null;
+        });
     }
 }

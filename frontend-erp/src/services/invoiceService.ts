@@ -1,4 +1,4 @@
-import api from './api';
+import { api } from '@/lib/api';
 import { v4 as uuidv4 } from 'uuid';
 import { offlineDb, PendingInvoice, PendingInvoiceItem } from '@/lib/offline-db';
 import { syncService } from './syncService';

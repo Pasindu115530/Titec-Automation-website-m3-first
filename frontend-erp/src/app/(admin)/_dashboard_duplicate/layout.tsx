@@ -15,7 +15,8 @@ import {
     Package,
     FileText,
     LayoutGrid,
-    Wrench
+    Wrench,
+    Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming you have utils
 import { Button } from '@/components/ui/button';

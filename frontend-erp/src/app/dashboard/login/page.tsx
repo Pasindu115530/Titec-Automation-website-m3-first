@@ -92,16 +92,21 @@ export default function AdminLoginPage() {
 
             // Store user data
             if (data.user) {
-                console.log('User object found, saving to localStorage and updating AuthContext...');
-                localStorage.setItem('user', JSON.stringify(data.user));
+                console.log('User object found, updating AuthContext and localStorage...');
                 // Immediately update AuthContext so header reflects login without refresh
                 try {
+                    const userObj = data.user as any;
+                    const isSuperAdmin = userObj.roles?.includes('Super Admin');
+                    const actualRole = isSuperAdmin ? 'admin' : 'customer';
+
                     setUserExternal({
-                        id: (data.user as Record<string, unknown>).id as string | number,
-                        email: (data.user as Record<string, unknown>).email as string,
-                        name: (data.user as Record<string, unknown>).name as string,
-                        role: (data.user as Record<string, unknown>).role as any,
+                        id: userObj.id || userObj._id,
+                        email: userObj.email,
+                        name: userObj.name,
+                        role: actualRole,
                         token,
+                        roles: userObj.roles || [],
+                        permissions: userObj.permissions || [],
                     });
                     console.log('AuthContext updated successfully.');
                 } catch (e) {

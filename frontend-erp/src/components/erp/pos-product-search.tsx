@@ -33,7 +33,7 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
       setIsSearching(true);
       try {
         const response = await productService.getProducts(query);
-        setResults(response.data || []);
+        setResults(response || []);
         setIsOpen(true);
       } catch (error) {
         console.error('Failed to search products:', error);

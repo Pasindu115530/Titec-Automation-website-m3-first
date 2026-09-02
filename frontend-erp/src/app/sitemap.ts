@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { productService } from '@/services/productService'
+import { projectService } from '@/services/projectService'
 import { createSlug } from '@/utils/slug-utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -77,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let projectPages: MetadataRoute.Sitemap = []
     try {
         const projects = await projectService.getProjects()
-        projectPages = projects.map(project => ({
+        projectPages = projects.map((project: any) => ({
             url: `${baseUrl}/projects/${project.id}`,
             lastModified: new Date(
                 (project as any).updated_at || project.completion_date || now
