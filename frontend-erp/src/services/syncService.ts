@@ -58,7 +58,7 @@ class SyncService {
     );
 
     try {
-      const response = await api.post('/invoices/batch', {
+      const response = await api.post('/api/invoices/batch', {
         invoices: pending.map(inv => ({
           uuid: inv.uuid,
           client_id: inv.client_id,
@@ -121,7 +121,7 @@ class SyncService {
     if (pending.length === 0) return 0;
 
     try {
-      const response = await api.post('/service-logs/batch', {
+      const response = await api.post('/api/service-logs/batch', {
         service_logs: pending.map(log => ({
           uuid: log.uuid,
           client_id: log.client_id,

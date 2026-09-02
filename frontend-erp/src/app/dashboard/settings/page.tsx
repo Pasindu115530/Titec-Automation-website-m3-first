@@ -6,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
+import UsersTable from '@/components/erp/users-table';
+
 export default function SettingsPage() {
+    const [activeTab, setActiveTab] = useState<'general' | 'users'>('general');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState('');
     const [formData, setFormData] = useState({
@@ -69,12 +72,14 @@ export default function SettingsPage() {
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
                         Settings
                     </h1>
-                    <p className="text-gray-500 mt-1">Manage your application preferences and configuration.</p>
+                    <p className="text-gray-500 mt-1">Manage your application preferences and users.</p>
                 </div>
-                <Button className="gap-2" onClick={handleSave} disabled={loading}>
-                    <Save className="h-4 w-4" />
-                    {loading ? 'Saving...' : 'Save Changes'}
-                </Button>
+                {activeTab === 'general' && (
+                    <Button className="gap-2" onClick={handleSave} disabled={loading}>
+                        <Save className="h-4 w-4" />
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                )}
             </div>
 
             {success && (
@@ -83,7 +88,37 @@ export default function SettingsPage() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className="border-b border-gray-200">
+                <nav className="-mb-px flex space-x-8">
+                    <button
+                        onClick={() => setActiveTab('general')}
+                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                            activeTab === 'general'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                    >
+                        General Settings
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('users')}
+                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                            activeTab === 'users'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                    >
+                        User Management
+                    </button>
+                </nav>
+            </div>
+
+            {activeTab === 'users' ? (
+                <div className="animate-in fade-in duration-300 pt-2">
+                    <UsersTable />
+                </div>
+            ) : (
+            <div className="grid grid-cols-1 gap-6 animate-in fade-in duration-300 pt-2">
                 {/* Profile Settings */}
                 <Card>
                     <CardHeader>
@@ -402,6 +437,7 @@ export default function SettingsPage() {
                     </CardContent>
                 </Card>
             </div>
+            )}
         </div>
     );
 }

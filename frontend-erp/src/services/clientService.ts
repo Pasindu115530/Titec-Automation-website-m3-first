@@ -21,32 +21,32 @@ export interface Client {
 
 export const clientService = {
     async getClients(search = '', page = 1) {
-        const response = await api.get(`/clients?search=${encodeURIComponent(search)}&page=${page}`);
+        const response = await api.get(`/api/clients?search=${encodeURIComponent(search)}&page=${page}`);
         return response.data;
     },
 
     async getClient(id: number) {
-        const response = await api.get(`/clients/${id}`);
+        const response = await api.get(`/api/clients/${id}`);
         return response.data;
     },
 
     async getClientHistory(id: number) {
-        const response = await api.get(`/clients/${id}/history`);
+        const response = await api.get(`/api/clients/${id}/history`);
         return response.data;
     },
 
     async createClient(data: Partial<Client>) {
-        const response = await api.post('/clients', data);
+        const response = await api.post('/api/clients', data);
         return response.data;
     },
 
     async updateClient(id: number, data: Partial<Client>) {
-        const response = await api.put(`/clients/${id}`, data);
+        const response = await api.put(`/api/clients/${id}`, data);
         return response.data;
     },
 
     async deleteClient(id: number) {
-        const response = await api.delete(`/clients/${id}`);
+        const response = await api.delete(`/api/clients/${id}`);
         return response.data;
     }
 };

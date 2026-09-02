@@ -21,12 +21,12 @@ export interface CreateInvoiceData {
 
 export const invoiceService = {
   async getInvoices(params: any = {}) {
-    const response = await api.get('/invoices', { params });
+    const response = await api.get('/api/invoices', { params });
     return response.data;
   },
 
   async getInvoice(id: number) {
-    const response = await api.get(`/invoices/${id}`);
+    const response = await api.get(`/api/invoices/${id}`);
     return response.data;
   },
 
@@ -38,7 +38,7 @@ export const invoiceService = {
 
     try {
       // Create via API
-      const response = await api.post('/invoices', data);
+      const response = await api.post('/api/invoices', data);
       return response.data;
     } catch (error) {
       console.warn('API creation failed, falling back to offline storage', error);
@@ -69,17 +69,17 @@ export const invoiceService = {
   },
 
   async confirmInvoice(id: number) {
-    const response = await api.post(`/invoices/${id}/confirm`);
+    const response = await api.post(`/api/invoices/${id}/confirm`);
     return response.data;
   },
 
   async voidInvoice(id: number) {
-    const response = await api.post(`/invoices/${id}/void`);
+    const response = await api.post(`/api/invoices/${id}/void`);
     return response.data;
   },
 
   async recordPayment(id: number, amount: number, payment_method: string) {
-    const response = await api.post(`/invoices/${id}/payment`, {
+    const response = await api.post(`/api/invoices/${id}/payment`, {
       amount,
       payment_method,
     });

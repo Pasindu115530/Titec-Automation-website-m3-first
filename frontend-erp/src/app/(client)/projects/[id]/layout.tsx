@@ -1,5 +1,5 @@
 export async function generateStaticParams() {
-    return [];
+    return [{ id: 'placeholder' }];
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
