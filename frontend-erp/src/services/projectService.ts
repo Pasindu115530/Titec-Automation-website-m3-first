@@ -1,4 +1,4 @@
-import api from '@/services/api';
+import { api } from '@/lib/api';
 import { Project } from '../types';
 
 export const projectService = {

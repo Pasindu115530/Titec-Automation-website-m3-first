@@ -10,10 +10,18 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Main login form submitted for:', email);
     try {
-      await login(email, password);
+      // Pass 'admin' or 'customer' role; defaulting to 'admin' as this seems to be an ERP system login
+      console.log('Calling AuthContext login...');
+      await login(email, password, 'admin');
+      console.log('AuthContext login successful.');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+      console.error('AuthContext login failed:', err);
+      if (err.response) {
+        console.error('Error response data:', err.response.data);
+      }
+      setError(err.response?.data?.message || err.message || 'Login failed');
     }
   };
 

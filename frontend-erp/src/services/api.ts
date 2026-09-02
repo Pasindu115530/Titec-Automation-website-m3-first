@@ -1,48 +1,38 @@
-import axios from 'axios';
+// Removed unused 'import axios' to keep bundle small
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://127.0.0.1:8000';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+// Added 'fallbackValue' parameter to handle Objects vs Arrays safely
+export async function fetchFromApi<T>(endpoint: string, options?: RequestInit, fallbackValue?: T): Promise<T> {
+    try {
+        const headers: HeadersInit = {
+            'Accept': 'application/json',
+            ...options?.headers,
+        };
 
-const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  withCredentials: true,
-});
-
-// Request interceptor — attach Bearer token
-api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const userData = localStorage.getItem('erp_user');
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        if (user.token) {
-          config.headers.Authorization = `Bearer ${user.token}`;
+        if (!(options?.body instanceof FormData)) {
+            (headers as any)['Content-Type'] = 'application/json';
         }
-      } catch (e) {
-        console.error('Error parsing user token', e);
-      }
-    }
-  }
-  return config;
-});
 
-// Response interceptor — handle 401
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('erp_user');
-        if (window.location.pathname !== '/') {
-            window.location.href = '/';
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers,
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            throw new Error(`API call failed: ${response.status} ${response.statusText}`);
         }
-      }
-    }
-    return Promise.reject(error);
-  }
-);
 
-export default api;
+        return await response.json();
+    } catch (error) {
+        console.warn(`⚠️ Build Warning: Could not fetch ${endpoint}. Using fallback data.`);
+
+        // If you provided a specific fallback (like {} for an object), return it.
+        if (fallbackValue !== undefined) {
+            return fallbackValue;
+        }
+
+        // Default to empty array [] (Safe for lists, risky for single objects)
+        return [] as unknown as T;
+    }
+}

@@ -289,7 +289,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
                                     <label className="text-sm font-medium">Brand</label>
-                                    <a href="/admin/brands" target="_blank" className="text-xs text-indigo-600 hover:underline">+ New Brand</a>
+                                    <a href="/dashboard/brands" target="_blank" className="text-xs text-indigo-600 hover:underline">+ New Brand</a>
                                 </div>
                                 <div className="relative">
                                     <Tag className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />

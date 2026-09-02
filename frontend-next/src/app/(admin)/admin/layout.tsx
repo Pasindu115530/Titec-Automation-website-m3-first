@@ -43,17 +43,10 @@ export default function AdminLayout({
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
         { name: 'Quotation Requests', icon: FileText, href: '/admin/quotations' },
-
-        // Projects
         { name: 'Projects Management', icon: FolderPlus, href: '/admin/projects' },
-
-        // Products
         { name: 'Products Management', icon: Package, href: '/admin/products' },
         { name: 'Brands Management', icon: LayoutGrid, href: '/admin/brands' },
-
-        // Services
         { name: 'Services Management', icon: Wrench, href: '/admin/services' },
-
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
     ];
 

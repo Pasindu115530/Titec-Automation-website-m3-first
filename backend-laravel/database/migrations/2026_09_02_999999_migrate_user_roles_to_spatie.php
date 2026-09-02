@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         // Ensure roles exist (idempotent)
-        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'sanctum']);
+        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
 
         // Migrate existing admin users to Super Admin role
         $adminUsers = User::where('role', 'admin')->get();
