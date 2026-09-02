@@ -207,6 +207,7 @@ SANCTUM_STATEFUL_DOMAINS=             # Allowed SPA domains
 
 ## Deployment Notes
 
+- **Trigger**: Deployed manually via GitHub Actions (`workflow_dispatch`) with target selection (frontend, erp, backend, all).
 - **Hosting**: cPanel shared hosting
 - **Frontend**: Runs via custom `server.js` (Node.js HTTP server wrapping Next.js)
 - **Backend**: Standard Laravel on Apache/PHP-FPM

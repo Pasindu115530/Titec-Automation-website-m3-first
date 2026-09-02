@@ -25,9 +25,9 @@ export default function InstallationDetailPage() {
     const loadInstallation = async () => {
         setLoading(true);
         try {
-            const data = await installationService.getInstallationById(id);
+            const data: any = await installationService.getInstallationById(id);
             // Handling whether the backend nests it in { data: ... }
-            setInstallation(data.data ? data.data : data);
+            setInstallation(data?.data ? data.data : data);
         } catch (error) {
             toast.error('Failed to load installation details.');
             router.push('/dashboard/installations');

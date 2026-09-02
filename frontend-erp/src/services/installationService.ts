@@ -34,10 +34,12 @@ export interface Installation {
     updated_at: string;
     client?: {
         id: number;
-        company_name: string;
-        contact_name: string;
-        phone: string;
-        city: string;
+        company_name?: string;
+        contact_name?: string;
+        contact_person?: string;
+        phone?: string;
+        city?: string;
+        address?: string;
     };
     invoice?: {
         id: number;

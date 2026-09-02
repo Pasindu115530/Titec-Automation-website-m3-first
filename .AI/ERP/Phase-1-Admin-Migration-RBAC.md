@@ -1044,40 +1044,27 @@ module.exports = {
 name: Deploy (Path-Filtered)
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Deployment Target'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - frontend
+          - backend
+          - erp
   pull_request:
     branches: [main]
 
 jobs:
   # ═══════════════════════════════════════════════
-  # Step 0: Detect which paths changed
-  # ═══════════════════════════════════════════════
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      frontend-next: ${{ steps.filter.outputs.frontend-next }}
-      frontend-erp: ${{ steps.filter.outputs.frontend-erp }}
-      backend: ${{ steps.filter.outputs.backend }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            frontend-next:
-              - 'frontend-next/**'
-            frontend-erp:
-              - 'frontend-erp/**'
-            backend:
-              - 'backend-laravel/**'
-
-  # ═══════════════════════════════════════════════
   # Job 1: Deploy Main Website (SSR Next.js)
   # ═══════════════════════════════════════════════
   deploy-main-web:
-    needs: changes
-    if: needs.changes.outputs.frontend-next == 'true' && github.event_name == 'push'
+    if: ${{ github.event.inputs.target == 'frontend' || github.event.inputs.target == 'all' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1131,8 +1118,7 @@ jobs:
   # Job 2: Deploy ERP (Static Export)
   # ═══════════════════════════════════════════════
   deploy-erp:
-    needs: changes
-    if: needs.changes.outputs.frontend-erp == 'true' && github.event_name == 'push'
+    if: ${{ github.event.inputs.target == 'erp' || github.event.inputs.target == 'all' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1182,8 +1168,7 @@ jobs:
   # Job 3: Deploy Backend (Laravel)
   # ═══════════════════════════════════════════════
   deploy-backend:
-    needs: changes
-    if: needs.changes.outputs.backend == 'true' && github.event_name == 'push'
+    if: ${{ github.event.inputs.target == 'backend' || github.event.inputs.target == 'all' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
