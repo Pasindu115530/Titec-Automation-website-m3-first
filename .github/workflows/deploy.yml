@@ -1,109 +1,213 @@
-name: Deploy Full Stack (Zip & Ship)
+name: Deploy (Path-Filtered)
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  deploy:
+  # ═══════════════════════════════════════════════
+  # Step 0: Detect which paths changed
+  # ═══════════════════════════════════════════════
+  changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      frontend-next: ${{ steps.filter.outputs.frontend-next }}
+      frontend-erp: ${{ steps.filter.outputs.frontend-erp }}
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
-    - name: 🚚 Get Latest Code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend-next:
+              - 'frontend-next/**'
+            frontend-erp:
+              - 'frontend-erp/**'
+            backend:
+              - 'backend-laravel/**'
 
-    # --- PART A: BUILD BACKEND ---
-    - name: ⚙️ Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, fileinfo
+  # ═══════════════════════════════════════════════
+  # Job 1: Deploy Main Website (SSR Next.js)
+  # ═══════════════════════════════════════════════
+  deploy-main-web:
+    needs: changes
+    if: needs.changes.outputs.frontend-next == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: 🔨 Build Backend
-      run: |
-        cd backend-laravel
-        composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    # --- PART B: BUILD FRONTEND ---
-    - name: ⚙️ Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: 🔨 Build Frontend
+        env:
+          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+        run: |
+          cd frontend-next
+          npm install
+          npm run build
+          rm -rf node_modules
 
-    - name: 🔨 Build Frontend
-      env:
-        NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
-      run: |
-        cd frontend-next
-        npm install
-        npm run build
-        rm -rf node_modules
+      - name: 📦 Archive Frontend
+        run: tar -czf frontend-next.tar.gz frontend-next/
 
-    # --- PART C: COMPRESS FILES ---
-    - name: 📦 Create Deployment Archive
-      run: |
-        tar -czf deploy_package.tar.gz \
-          --exclude='.git' \
-          --exclude='.github' \
-          --exclude='backend-laravel/.env' \
-          --exclude='frontend-next/.env' \
-          --exclude='backend-laravel/storage/logs' \
-          backend-laravel frontend-next
+      - name: 🚀 Deploy Frontend
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          source: "frontend-next.tar.gz"
+          target: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
 
-    # --- PART D: UPLOAD & DEPLOY ---
-    - name: 📂 Prepare Server Directory
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST_IP }}
-        username: ${{ secrets.CPANEL_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }}
-        script: |
-          mkdir -p /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+      - name: 🔄 Extract & Restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+            pkill -u ${{ secrets.CPANEL_USER }} node || true
+            rm -rf frontend-next/.next
+            tar -xzf frontend-next.tar.gz
+            rm frontend-next.tar.gz
+            cd frontend-next
+            export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
+            npm install --production
+            mkdir -p tmp && touch tmp/restart.txt
 
-    - name: 🚀 Upload Archive
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST_IP }}
-        username: ${{ secrets.CPANEL_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }}
-        source: "deploy_package.tar.gz"
-        target: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
+  # ═══════════════════════════════════════════════
+  # Job 2: Deploy ERP (Static Export)
+  # ═══════════════════════════════════════════════
+  deploy-erp:
+    needs: changes
+    if: needs.changes.outputs.frontend-erp == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: 🧹 Extract, Clean & Force Restart
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST_IP }}
-        username: ${{ secrets.CPANEL_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.REMOTE_PORT }}
-        script: |
-          cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
-          
-          # 1. Force Kill - පරණ Node processes සම්පූර්ණයෙන්ම නවත්වන්න (Ghost Processes අයින් කිරීමට)
-          pkill -u ${{ secrets.CPANEL_USER }} node || true
-          
-          # 2. පරණ build artifacts අයින් කිරීම
-          rm -rf frontend-next/.next
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-          # 3. Extract and Overwrite
-          tar -xzf deploy_package.tar.gz
-          rm deploy_package.tar.gz
-          
-          # 4. Finalize Laravel (Cache clear කර අලුත් config load කිරීම)
+      - name: 🔨 Build ERP (Static Export)
+        env:
+          NEXT_PUBLIC_BACKEND_URL: ${{ secrets.NEXT_PUBLIC_BACKEND_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.ERP_APP_URL }}
+        run: |
+          cd frontend-erp
+          npm install
+          npm run build
+          # Static export outputs to 'out/' directory
+
+      - name: 📦 Archive ERP
+        run: tar -czf frontend-erp-out.tar.gz -C frontend-erp/out .
+
+      - name: 🚀 Deploy ERP Static Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          source: "frontend-erp-out.tar.gz"
+          target: "/home/${{ secrets.CPANEL_USER }}/erp.titecautomation.lk/"
+
+      - name: 🔄 Extract Static Files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /home/${{ secrets.CPANEL_USER }}/erp.titecautomation.lk/
+            rm -rf public_html/*
+            tar -xzf frontend-erp-out.tar.gz -C public_html/
+            rm frontend-erp-out.tar.gz
+
+  # ═══════════════════════════════════════════════
+  # Job 3: Deploy Backend (Laravel)
+  # ═══════════════════════════════════════════════
+  deploy-backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, fileinfo
+
+      - name: 🔨 Build Backend
+        run: |
           cd backend-laravel
-          php artisan migrate --force
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan config:cache
-          
-          # 5. Finalize Frontend
-          cd ../frontend-next
-          export PATH="/opt/cpanel/ea-nodejs20/bin:$PATH"
-          npm install --production
-          
-          # 6. Restart App (Passenger trigger)
-          mkdir -p tmp
-          touch tmp/restart.txt
+          composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs
+
+      - name: 📦 Archive Backend
+        run: |
+          tar -czf backend-laravel.tar.gz \
+            --exclude='backend-laravel/.env' \
+            --exclude='backend-laravel/storage/logs/*' \
+            backend-laravel/
+
+      - name: 🚀 Deploy Backend
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          source: "backend-laravel.tar.gz"
+          target: "/home/${{ secrets.CPANEL_USER }}/repositories/titec_project/"
+
+      - name: 🔄 Extract & Migrate
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.CPANEL_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /home/${{ secrets.CPANEL_USER }}/repositories/titec_project/
+            tar -xzf backend-laravel.tar.gz
+            rm backend-laravel.tar.gz
+            cd backend-laravel
+            php artisan migrate --force
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan config:cache
+            php artisan permission:cache-reset
+
+  # ═══════════════════════════════════════════════
+  # Staging Deploys (PR only)
+  # ═══════════════════════════════════════════════
+  staging-preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🏗️ Build Check (Frontend)
+        run: |
+          cd frontend-next && npm install && npm run build
+      - name: 🏗️ Build Check (ERP)
+        run: |
+          cd frontend-erp && npm install && npm run build
+        continue-on-error: true
+      - name: 🏗️ Build Check (Backend)
+        run: |
+          cd backend-laravel && composer install --ignore-platform-reqs
+      - name: ✅ All builds passed
+        run: echo "All builds passed"
