@@ -164,7 +164,7 @@ export default function AdminDashboard() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="bg-[#FFF4E8] rounded-lg p-6 border border-[#FDE5CC]/70 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all hover:shadow-md"
+                            className="bg-[#FFF4E8]/90 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_10px_30px_rgba(245,158,11,0.06),0_2px_6px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_16px_36px_rgba(245,158,11,0.1)] hover:-translate-y-0.5"
                         >
                             <div className="flex items-start gap-4">
                                 <div className="w-11 h-11 rounded-full bg-[#FFE7D1] flex items-center justify-center shrink-0 shadow-2xs">
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.08 }}
-                            className="bg-[#F1EBFF] rounded-lg p-6 border border-[#E0D5FE]/70 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all hover:shadow-md mt-4"
+                            className="bg-[#F1EBFF]/90 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_10px_30px_rgba(139,92,246,0.06),0_2px_6px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_16px_36px_rgba(139,92,246,0.1)] hover:-translate-y-0.5 mt-4"
                         >
                             <div className="flex items-start gap-4">
                                 <div className="w-11 h-11 rounded-full bg-[#E2D6FE] flex items-center justify-center shrink-0 shadow-2xs">
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.16 }}
-                            className="bg-[#E6F9F7] rounded-lg p-6 border border-[#B8F2EB]/70 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all hover:shadow-md mt-4"
+                            className="bg-[#E6F9F7]/90 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_10px_30px_rgba(6,182,212,0.06),0_2px_6px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_16px_36px_rgba(6,182,212,0.1)] hover:-translate-y-0.5 mt-4"
                         >
                             <div className="flex items-start gap-4">
                                 <div className="w-11 h-11 rounded-full bg-[#C7F3ED] flex items-center justify-center shrink-0 shadow-2xs">
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.22 }}
-                        className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+                        className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
                     >
                         <h3 className="text-lg font-bold text-neutral-900 tracking-tight mb-4">
                             Sales
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.1 }}
-                        className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+                        className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
                     >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
                             <h2 className="text-lg font-bold text-neutral-900 tracking-tight">
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.18 }}
-                            className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col justify-between"
+                            className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between"
                         >
                             <h3 className="text-lg font-bold text-neutral-900 tracking-tight mb-2">
                                 Sale Analytics
@@ -435,7 +435,7 @@ export default function AdminDashboard() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.24 }}
-                            className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col justify-between"
+                            className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between"
                         >
                             <div>
                                 <div className="flex items-center justify-between mb-4">
@@ -486,7 +486,7 @@ export default function AdminDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.28 }}
-                className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+                className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
             >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
                     <h3 className="text-lg font-bold text-neutral-900 tracking-tight">
@@ -550,7 +550,7 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.32 }}
-                    className="bg-white rounded-lg p-6 border border-neutral-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+                    className="bg-white/85 backdrop-blur-md rounded-2xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-300"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <div>

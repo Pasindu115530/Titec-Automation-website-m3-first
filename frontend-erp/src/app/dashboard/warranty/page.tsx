@@ -47,14 +47,14 @@ export default function WarrantyCheckerPage() {
                 </div>
                 <Link 
                     href="/dashboard/service-logs"
-                    className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors shadow-sm"
+                    className="px-4 py-2 bg-white/80 border border-white/80 rounded-2xl text-neutral-800 hover:bg-white font-medium transition-all shadow-[0_4px_16px_rgba(0,0,0,0.04)]"
                 >
                     View Service Logs
                 </Link>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+            <div className="bg-white/85 backdrop-blur-md rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] border border-white/80 overflow-hidden">
+                <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-b border-gray-100">
                     <form onSubmit={handleCheck} className="max-w-2xl mx-auto">
                         <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-2">
                             Product Serial Number / Invoice Reference
@@ -66,12 +66,12 @@ export default function WarrantyCheckerPage() {
                                 value={serialNumber}
                                 onChange={(e) => setSerialNumber(e.target.value)}
                                 placeholder="Enter S/N (e.g. SN-2026-10492)"
-                                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm text-lg"
+                                className="flex-1 px-4 py-3 border border-gray-300/80 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-xs text-lg bg-white/90"
                             />
                             <button
                                 type="submit"
                                 disabled={isChecking || !serialNumber.trim()}
-                                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors shadow-sm min-w-[140px] flex justify-center items-center"
+                                className="px-6 py-3 bg-neutral-900 text-white font-medium rounded-2xl hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 disabled:opacity-50 transition-colors shadow-sm min-w-[140px] flex justify-center items-center"
                             >
                                 {isChecking ? 'Checking...' : 'Check Status'}
                             </button>

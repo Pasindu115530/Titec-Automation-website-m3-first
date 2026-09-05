@@ -125,7 +125,15 @@ export default function AdminLayout({
         : 'User';
 
     return (
-        <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased">
+        <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased relative overflow-hidden">
+            {/* Ambient Background Depth Layer (Down Level) */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+                <div className="absolute -top-32 right-1/4 w-[650px] h-[650px] bg-blue-400/15 rounded-full blur-[140px]" />
+                <div className="absolute top-1/2 right-10 w-[550px] h-[550px] bg-purple-400/15 rounded-full blur-[140px]" />
+                <div className="absolute bottom-0 left-1/3 w-[600px] h-[600px] bg-cyan-400/15 rounded-full blur-[140px]" />
+                <div className="absolute top-20 left-10 w-[400px] h-[400px] bg-amber-300/15 rounded-full blur-[120px]" />
+            </div>
+
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isSidebarOpen && (
@@ -139,7 +147,7 @@ export default function AdminLayout({
                 )}
             </AnimatePresence>
 
-            <div className="flex flex-1 min-h-screen">
+            <div className="flex flex-1 min-h-screen relative z-10">
                 {/* Starline Light Sidebar */}
                 <motion.aside
                     initial={false}
@@ -147,7 +155,7 @@ export default function AdminLayout({
                         width: isSidebarOpen ? '17.5rem' : '0rem',
                     }}
                     className={cn(
-                        "fixed lg:static inset-y-0 left-0 z-40 bg-[#D0D4DA] flex flex-col transition-all duration-300 select-none overflow-hidden",
+                        "fixed lg:static inset-y-0 left-0 z-40 bg-transparent flex flex-col transition-all duration-300 select-none overflow-hidden",
                         !isSidebarOpen && "lg:w-0"
                     )}
                 >
@@ -165,14 +173,14 @@ export default function AdminLayout({
                             variant="ghost"
                             size="icon"
                             onClick={toggleSidebar}
-                            className="lg:hidden rounded-full hover:bg-neutral-300/60"
+                            className="lg:hidden rounded-2xl hover:bg-neutral-300/60"
                         >
                             <X className="h-5 w-5 text-neutral-800" />
                         </Button>
                     </div>
 
-                    {/* Navigation Pills List */}
-                    <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto min-w-[17.5rem] scrollbar-none">
+                    {/* Navigation Pills List (Upper Level - Elevated Translucent Tabs) */}
+                    <nav className="flex-1 px-4 py-2 space-y-2.5 overflow-y-auto min-w-[17.5rem] scrollbar-none">
                         {menuItems.map((item) => {
                             const currentPath = (pathname || '').replace(/\/$/, '');
                             const targetPath = item.href.replace(/\/$/, '');
@@ -181,10 +189,10 @@ export default function AdminLayout({
                                 <Link key={item.name} href={item.href} className="block">
                                     <span
                                         className={cn(
-                                            "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer shadow-2xs",
+                                            "flex items-center gap-3.5 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
-                                                ? "bg-[#D7FC45] text-neutral-950 font-semibold shadow-xs"
-                                                : "bg-[#E3E6EB]/85 text-neutral-700 hover:bg-[#D7DBE1] hover:text-neutral-950"
+                                                ? "bg-[#D7FC45] text-neutral-950 font-bold shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
+                                                : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
                                         <item.icon
@@ -202,7 +210,7 @@ export default function AdminLayout({
                         {/* Help / Support Link */}
                         <div className="pt-2">
                             <Link href="/dashboard" className="block">
-                                <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-[#E3E6EB]/85 text-neutral-700 hover:bg-[#D7DBE1] hover:text-neutral-950">
+                                <span className="flex items-center gap-3.5 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950">
                                     <HelpCircle className="h-5 w-5 text-neutral-600 shrink-0" />
                                     <span>Help & Docs</span>
                                 </span>
@@ -214,7 +222,7 @@ export default function AdminLayout({
                     <div className="p-4 min-w-[17.5rem]">
                         <button
                             onClick={logout}
-                            className="flex items-center gap-3 px-6 py-3 w-full rounded-full text-sm font-medium text-red-600 bg-red-100/40 hover:bg-red-100/80 transition-colors"
+                            className="flex items-center gap-3 px-5 py-2.5 w-full rounded-2xl text-sm font-medium text-red-600 bg-red-100/60 backdrop-blur-md border border-red-200/60 hover:bg-red-100/90 shadow-[0_4px_14px_rgba(239,68,68,0.06)] transition-all"
                         >
                             <LogOut className="h-4 w-4" />
                             <span>Sign Out</span>
@@ -231,7 +239,7 @@ export default function AdminLayout({
                                 variant="ghost"
                                 size="icon"
                                 onClick={toggleSidebar}
-                                className={cn("rounded-full hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
+                                className={cn("rounded-2xl hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
                                 aria-label="Toggle navigation"
                             >
                                 <Menu className="h-5 w-5 text-neutral-800" />
@@ -249,9 +257,9 @@ export default function AdminLayout({
                             </div>
                         </div>
 
-                        {/* Right Pill Actions: Search, Theme Toggle, Notifications, Profile */}
+                        {/* Right Pill Actions: Search, Theme Toggle, Notifications, Profile (Upper Level) */}
                         <div className="flex items-center gap-3">
-                            <div className="bg-white/85 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2.5 shadow-xs border border-white/60">
+                            <div className="bg-white/70 backdrop-blur-md rounded-2xl px-3 py-1.5 flex items-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] border border-white/80">
                                 {/* Search Button */}
                                 <button
                                     type="button"
