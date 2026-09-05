@@ -7,19 +7,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserIsAdmin
+class EnsureSuperAdmin
 {
     /**
      * Handle an incoming request.
      *
-     * Only allows users with the 'admin' role to proceed.
+     * Only allows users with the strictly 'admin' role to proceed.
+     * Retailers and customers are forbidden.
      * Must be used AFTER auth:sanctum middleware.
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !in_array($request->user()->role, ['admin', 'retailer'])) {
+        if (!$request->user() || $request->user()->role !== 'admin') {
             Log::channel('request_debug')->warning(
-                '🔐 Admin middleware 403 — non-admin user attempted admin route',
+                '🔐 SuperAdmin middleware 403 — non-admin user attempted superadmin route',
                 [
                     'url'           => $request->fullUrl(),
                     'method'        => $request->method(),
@@ -32,7 +33,7 @@ class EnsureUserIsAdmin
             );
 
             return response()->json([
-                'message' => 'Forbidden. Admin access required.'
+                'message' => 'Forbidden. Super Admin access required.'
             ], 403);
         }
 

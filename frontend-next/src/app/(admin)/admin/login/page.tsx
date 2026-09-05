@@ -16,15 +16,15 @@ export default function AdminLoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { isAdmin, setUserExternal } = useAuth();
+    const { isAdmin, isRetailer, setUserExternal } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        // If already logged in as admin, redirect to admin dashboard
-        if (isAdmin) {
+        // If already logged in as admin or retailer, redirect to admin dashboard
+        if (isAdmin || isRetailer) {
             router.push('/admin');
         }
-    }, [isAdmin, router]);
+    }, [isAdmin, isRetailer, router]);
 
     const handleLogin = async (data: { email: string; password: string }) => {
         try {

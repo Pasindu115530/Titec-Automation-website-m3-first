@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export type UserRole = 'customer' | 'admin';
+export type UserRole = 'customer' | 'admin' | 'retailer';
 
 export type User = {
     id: string;
@@ -21,6 +21,7 @@ interface AuthContextType {
     logout: () => void;
     isAdmin: boolean;
     isCustomer: boolean;
+    isRetailer: boolean;
     // Allows external flows (e.g., Laravel login page) to update auth state immediately
     setUserExternal: (payload: Omit<Partial<User>, 'id'> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
 }
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('user', JSON.stringify(userData));
 
             // Redirect based on role
-            if (role === 'admin') {
+            if (role === 'admin' || role === 'retailer') {
                 router.push('/admin');
             } else {
                 router.push('/store');
@@ -119,6 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const isAdmin = user?.role === 'admin';
     const isCustomer = user?.role === 'customer';
+    const isRetailer = user?.role === 'retailer';
 
     return (
         <AuthContext.Provider value={{
@@ -128,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             logout,
             isAdmin,
             isCustomer,
+            isRetailer,
             setUserExternal,
         }}>
             {children}

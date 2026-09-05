@@ -47,7 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
-        // Brand routes (admin only)
+        // Protected SuperAdmin Routes (admin only, hidden from retailer)
+        Route::middleware('superadmin')->group(function () {
+            // Brand routes (superadmin only)
         Route::post('/brands', [BrandController::class, 'store']);
         Route::put('/brands/{brand}', [BrandController::class, 'update']);
         Route::delete('/brands/{brand}', [BrandController::class, 'destroy']);
@@ -68,8 +70,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/quotation-requests/{id}/reply', [App\Http\Controllers\QuotationRequestController::class, 'reply']);
         Route::post('/quotation-requests/direct', [App\Http\Controllers\QuotationRequestController::class, 'sendDirectQuote']);
         Route::get('/quotation-requests/{id}/download', [App\Http\Controllers\QuotationRequestController::class, 'download']);
+        });
         
-        // Dashboard Stats (admin only)
+        // Dashboard Stats (admin & retailer)
         Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'index']);
     });
 });

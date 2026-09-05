@@ -28,15 +28,15 @@ export default function AdminLayout({
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const pathname = usePathname();
     const router = useRouter();
-    const { user, logout, isAdmin, isLoading } = useAuth();
+    const { user, logout, isAdmin, isRetailer, isLoading } = useAuth();
 
     useEffect(() => {
         // Redirect to admin login if not authenticated, except when already on login page
         // Only redirect after initial load is complete
-        if (!isLoading && !isAdmin && pathname !== '/admin/login') {
+        if (!isLoading && !isAdmin && !isRetailer && pathname !== '/admin/login') {
             router.push('/admin/login');
         }
-    }, [isAdmin, isLoading, pathname, router]);
+    }, [isAdmin, isRetailer, isLoading, pathname, router]);
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -56,6 +56,13 @@ export default function AdminLayout({
 
         { name: 'Settings', icon: Settings, href: '/admin/settings' },
     ];
+
+    const filteredMenuItems = menuItems.filter(item => {
+        if (user?.role === 'retailer') {
+            return !['Quotation Requests', 'Brands Management', 'Services Management'].includes(item.name);
+        }
+        return true;
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
@@ -97,7 +104,7 @@ export default function AdminLayout({
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1 min-w-[16rem]">
-                    {menuItems.map((item) => {
+                    {filteredMenuItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <Link key={item.name} href={item.href}>
