@@ -251,17 +251,17 @@ export default function ReportsPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
                     <p className="text-gray-500 mt-1">Key metrics and insights for your business.</p>
                 </div>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-sm flex items-center gap-2">
+                <button className="px-5 py-2.5 bg-neutral-900 text-white rounded-full hover:bg-black font-medium transition-colors shadow-sm flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                     Print Report
                 </button>
             </div>
 
-            {/* Tab Navigation (Matching rounded-2xl elevated pills) */}
-            <div className="flex space-x-2 bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.03)] w-fit">
+            {/* Tab Navigation (Matching rounded-full elevated pills) */}
+            <div className="flex space-x-2 bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.04)] w-fit">
                 <button
                     onClick={() => setActiveTab('sales')}
-                    className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all cursor-pointer ${
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
                         activeTab === 'sales'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
@@ -271,7 +271,7 @@ export default function ReportsPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('inventory')}
-                    className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all cursor-pointer ${
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
                         activeTab === 'inventory'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
@@ -281,7 +281,7 @@ export default function ReportsPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('warranty')}
-                    className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all cursor-pointer ${
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
                         activeTab === 'warranty'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'

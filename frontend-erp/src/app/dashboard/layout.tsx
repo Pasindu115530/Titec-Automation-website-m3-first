@@ -189,7 +189,7 @@ export default function AdminLayout({
                                 <Link key={item.name} href={item.href} className="block">
                                     <span
                                         className={cn(
-                                            "flex items-center gap-3.5 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-200 cursor-pointer",
+                                            "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
                                                 ? "bg-[#D7FC45] text-neutral-950 font-bold shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
@@ -210,7 +210,7 @@ export default function AdminLayout({
                         {/* Help / Support Link */}
                         <div className="pt-2">
                             <Link href="/dashboard" className="block">
-                                <span className="flex items-center gap-3.5 px-5 py-3 rounded-2xl text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950">
+                                <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950">
                                     <HelpCircle className="h-5 w-5 text-neutral-600 shrink-0" />
                                     <span>Help & Docs</span>
                                 </span>
@@ -222,7 +222,7 @@ export default function AdminLayout({
                     <div className="p-4 min-w-[17.5rem]">
                         <button
                             onClick={logout}
-                            className="flex items-center gap-3 px-5 py-2.5 w-full rounded-2xl text-sm font-medium text-red-600 bg-red-100/60 backdrop-blur-md border border-red-200/60 hover:bg-red-100/90 shadow-[0_4px_14px_rgba(239,68,68,0.06)] transition-all"
+                            className="flex items-center gap-3 px-6 py-3 w-full rounded-full text-sm font-medium text-red-600 bg-red-100/60 backdrop-blur-md border border-red-200/60 hover:bg-red-100/90 shadow-[0_4px_14px_rgba(239,68,68,0.06)] transition-all"
                         >
                             <LogOut className="h-4 w-4" />
                             <span>Sign Out</span>
@@ -239,7 +239,7 @@ export default function AdminLayout({
                                 variant="ghost"
                                 size="icon"
                                 onClick={toggleSidebar}
-                                className={cn("rounded-2xl hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
+                                className={cn("rounded-full hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
                                 aria-label="Toggle navigation"
                             >
                                 <Menu className="h-5 w-5 text-neutral-800" />
@@ -259,7 +259,7 @@ export default function AdminLayout({
 
                         {/* Right Pill Actions: Search, Theme Toggle, Notifications, Profile (Upper Level) */}
                         <div className="flex items-center gap-3">
-                            <div className="bg-white/70 backdrop-blur-md rounded-2xl px-3 py-1.5 flex items-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] border border-white/80">
+                            <div className="bg-white/70 backdrop-blur-md rounded-full px-4 py-1.5 flex items-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] border border-white/80">
                                 {/* Search Button */}
                                 <button
                                     type="button"
