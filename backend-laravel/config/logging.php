@@ -127,6 +127,17 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Dedicated channel for request debug logging (403/429 diagnostics)
+        // Logs to a separate file so 403 issues are easy to find
+        // Usage: Log::channel('request_debug')->warning(...)
+        'request_debug' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/request_debug.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];
