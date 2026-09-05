@@ -65,31 +65,31 @@ export default function ReportsPage() {
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                         <p className="text-sm text-gray-500 font-medium">Total Sales</p>
                         <p className="text-2xl font-bold text-gray-900">Rs. {Number(data.total_sales || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                         <p className="text-sm text-gray-500 font-medium">Invoices</p>
                         <p className="text-2xl font-bold text-gray-900">{data.invoice_count || 0}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-green-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-green-100 shadow-sm">
                         <p className="text-sm text-green-600 font-medium">Payments Received</p>
                         <p className="text-2xl font-bold text-green-700">Rs. {Number(data.payments_received || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-red-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
                         <p className="text-sm text-red-500 font-medium">Outstanding</p>
                         <p className="text-2xl font-bold text-red-600">Rs. {Number(data.outstanding || 0).toLocaleString()}</p>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <div className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
                     <h3 className="text-sm font-semibold text-gray-700 mb-6">Revenue Trend</h3>
                     <ReportChart data={chartData} color="bg-blue-500" />
                 </div>
                 
                 {data.top_products && (
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
                         <h3 className="text-sm font-semibold text-gray-700 mb-4">Top Selling Products</h3>
                         <div className="space-y-3">
                             {data.top_products.map((prod: any, idx: number) => (
@@ -126,21 +126,21 @@ export default function ReportsPage() {
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                         <p className="text-sm text-gray-500 font-medium">Total SKUs</p>
                         <p className="text-2xl font-bold text-gray-900">{data.total_skus || 0}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm md:col-span-2">
                         <p className="text-sm text-blue-600 font-medium">Total Stock Value</p>
                         <p className="text-2xl font-bold text-blue-700">Rs. {Number(data.total_value || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-yellow-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-yellow-100 shadow-sm">
                         <p className="text-sm text-yellow-600 font-medium">Low Stock Items</p>
                         <p className="text-2xl font-bold text-yellow-700">{data.low_stock_count || 0}</p>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto max-h-[500px]">
                         <table className="w-full text-left border-collapse relative">
                             <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
@@ -195,7 +195,7 @@ export default function ReportsPage() {
                     </div>
                 </div>
                 
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
+                <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-3">
                     <svg className="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     <div>
                         <h4 className="text-sm font-bold text-red-800">{warranties.length} warranties expiring soon</h4>
@@ -203,7 +203,7 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>

@@ -16,11 +16,53 @@ import {
     FileText,
     LayoutGrid,
     Wrench,
-    Search
+    Search,
+    ShoppingBag,
+    ClipboardList,
+    ShieldCheck,
+    BarChart3,
+    HelpCircle,
+    Bell,
+    Moon,
+    Sun,
+    ChevronDown,
 } from 'lucide-react';
-import { cn } from '@/lib/utils'; // Assuming you have utils
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+// 8-point geometric star icon matching the Starline design
+function StarlineLogoIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={cn("w-6 h-6 text-neutral-900", className)}
+        >
+            <path d="M12 0L14.59 7.41L22 4.59L19.18 12L24 14.59L16.59 17.41L19.41 24L12 19.18L7.41 24L4.59 16.59L0 19.41L4.82 12L0 9.41L7.41 6.59L4.59 0L12 4.82L12 0Z" />
+        </svg>
+    );
+}
+
+// 4-dot rounded square icon matching the exact user uploaded image
+function DashboardGridIcon({ className }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+            <rect x="3" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="3" width="7.5" height="7.5" rx="2" />
+            <rect x="3" y="13.5" width="7.5" height="7.5" rx="2" />
+            <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" />
+        </svg>
+    );
+}
 
 export default function AdminLayout({
     children,
@@ -28,13 +70,12 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
     const { user, logout, isAdmin, isLoading } = useAuth();
 
     useEffect(() => {
-        // Redirect to admin login if not authenticated, except when already on login page
-        // Only redirect after initial load is complete
         if (!isLoading && !isAdmin && pathname !== '/dashboard/login') {
             router.push('/dashboard/login');
         }
@@ -43,39 +84,34 @@ export default function AdminLayout({
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const allMenuItems = [
-        { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' }, // Visible to all admins
-        { name: 'Quotation Requests', icon: FileText, href: '/dashboard/quotations', requiredPermissions: ['view_quotation_requests'] },
-
-        // ── ERP Modules ──
+        { name: 'Dashboard', icon: DashboardGridIcon, href: '/dashboard' },
+        { name: 'POS', icon: ShoppingBag, href: '/dashboard/pos', requiredPermissions: ['view_pos'] },
+        { name: 'Invoices', icon: FileText, href: '/dashboard/invoices', requiredPermissions: ['view_invoices'] },
+        { name: 'Quotations', icon: FileText, href: '/dashboard/quotations', requiredPermissions: ['view_quotation_requests'] },
         { name: 'Clients', icon: Users, href: '/dashboard/clients', requiredPermissions: ['view_clients'] },
-        { name: 'POS / Billing', icon: Package, href: '/dashboard/pos', requiredPermissions: ['view_pos'] }, 
-        { name: 'Invoices', icon: FileText, href: '/dashboard/invoices', requiredPermissions: ['view_invoices'] }, 
-        { name: 'Inventory', icon: Package, href: '/dashboard/inventory', requiredPermissions: ['view_inventory'] }, 
-        { name: 'Installations', icon: Wrench, href: '/dashboard/installations', requiredPermissions: ['view_installations'] }, 
-        { name: 'Service Logs', icon: FileText, href: '/dashboard/service-logs', requiredPermissions: ['view_service_logs'] }, 
-        { name: 'Warranty Check', icon: Search, href: '/dashboard/warranty', requiredPermissions: ['view_warranty'] }, 
-        { name: 'Reports', icon: LayoutDashboard, href: '/dashboard/reports', requiredPermissions: ['view_reports'] }, 
+        { name: 'Inventory', icon: Package, href: '/dashboard/inventory', requiredPermissions: ['view_inventory'] },
+        { name: 'Installations', icon: Wrench, href: '/dashboard/installations', requiredPermissions: ['view_installations'] },
+        { name: 'Service Logs', icon: ClipboardList, href: '/dashboard/service-logs', requiredPermissions: ['view_service_logs'] },
+        { name: 'Warranty', icon: ShieldCheck, href: '/dashboard/warranty', requiredPermissions: ['view_warranty'] },
+        { name: 'Reports', icon: BarChart3, href: '/dashboard/reports', requiredPermissions: ['view_reports'] },
 
-        // ── CMS Modules ──
-        { name: 'Projects Management', icon: FolderPlus, href: '/dashboard/projects', requiredPermissions: ['view_projects'] },
-        { name: 'Products Management', icon: Package, href: '/dashboard/products', requiredPermissions: ['view_products'] },
-        { name: 'Brands Management', icon: LayoutGrid, href: '/dashboard/brands', requiredPermissions: ['view_brands'] },
-        { name: 'Services Management', icon: Wrench, href: '/dashboard/services', requiredPermissions: ['view_services'] },
+        // CMS
+        { name: 'Products', icon: Package, href: '/dashboard/products', requiredPermissions: ['view_products'] },
+        { name: 'Projects', icon: FolderPlus, href: '/dashboard/projects', requiredPermissions: ['view_projects'] },
+        { name: 'Brands', icon: LayoutGrid, href: '/dashboard/brands', requiredPermissions: ['view_brands'] },
+        { name: 'Services', icon: Wrench, href: '/dashboard/services', requiredPermissions: ['view_services'] },
 
         { name: 'Settings', icon: Settings, href: '/dashboard/settings', requiredRoles: ['Super Admin'] },
     ];
 
     const menuItems = allMenuItems.filter(item => {
-        // Super Admins see everything
         if (user?.roles?.includes('Super Admin')) return true;
 
-        // Check explicit roles
         if (item.requiredRoles && item.requiredRoles.length > 0) {
             const hasRole = item.requiredRoles.some(role => user?.roles?.includes(role));
             if (!hasRole) return false;
         }
 
-        // Check explicit permissions
         if (item.requiredPermissions && item.requiredPermissions.length > 0) {
             const hasPermission = item.requiredPermissions.some(permission => user?.permissions?.includes(permission));
             if (!hasPermission) return false;
@@ -84,8 +120,12 @@ export default function AdminLayout({
         return true;
     });
 
+    const userDisplayName = user?.firstName
+        ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+        : 'User';
+
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased">
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isSidebarOpen && (
@@ -94,89 +134,206 @@ export default function AdminLayout({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsSidebarOpen(false)}
-                        className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+                        className="fixed inset-0 bg-black/30 backdrop-blur-xs z-30 lg:hidden"
                     />
                 )}
             </AnimatePresence>
 
-            {/* Sidebar */}
-            <motion.aside
-                initial={false}
-                animate={{
-                    width: isSidebarOpen ? '16rem' : '0rem',
-                    x: isSidebarOpen ? 0 : -100
-                }}
-                className={cn(
-                    "fixed lg:static inset-y-0 left-0 z-30 bg-[#000619] border-r border-white/10 overflow-hidden flex flex-col transition-all duration-300",
-                    !isSidebarOpen && "lg:w-0 lg:border-none"
-                )}
-            >
-                <div className="p-6 border-b border-white/10 flex items-center justify-between min-w-[16rem]">
-                    <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(37,99,235,0.5)]">
-                            T
-                        </div>
-                        <span className="font-bold text-xl text-white font-orbitron tracking-wider">Titec Admin</span>
+            <div className="flex flex-1 min-h-screen">
+                {/* Starline Light Sidebar */}
+                <motion.aside
+                    initial={false}
+                    animate={{
+                        width: isSidebarOpen ? '17.5rem' : '0rem',
+                    }}
+                    className={cn(
+                        "fixed lg:static inset-y-0 left-0 z-40 bg-[#D0D4DA] flex flex-col transition-all duration-300 select-none overflow-hidden",
+                        !isSidebarOpen && "lg:w-0"
+                    )}
+                >
+                    <div className="p-6 pb-4 flex items-center justify-between min-w-[17.5rem]">
+                        {/* Starline Logo Header */}
+                        <Link href="/dashboard" className="flex items-center gap-3 group">
+                            <div className="p-1 transition-transform group-hover:rotate-45 duration-300">
+                                <StarlineLogoIcon className="w-7 h-7 text-neutral-900" />
+                            </div>
+                            <span className="font-semibold text-xl tracking-tight text-neutral-900">
+                                Titec ERP
+                            </span>
+                        </Link>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleSidebar}
+                            className="lg:hidden rounded-full hover:bg-neutral-300/60"
+                        >
+                            <X className="h-5 w-5 text-neutral-800" />
+                        </Button>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="lg:hidden">
-                        <X className="h-5 w-5" />
-                    </Button>
-                </div>
 
-                <nav className="flex-1 p-4 space-y-1 min-w-[16rem]">
-                    {menuItems.map((item) => {
-                        const isActive = pathname === item.href;
-                        return (
-                            <Link key={item.name} href={item.href}>
-                                <span
-                                    className={cn(
-                                        "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 cursor-pointer",
-                                        isActive
-                                            ? "bg-blue-900/40 text-blue-400 border-l-2 border-blue-500"
-                                            : "text-gray-400 hover:bg-white/5 hover:text-white"
-                                    )}
-                                >
-                                    <item.icon className={cn("h-5 w-5", isActive ? "text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]" : "text-gray-500")} />
-                                    {item.name}
+                    {/* Navigation Pills List */}
+                    <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto min-w-[17.5rem] scrollbar-none">
+                        {menuItems.map((item) => {
+                            const currentPath = (pathname || '').replace(/\/$/, '');
+                            const targetPath = item.href.replace(/\/$/, '');
+                            const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
+                            return (
+                                <Link key={item.name} href={item.href} className="block">
+                                    <span
+                                        className={cn(
+                                            "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer shadow-2xs",
+                                            isActive
+                                                ? "bg-[#D7FC45] text-neutral-950 font-semibold shadow-xs"
+                                                : "bg-[#E3E6EB]/85 text-neutral-700 hover:bg-[#D7DBE1] hover:text-neutral-950"
+                                        )}
+                                    >
+                                        <item.icon
+                                            className={cn(
+                                                "h-5 w-5 shrink-0",
+                                                isActive ? "text-neutral-950" : "text-neutral-600"
+                                            )}
+                                        />
+                                        <span className="truncate">{item.name}</span>
+                                    </span>
+                                </Link>
+                            );
+                        })}
+
+                        {/* Help / Support Link */}
+                        <div className="pt-2">
+                            <Link href="/dashboard" className="block">
+                                <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-[#E3E6EB]/85 text-neutral-700 hover:bg-[#D7DBE1] hover:text-neutral-950">
+                                    <HelpCircle className="h-5 w-5 text-neutral-600 shrink-0" />
+                                    <span>Help & Docs</span>
                                 </span>
                             </Link>
-                        )
-                    })}
-                </nav>
-
-                <div className="p-4 border-t border-white/10 min-w-[16rem]">
-                    <button
-                        onClick={logout}
-                        className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                        <LogOut className="h-5 w-5" />
-                        Sign Out
-                    </button>
-                </div>
-            </motion.aside>
-
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                {/* Top Header */}
-                <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-16 flex items-center px-6 justify-between lg:justify-end sticky top-0 z-20">
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className={cn("lg:hidden mr-auto", isSidebarOpen && "hidden")}>
-                        <Menu className="h-6 w-6" />
-                    </Button>
-                    <div className="flex items-center gap-4">
-                        <ConnectionStatus />
-                        <span className="text-sm text-gray-500">{user?.firstName} {user?.lastName}</span>
-                        <div className="h-8 w-8 rounded-full bg-linear-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-semibold shadow-md">
-                            {user?.firstName?.[0]}{user?.lastName?.[0]}
                         </div>
-                    </div>
-                </header>
+                    </nav>
 
-                {/* Page Content */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-                    <div className="max-w-7xl mx-auto">
-                        {children}
+                    {/* Sign Out Action */}
+                    <div className="p-4 min-w-[17.5rem]">
+                        <button
+                            onClick={logout}
+                            className="flex items-center gap-3 px-6 py-3 w-full rounded-full text-sm font-medium text-red-600 bg-red-100/40 hover:bg-red-100/80 transition-colors"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            <span>Sign Out</span>
+                        </button>
                     </div>
-                </main>
+                </motion.aside>
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                    {/* Top Header */}
+                    <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-transparent">
+                        <div className="flex items-center gap-4">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={toggleSidebar}
+                                className={cn("rounded-full hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
+                                aria-label="Toggle navigation"
+                            >
+                                <Menu className="h-5 w-5 text-neutral-800" />
+                            </Button>
+
+                            {/* Welcome Greeting Title */}
+                            <div>
+                                <h1 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                                    Welcome, {user?.firstName || 'Josiah'}
+                                    <span className="text-xl inline-block animate-bounce">🎉</span>
+                                </h1>
+                                <p className="text-xs md:text-sm text-neutral-600 mt-0.5 font-normal">
+                                    Here`s what happening in your store.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Right Pill Actions: Search, Theme Toggle, Notifications, Profile */}
+                        <div className="flex items-center gap-3">
+                            <div className="bg-white/85 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2.5 shadow-xs border border-white/60">
+                                {/* Search Button */}
+                                <button
+                                    type="button"
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition-colors"
+                                    title="Search"
+                                    onClick={() => router.push('/dashboard/pos')}
+                                >
+                                    <Search className="w-4 h-4" />
+                                </button>
+
+                                {/* Dark/Light mode icon */}
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDarkMode(!isDarkMode)}
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition-colors"
+                                    title="Toggle theme"
+                                >
+                                    {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
+                                </button>
+
+                                {/* Notification Bell with Red Count Badge */}
+                                <Link
+                                    href="/dashboard/quotations"
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 relative transition-colors"
+                                    title="Notifications"
+                                >
+                                    <Bell className="w-4 h-4" />
+                                    <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white rounded-full text-[10px] w-4 h-4 font-bold flex items-center justify-center shadow-xs">
+                                        2
+                                    </span>
+                                </Link>
+
+                                <div className="h-4 w-px bg-neutral-200 mx-0.5" />
+
+                                {/* Connection Status Indicator */}
+                                <div className="hidden sm:block">
+                                    <ConnectionStatus />
+                                </div>
+
+                                {/* User Dropdown */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="flex items-center gap-2 pl-1 pr-1.5 py-0.5 rounded-full hover:bg-neutral-100 transition-colors outline-hidden">
+                                            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                                                {user?.firstName?.[0] || 'A'}
+                                            </div>
+                                            <ChevronDown className="w-3.5 h-3.5 text-neutral-500" />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-52 rounded-2xl p-2 shadow-lg border border-neutral-100">
+                                        <DropdownMenuLabel className="font-normal">
+                                            <div className="flex flex-col space-y-1">
+                                                <p className="text-sm font-semibold leading-none text-neutral-900">{userDisplayName}</p>
+                                                <p className="text-xs leading-none text-neutral-500 truncate">{user?.email || 'admin@titec.lk'}</p>
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
+                                            <Link href="/dashboard/settings" className="flex items-center gap-2 text-sm text-neutral-700">
+                                                <Settings className="w-4 h-4" />
+                                                Settings
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            onClick={logout}
+                                            className="rounded-xl cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                                        >
+                                            <LogOut className="w-4 h-4 mr-2" />
+                                            Sign Out
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Dashboard Content Container */}
+                    <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 pb-8 scrollbar-none">
+                        {children}
+                    </main>
+                </div>
             </div>
         </div>
     );

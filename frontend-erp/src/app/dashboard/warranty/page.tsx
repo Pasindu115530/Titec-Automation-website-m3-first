@@ -53,7 +53,7 @@ export default function WarrantyCheckerPage() {
                 </Link>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
                     <form onSubmit={handleCheck} className="max-w-2xl mx-auto">
                         <label htmlFor="serialNumber" className="block text-sm font-medium text-gray-700 mb-2">
@@ -97,7 +97,7 @@ export default function WarrantyCheckerPage() {
                     {hasChecked && !isChecking && warrantyData && (
                         <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
                             {warrantyData.error ? (
-                                <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
                                     <div className="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-3">
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                     </div>
@@ -105,7 +105,7 @@ export default function WarrantyCheckerPage() {
                                     <p className="text-red-600 mt-1">{warrantyData.error}</p>
                                 </div>
                             ) : (
-                                <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+                                <div className="bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
                                     {/* Status Banner */}
                                     <div className={`p-4 text-center border-b ${
                                         warrantyData.status === 'active' || warrantyData.is_valid

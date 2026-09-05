@@ -200,6 +200,23 @@
 	.similar-products-scroll::-webkit-scrollbar {
 		display: none;
 	}
+
+	/* Starline Theme Components */
+	.starline-card {
+		@apply bg-white rounded-lg p-6 border border-gray-100/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all duration-300;
+	}
+
+	.starline-card-hover {
+		@apply hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300;
+	}
+
+	.starline-pill-active {
+		@apply bg-[#D7FC45] text-neutral-900 font-semibold shadow-xs;
+	}
+
+	.starline-pill-inactive {
+		@apply bg-[#E5E7EB]/80 text-neutral-700 hover:bg-[#D9DDE2] hover:text-neutral-900 transition-colors;
+	}
 }
 
 /* Small global adjustments and component helpers */
