@@ -309,27 +309,29 @@ export default function AdminLayout({
                                             <ChevronDown className="w-3.5 h-3.5 text-neutral-500" />
                                         </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-52 rounded-2xl p-2 shadow-lg border border-neutral-100">
-                                        <DropdownMenuLabel className="font-normal">
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-semibold leading-none text-neutral-900">{userDisplayName}</p>
-                                                <p className="text-xs leading-none text-neutral-500 truncate">{user?.email || 'admin@titec.lk'}</p>
+                                    <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl p-2.5 bg-white border border-neutral-200/90 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] z-50">
+                                        <div className="flex items-center gap-3 p-2.5 bg-neutral-50 rounded-xl mb-1.5 border border-neutral-100">
+                                            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 text-white flex items-center justify-center text-sm font-bold shadow-xs shrink-0">
+                                                {user?.firstName?.[0] || 'T'}
                                             </div>
-                                        </DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
-                                            <Link href="/dashboard/settings" className="flex items-center gap-2 text-sm text-neutral-700">
-                                                <Settings className="w-4 h-4" />
-                                                Settings
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-bold text-neutral-900 truncate leading-tight">{userDisplayName}</p>
+                                                <p className="text-xs text-neutral-500 truncate mt-0.5">{user?.email || 'admin@titec.lk'}</p>
+                                            </div>
+                                        </div>
+                                        <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer hover:bg-neutral-100 transition-colors">
+                                            <Link href="/dashboard/settings" className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 w-full">
+                                                <Settings className="w-4 h-4 text-neutral-500" />
+                                                <span>Settings</span>
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
+                                        <DropdownMenuSeparator className="my-1 bg-neutral-100" />
                                         <DropdownMenuItem
                                             onClick={logout}
-                                            className="rounded-xl cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                                            className="rounded-xl px-3 py-2 cursor-pointer text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 transition-colors flex items-center gap-2.5 text-sm font-medium w-full"
                                         >
-                                            <LogOut className="w-4 h-4 mr-2" />
-                                            Sign Out
+                                            <LogOut className="w-4 h-4 text-red-500" />
+                                            <span>Sign Out</span>
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
