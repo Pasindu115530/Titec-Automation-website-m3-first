@@ -50,27 +50,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string, role: UserRole) => {
         try {
-            console.log(`AuthContext login started for email: ${email}, role: ${role}`);
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://127.0.0.1:8000';
-            console.log(`Sending POST request to ${backendUrl}/api/login...`);
-            const response = await fetch(`${backendUrl}/api/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            console.log(`[AuthSystem] Login process started | Email: ${email} | Expected Role: ${role}`);
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+            console.log(`[AuthSystem] Sending POST request to ${backendUrl}/api/login...`);
+            
+            let response: Response;
+            try {
+                response = await fetch(`${backendUrl}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+            } catch (fetchErr: any) {
+                console.error(`[AuthSystem] Network error connecting to ${backendUrl}/api/login:`, fetchErr);
+                throw new Error(`Unable to connect to authentication server at ${backendUrl}. Please ensure the backend server is running.`);
+            }
 
-            console.log(`Response status: ${response.status} ${response.statusText}`);
+            console.log(`[AuthSystem] Server response status: ${response.status} ${response.statusText}`);
 
             if (!response.ok) {
-                const error = await response.json();
-                console.error('Login request failed with error payload:', error);
-                throw new Error(error.message || 'Login failed');
+                let errorData: any = {};
+                try {
+                    errorData = await response.json();
+                } catch {
+                    errorData = { message: `HTTP Error ${response.status}` };
+                }
+                console.error('[AuthSystem] Login request failed with payload:', errorData);
+                const message = errorData.errors?.email?.[0] || errorData.message || 'Login failed';
+                throw new Error(message);
             }
 
             const data = await response.json();
-            console.log('Login successful, response data received:', data);
+            console.log('[AuthSystem] Login successful, user payload received:', data.user);
 
             // Map Spatie roles to old local roles
             const isSuperAdmin = data.user.roles?.includes('Super Admin');
@@ -78,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Verify the role matches what's expected
             if (actualRole !== role) {
+                console.warn(`[AuthSystem] Role mismatch: User has '${actualRole}', requested '${role}'`);
                 throw new Error(`Invalid credentials for ${role} login`);
             }
 
@@ -96,16 +111,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('token', data.access_token);
+            console.log('[AuthSystem] Auth state updated & session stored.');
 
             // Redirect based on role
-            console.log(`Redirecting to role dashboard: ${role}...`);
+            console.log(`[AuthSystem] Redirecting to ${role === 'admin' ? '/dashboard' : '/store'}...`);
             if (role === 'admin') {
                 router.push('/dashboard');
             } else {
                 router.push('/store');
             }
         } catch (error) {
-            console.error('Exception caught in AuthContext login:', error);
+            console.error('[AuthSystem] Exception caught during login:', error);
             throw error;
         }
     };
