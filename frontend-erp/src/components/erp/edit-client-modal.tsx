@@ -33,7 +33,7 @@ export function EditClientModal({ isOpen, onClose, onClientUpdated, client }: Ed
     try {
       const response = await clientService.updateClient(client.id, formData);
       toast.success('Client updated successfully');
-      onClientUpdated(response.client);
+      onClientUpdated(response as Client);
       onClose();
     } catch (error) {
       console.error('Failed to update client', error);
