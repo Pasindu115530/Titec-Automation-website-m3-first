@@ -44,24 +44,26 @@ export function ClientDetailDrawer({ isOpen, onClose, client }: ClientDetailDraw
             {client.client_type === 'business' ? <Building2 className="h-6 w-6 text-indigo-400" /> : <User className="h-6 w-6 text-emerald-400" />}
             {client.client_type === 'business' ? client.company_name : client.contact_person}
           </SheetTitle>
-          <SheetDescription className="text-gray-400 flex flex-col gap-1 mt-2">
-            <span className="flex items-center gap-2">
-              <Badge variant="outline" className="border-white/20 text-xs">
-                {client.client_type === 'business' ? 'Business' : 'Individual'}
-              </Badge>
-              {client.tax_id && <span className="text-xs">TIN: {client.tax_id}</span>}
-              {client.nic && <span className="text-xs">NIC: {client.nic}</span>}
-            </span>
-            <span className="flex items-center gap-2 mt-2">
-              <MapPin className="h-4 w-4" /> 
-              {client.address ? `${client.address}, ${client.city || ''} ${client.district || ''}` : 'No address provided'}
-            </span>
-            <span className="flex items-center gap-2">
-              <Phone className="h-4 w-4" /> {client.phone} {client.secondary_phone && ` / ${client.secondary_phone}`}
-            </span>
-            <span className="flex items-center gap-2">
-              <Mail className="h-4 w-4" /> {client.email || 'No email provided'}
-            </span>
+          <SheetDescription asChild>
+            <div className="text-gray-400 flex flex-col gap-1 mt-2">
+              <span className="flex items-center gap-2">
+                <Badge variant="outline" className="border-white/20 text-xs">
+                  {client.client_type === 'business' ? 'Business' : 'Individual'}
+                </Badge>
+                {client.tax_id && <span className="text-xs">TIN: {client.tax_id}</span>}
+                {client.nic && <span className="text-xs">NIC: {client.nic}</span>}
+              </span>
+              <span className="flex items-center gap-2 mt-2">
+                <MapPin className="h-4 w-4" /> 
+                {client.address ? `${client.address}, ${client.city || ''} ${client.district || ''}` : 'No address provided'}
+              </span>
+              <span className="flex items-center gap-2">
+                <Phone className="h-4 w-4" /> {client.phone} {client.secondary_phone && ` / ${client.secondary_phone}`}
+              </span>
+              <span className="flex items-center gap-2">
+                <Mail className="h-4 w-4" /> {client.email || 'No email provided'}
+              </span>
+            </div>
           </SheetDescription>
         </SheetHeader>
 

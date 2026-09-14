@@ -36,7 +36,7 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
     try {
       const response = await clientService.createClient(formData);
       toast.success('Client added successfully');
-      onClientAdded(response.client);
+      onClientAdded(response as Client);
       onClose();
       // Reset form
       setFormData({

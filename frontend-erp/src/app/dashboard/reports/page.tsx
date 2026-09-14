@@ -65,31 +65,31 @@ export default function ReportsPage() {
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                        <p className="text-sm text-gray-500 font-medium">Total Sales</p>
-                        <p className="text-2xl font-bold text-gray-900">Rs. {Number(data.total_sales || 0).toLocaleString()}</p>
+                    <div className="bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.03)]">
+                        <p className="text-sm text-neutral-500 font-medium">Total Sales</p>
+                        <p className="text-2xl font-extrabold text-neutral-900 mt-1">Rs. {Number(data.total_sales || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                        <p className="text-sm text-gray-500 font-medium">Invoices</p>
-                        <p className="text-2xl font-bold text-gray-900">{data.invoice_count || 0}</p>
+                    <div className="bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.03)]">
+                        <p className="text-sm text-neutral-500 font-medium">Invoices</p>
+                        <p className="text-2xl font-extrabold text-neutral-900 mt-1">{data.invoice_count || 0}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-green-100 shadow-sm">
-                        <p className="text-sm text-green-600 font-medium">Payments Received</p>
-                        <p className="text-2xl font-bold text-green-700">Rs. {Number(data.payments_received || 0).toLocaleString()}</p>
+                    <div className="bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.03)]">
+                        <p className="text-sm text-emerald-600 font-medium">Payments Received</p>
+                        <p className="text-2xl font-extrabold text-emerald-700 mt-1">Rs. {Number(data.payments_received || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-red-100 shadow-sm">
-                        <p className="text-sm text-red-500 font-medium">Outstanding</p>
-                        <p className="text-2xl font-bold text-red-600">Rs. {Number(data.outstanding || 0).toLocaleString()}</p>
+                    <div className="bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.03)]">
+                        <p className="text-sm text-rose-500 font-medium">Outstanding</p>
+                        <p className="text-2xl font-extrabold text-rose-600 mt-1">Rs. {Number(data.outstanding || 0).toLocaleString()}</p>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-6">Revenue Trend</h3>
+                <div className="bg-white/85 backdrop-blur-md p-6 rounded-2xl border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                    <h3 className="text-sm font-semibold text-neutral-800 mb-6">Revenue Trend</h3>
                     <ReportChart data={chartData} color="bg-blue-500" />
                 </div>
                 
                 {data.top_products && (
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white/85 backdrop-blur-md p-6 rounded-2xl border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
                         <h3 className="text-sm font-semibold text-gray-700 mb-4">Top Selling Products</h3>
                         <div className="space-y-3">
                             {data.top_products.map((prod: any, idx: number) => (
@@ -126,21 +126,21 @@ export default function ReportsPage() {
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                         <p className="text-sm text-gray-500 font-medium">Total SKUs</p>
                         <p className="text-2xl font-bold text-gray-900">{data.total_skus || 0}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
+                    <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm md:col-span-2">
                         <p className="text-sm text-blue-600 font-medium">Total Stock Value</p>
                         <p className="text-2xl font-bold text-blue-700">Rs. {Number(data.total_value || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-white p-4 rounded-xl border border-yellow-100 shadow-sm">
+                    <div className="bg-white p-4 rounded-lg border border-yellow-100 shadow-sm">
                         <p className="text-sm text-yellow-600 font-medium">Low Stock Items</p>
                         <p className="text-2xl font-bold text-yellow-700">{data.low_stock_count || 0}</p>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto max-h-[500px]">
                         <table className="w-full text-left border-collapse relative">
                             <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
@@ -195,7 +195,7 @@ export default function ReportsPage() {
                     </div>
                 </div>
                 
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3">
+                <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-3">
                     <svg className="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     <div>
                         <h4 className="text-sm font-bold text-red-800">{warranties.length} warranties expiring soon</h4>
@@ -203,7 +203,7 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
@@ -251,46 +251,44 @@ export default function ReportsPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
                     <p className="text-gray-500 mt-1">Key metrics and insights for your business.</p>
                 </div>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-sm flex items-center gap-2">
+                <button className="px-5 py-2.5 bg-neutral-900 text-white rounded-full hover:bg-black font-medium transition-colors shadow-sm flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                     Print Report
                 </button>
             </div>
 
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
-                    <button
-                        onClick={() => setActiveTab('sales')}
-                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                            activeTab === 'sales'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    >
-                        Sales Summary
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('inventory')}
-                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                            activeTab === 'inventory'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    >
-                        Stock Valuation
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('warranty')}
-                        className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                            activeTab === 'warranty'
-                                ? 'border-blue-500 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    >
-                        Warranty Expiry
-                    </button>
-                </nav>
+            {/* Tab Navigation (Matching rounded-full elevated pills) */}
+            <div className="flex space-x-2 bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.04)] w-fit">
+                <button
+                    onClick={() => setActiveTab('sales')}
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
+                        activeTab === 'sales'
+                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
+                    }`}
+                >
+                    Sales Summary
+                </button>
+                <button
+                    onClick={() => setActiveTab('inventory')}
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
+                        activeTab === 'inventory'
+                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
+                    }`}
+                >
+                    Stock Valuation
+                </button>
+                <button
+                    onClick={() => setActiveTab('warranty')}
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
+                        activeTab === 'warranty'
+                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
+                    }`}
+                >
+                    Warranty Expiry
+                </button>
             </div>
 
             {/* Content Area */}

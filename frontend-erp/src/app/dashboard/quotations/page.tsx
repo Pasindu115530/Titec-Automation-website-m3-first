@@ -142,32 +142,30 @@ export default function AdminQuotationsPage() {
                 </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className="border-b border-gray-200 overflow-x-auto">
-                <nav className="-mb-px flex space-x-6 sm:space-x-8 min-w-max" aria-label="Tabs">
-                    <button
-                        onClick={() => setStatusFilter('pending')}
-                        className={`
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                            ${statusFilter === 'pending'
-                                ? 'border-indigo-500 text-indigo-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
-                        `}
-                    >
-                        Pending Requests
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('quoted')}
-                        className={`
-                            whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                            ${statusFilter === 'quoted'
-                                ? 'border-indigo-500 text-indigo-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
-                        `}
-                    >
-                        Quoted History
-                    </button>
-                </nav>
+            {/* Filter Tabs (Matching rounded-full elevated pills) */}
+            <div className="flex space-x-2 bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.04)] w-fit overflow-x-auto">
+                <button
+                    onClick={() => setStatusFilter('pending')}
+                    className={`
+                        px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer whitespace-nowrap
+                        ${statusFilter === 'pending'
+                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'}
+                    `}
+                >
+                    Pending Requests
+                </button>
+                <button
+                    onClick={() => setStatusFilter('quoted')}
+                    className={`
+                        px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer whitespace-nowrap
+                        ${statusFilter === 'quoted'
+                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'}
+                    `}
+                >
+                    Quoted History
+                </button>
             </div>
 
             {loading ? (

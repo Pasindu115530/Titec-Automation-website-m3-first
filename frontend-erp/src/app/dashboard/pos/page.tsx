@@ -133,7 +133,7 @@ export default function POSPage() {
     <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
       {/* Left Area - POS Input (70%) */}
       <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-        <div className="bg-[#111827] border border-white/10 p-4 rounded-xl shadow-lg">
+        <div className="bg-[#111827] border border-white/10 p-4 rounded-lg shadow-lg">
           <ClientPicker 
             selectedClient={selectedClient} 
             onSelectClient={setSelectedClient} 
@@ -144,7 +144,7 @@ export default function POSPage() {
           <POSProductSearch onAddProduct={handleAddProduct} />
         </div>
 
-        <div className="flex-1 bg-[#111827] border border-white/10 rounded-xl overflow-hidden flex flex-col shadow-lg">
+        <div className="flex-1 bg-[#111827] border border-white/10 rounded-lg overflow-hidden flex flex-col shadow-lg">
           <div className="p-4 bg-white/5 border-b border-white/10 flex justify-between items-center text-sm font-semibold text-gray-300 uppercase tracking-wider">
             <span>Invoice Items ({items.length})</span>
             <Button variant="ghost" size="sm" onClick={() => setItems([])} className="text-red-400 hover:text-red-300 h-8 text-xs">

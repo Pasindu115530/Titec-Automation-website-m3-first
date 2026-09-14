@@ -150,4 +150,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/service-logs/batch', [\App\Http\Controllers\ServiceLogController::class, 'batch']);
     });
     Route::middleware('permission:service_logs.edit')->put('/service-logs/{serviceLog}', [\App\Http\Controllers\ServiceLogController::class, 'update']);
+
+    // ── Reports ──────────────────────────────────
+    Route::middleware('permission:dashboard.view')->group(function () {
+        Route::get('/reports/sales', [\App\Http\Controllers\ReportController::class, 'sales']);
+        Route::get('/reports/inventory', [\App\Http\Controllers\ReportController::class, 'inventory']);
+        Route::get('/reports/warranty', [\App\Http\Controllers\ReportController::class, 'warranty']);
+        Route::get('/reports/top-products', [\App\Http\Controllers\ReportController::class, 'topProducts']);
+        Route::get('/reports/client-revenue', [\App\Http\Controllers\ReportController::class, 'clientRevenue']);
+    });
 });
