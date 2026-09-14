@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'force_password_reset',
     ];
 
     /**
@@ -58,5 +59,10 @@ class User extends Authenticatable
     {
         // Useful for admins to see quotes they generated
         return $this->hasMany(Quotation::class, 'admin_id');
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
     }
 }

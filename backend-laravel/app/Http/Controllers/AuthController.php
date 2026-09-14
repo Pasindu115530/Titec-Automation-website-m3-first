@@ -56,8 +56,32 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'roles' => $user->getRoleNames(),
                 'permissions' => $user->getAllPermissions()->pluck('name'),
+                'requires_password_reset' => (bool)$user->force_password_reset,
             ],
         ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The provided current password does not match our records.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+            'force_password_reset' => false,
+        ]);
+
+        return response()->json(['message' => 'Password changed successfully.']);
     }
 
     public function logout(Request $request)

@@ -89,6 +89,7 @@ export default function AdminLayout({
         { name: 'Invoices', icon: FileText, href: '/dashboard/invoices', requiredPermissions: ['view_invoices'] },
         { name: 'Quotations', icon: FileText, href: '/dashboard/quotations', requiredPermissions: ['view_quotation_requests'] },
         { name: 'Clients', icon: Users, href: '/dashboard/clients', requiredPermissions: ['view_clients'] },
+        { name: 'Employees', icon: Users, href: '/dashboard/employees', requiredPermissions: ['view_users'] },
         { name: 'Inventory', icon: Package, href: '/dashboard/inventory', requiredPermissions: ['view_inventory'] },
         { name: 'Installations', icon: Wrench, href: '/dashboard/installations', requiredPermissions: ['view_installations'] },
         { name: 'Service Logs', icon: ClipboardList, href: '/dashboard/service-logs', requiredPermissions: ['view_service_logs'] },

@@ -14,6 +14,7 @@ export type User = {
     token: string;
     roles?: string[];
     permissions?: string[];
+    requiresPasswordReset?: boolean;
 };
 
 interface AuthContextType {
@@ -107,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 token: data.access_token, // ERP format uses access_token
                 roles: data.user.roles || [],
                 permissions: data.user.permissions || [],
+                requiresPasswordReset: data.user.requires_password_reset || false,
             };
 
             setUser(userData);
@@ -114,7 +116,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('token', data.access_token);
             console.log('[AuthSystem] Auth state updated & session stored.');
 
-            // Redirect based on role
+            // Redirect based on role and password reset requirement
+            if (data.user.requires_password_reset) {
+                console.log('[AuthSystem] User requires password reset. Redirecting to change password page.');
+                router.push('/dashboard/change-password');
+                return;
+            }
+
             console.log(`[AuthSystem] Redirecting to ${role === 'admin' ? '/dashboard' : '/store'}...`);
             if (role === 'admin') {
                 router.push('/dashboard');

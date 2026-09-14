@@ -31,12 +31,16 @@ Route::middleware('throttle:3,1')->group(function () {
     Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']);
 });
 
+// Email provisioning confirmation (developers click this from their email)
+Route::get('/email/confirm/{token}', [\App\Http\Controllers\UserController::class, 'confirmEmailProvisioned']);
+
 // ═══════════════════════════════════════════════
 // AUTHENTICATED ROUTES
 // ═══════════════════════════════════════════════
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
     Route::get('/user', function (Request $request) {
         $user = $request->user();
         return response()->json([
@@ -45,8 +49,24 @@ Route::middleware('auth:sanctum')->group(function () {
             'email' => $user->email,
             'roles' => $user->getRoleNames(),
             'permissions' => $user->getAllPermissions()->pluck('name'),
+            'requires_password_reset' => (bool)$user->force_password_reset,
         ]);
     });
+
+    // ── Users & Employees ────────────────────────
+    Route::middleware('permission:users.view')->group(function () {
+        Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
+        Route::get('/roles', [\App\Http\Controllers\UserController::class, 'roles']);
+        Route::get('/employees', [\App\Http\Controllers\EmployeeController::class, 'index']);
+        Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show']);
+    });
+    Route::middleware('permission:users.create')->post('/users', [\App\Http\Controllers\UserController::class, 'store']);
+    Route::middleware('permission:users.edit')->group(function () {
+        Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update']);
+        Route::post('/users/{user}/resend-welcome', [\App\Http\Controllers\UserController::class, 'resendWelcome']);
+        Route::put('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'update']);
+    });
+    Route::middleware('permission:users.delete')->delete('/users/{user}', [\App\Http\Controllers\UserController::class, 'destroy']);
 
     // ── Content Management ──────────────────────
     Route::middleware('permission:products.create')->post('/products', [ProductController::class, 'store']);
