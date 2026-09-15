@@ -118,6 +118,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     } catch {
         // Silently skip — sitemap will still include static pages
     }
+    // ── Dynamic service pages ──
+    let servicePages: MetadataRoute.Sitemap = []
+    try {
+        const services = await serverFetch<any[]>('/api/services')
+        if (Array.isArray(services)) {
+            servicePages = services.map((service: any) => ({
+                url: `${baseUrl}/services/${service.slug}`,
+                lastModified: new Date(service.updated_at || now),
+                changeFrequency: 'weekly' as const,
+                priority: 0.8,
+            }))
+        }
+    } catch {
+        // Silently skip
+    }
 
-    return [...staticPages, ...productPages, ...projectPages]
+    return [...staticPages, ...productPages, ...projectPages, ...servicePages]
 }
