@@ -109,7 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const projects = await serverFetch<any[]>('/api/projects')
         if (Array.isArray(projects)) {
             projectPages = projects.map((project: any) => ({
-                url: `${baseUrl}/projects/${project.id}`,
+                url: `${baseUrl}/projects/${createSlug(project.title, project.id)}`,
                 lastModified: new Date(project.updated_at || project.completion_date || now),
                 changeFrequency: 'monthly' as const,
                 priority: 0.7,

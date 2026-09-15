@@ -2,6 +2,7 @@ import { projectService } from '@/services/projectService';
 import ProjectsClient from "@/components/client/projects-client";
 import { Metadata } from "next";
 import { Project } from "@/types";
+import { createSlug } from "@/utils/slug-utils";
 
 export const revalidate = 300;
 
@@ -74,7 +75,7 @@ export default async function ProjectsPage() {
             "@type": "ListItem",
             "position": index + 1,
             "name": project.title,
-            "url": `${baseUrl}/projects/${project.id}`,
+            "url": `${baseUrl}/projects/${createSlug(project.title, project.id)}`,
         })),
     };
 

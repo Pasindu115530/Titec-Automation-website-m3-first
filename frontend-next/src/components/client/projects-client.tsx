@@ -12,6 +12,7 @@ import { Project } from "@/types";
 import Footer from "@/components/footer";
 import Loader from "@/components/loader";
 import { projectService } from "@/services/projectService";
+import { createSlug } from "@/utils/slug-utils";
 
 import { getImageUrl } from "@/utils/image-utils";
 
@@ -171,7 +172,7 @@ export default function ProjectsClient({ initialProjects }: ProjectsClientProps)
                                                 <MessageSquare className="h-4 w-4" />
                                                 Request Similar System
                                             </Button>
-                                            <Link href={`/projects/${project.id}`} className="flex items-center text-indigo-600 font-medium text-sm group/link">
+                                            <Link href={`/projects/${createSlug(project.title, project.id)}`} className="flex items-center text-indigo-600 font-medium text-sm group/link">
                                                 View Details
                                                 <ArrowRight className="h-4 w-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                                             </Link>
