@@ -15,6 +15,23 @@ const nextConfig = {
         unoptimized: true, // Fail-safe for cPanel if optimization libraries (sharp) are missing
     },
 
+    // Enforce www subdomain to fix Google Search Console duplicate canonical errors
+    async redirects() {
+        return [
+            {
+                source: '/:path*',
+                has: [
+                    {
+                        type: 'host',
+                        value: 'titecautomation.lk',
+                    },
+                ],
+                destination: 'https://www.titecautomation.lk/:path*',
+                permanent: true, // 301 redirect
+            },
+        ];
+    },
+
     // Cache headers — public pages are crawler-friendly, admin stays private
     async headers() {
         return [
