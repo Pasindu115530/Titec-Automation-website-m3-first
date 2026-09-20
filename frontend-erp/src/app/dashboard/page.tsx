@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
             {/* Top Grid: Left (Sales Overview) & Right (Orders Overview, Analytics, Top Products) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
+
                 {/* ── LEFT COLUMN (4 of 12 cols on desktop) ── */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className="bg-white/40 backdrop-blur-md rounded-[32px] p-5 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)] space-y-4">
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
 
                     {/* Middle Two-Card Row: Sale Analytics & Top Products */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
+
                         {/* Sale Analytics Card with Donut Chart */}
                         <motion.div
                             initial={{ opacity: 0, y: 15 }}
