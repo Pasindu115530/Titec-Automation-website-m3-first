@@ -1,26 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { ConnectionStatus } from '@/components/layout/connection-status';
+import { Toaster } from '@/components/ui/sonner';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    LayoutDashboard,
-    FolderPlus,
-    Users,
-    Settings,
     LogOut,
     Menu,
     X,
-    Package,
-    FileText,
-    LayoutGrid,
-    Wrench,
     Search,
-    ShoppingBag,
-    ClipboardList,
-    ShieldCheck,
-    BarChart3,
     HelpCircle,
     Bell,
     Moon,
@@ -30,14 +19,15 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import { getFilteredNavigation, isERPUser, type NavGroup } from '@/lib/rbac';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Settings } from 'lucide-react';
 
 // 8-point geometric star icon matching the Starline design
 function StarlineLogoIcon({ className }: { className?: string }) {
@@ -64,6 +54,117 @@ function DashboardGridIcon({ className }: { className?: string }) {
     );
 }
 
+// ─── Collapsible Group Component ────────────────────
+
+function SidebarGroup({
+    group,
+    isExpanded,
+    onToggle,
+    pathname,
+}: {
+    group: NavGroup;
+    isExpanded: boolean;
+    onToggle: () => void;
+    pathname: string;
+}) {
+    // Check if any item in this group is active
+    const hasActiveItem = group.items.some(item => {
+        const currentPath = (pathname || '').replace(/\/$/, '');
+        const targetPath = item.href.replace(/\/$/, '');
+        return currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
+    });
+
+    return (
+        <div className="space-y-1">
+            {/* Group Header */}
+            <button
+                onClick={onToggle}
+                className={cn(
+                    "flex items-center justify-between w-full px-5 py-2 text-[10.5px] font-bold uppercase tracking-[0.12em] transition-colors duration-200 rounded-lg",
+                    hasActiveItem
+                        ? "text-neutral-800"
+                        : "text-neutral-500 hover:text-neutral-700"
+                )}
+            >
+                <span>{group.label}</span>
+                <motion.div
+                    animate={{ rotate: isExpanded ? 0 : -90 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                </motion.div>
+            </button>
+
+            {/* Group Items */}
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                        className="overflow-hidden"
+                    >
+                        <div className="space-y-1.5 pb-1">
+                            {group.items.map((item) => {
+                                const currentPath = (pathname || '').replace(/\/$/, '');
+                                const targetPath = item.href.replace(/\/$/, '');
+                                const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
+                                return (
+                                    <Link key={item.name} href={item.href} className="block">
+                                        <span
+                                            className={cn(
+                                                "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
+                                                isActive
+                                                    ? "bg-[#D7FC45] text-neutral-950 font-bold shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
+                                                    : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
+                                            )}
+                                        >
+                                            <item.icon
+                                                className={cn(
+                                                    "h-4 w-4 shrink-0",
+                                                    isActive ? "text-neutral-950" : "text-neutral-600"
+                                                )}
+                                            />
+                                            <span className="truncate">{item.name}</span>
+                                        </span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+// ─── Storage helpers for expanded state ─────────────
+
+const EXPANDED_GROUPS_KEY = 'erp_sidebar_expanded_groups';
+
+function getInitialExpandedGroups(groups: NavGroup[]): Record<string, boolean> {
+    if (typeof window === 'undefined') {
+        return Object.fromEntries(groups.map(g => [g.label, true]));
+    }
+    try {
+        const saved = localStorage.getItem(EXPANDED_GROUPS_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch { /* ignore */ }
+    // Default: all groups expanded
+    return Object.fromEntries(groups.map(g => [g.label, true]));
+}
+
+function saveExpandedGroups(state: Record<string, boolean>) {
+    try {
+        localStorage.setItem(EXPANDED_GROUPS_KEY, JSON.stringify(state));
+    } catch { /* ignore */ }
+}
+
+// ═══════════════════════════════════════════════
+// MAIN LAYOUT
+// ═══════════════════════════════════════════════
+
 export default function AdminLayout({
     children,
 }: {
@@ -75,6 +176,28 @@ export default function AdminLayout({
     const router = useRouter();
     const { user, logout, isAdmin, isLoading } = useAuth();
 
+    // Get RBAC-filtered navigation groups
+    const navGroups = getFilteredNavigation(user);
+
+    // Expanded/collapsed state per group
+    const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() =>
+        getInitialExpandedGroups(navGroups)
+    );
+
+    // Re-initialize expanded state when navGroups change (e.g. user role change)
+    useEffect(() => {
+        setExpandedGroups(prev => {
+            const updated = { ...prev };
+            for (const group of navGroups) {
+                if (!(group.label in updated)) {
+                    updated[group.label] = true;
+                }
+            }
+            return updated;
+        });
+    }, [navGroups.length]);
+
+    // Auth guard — redirect if not an ERP user
     useEffect(() => {
         if (!isLoading && !isAdmin && pathname !== '/dashboard/login') {
             router.push('/dashboard/login');
@@ -83,47 +206,20 @@ export default function AdminLayout({
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    const allMenuItems = [
-        { name: 'Dashboard', icon: DashboardGridIcon, href: '/dashboard' },
-        { name: 'POS', icon: ShoppingBag, href: '/dashboard/pos', requiredPermissions: ['view_pos'] },
-        { name: 'Invoices', icon: FileText, href: '/dashboard/invoices', requiredPermissions: ['view_invoices'] },
-        { name: 'Quotations', icon: FileText, href: '/dashboard/quotations', requiredPermissions: ['view_quotation_requests'] },
-        { name: 'Clients', icon: Users, href: '/dashboard/clients', requiredPermissions: ['view_clients'] },
-        { name: 'Employees', icon: Users, href: '/dashboard/employees', requiredPermissions: ['view_users'] },
-        { name: 'Inventory', icon: Package, href: '/dashboard/inventory', requiredPermissions: ['view_inventory'] },
-        { name: 'Installations', icon: Wrench, href: '/dashboard/installations', requiredPermissions: ['view_installations'] },
-        { name: 'Service Logs', icon: ClipboardList, href: '/dashboard/service-logs', requiredPermissions: ['view_service_logs'] },
-        { name: 'Warranty', icon: ShieldCheck, href: '/dashboard/warranty', requiredPermissions: ['view_warranty'] },
-        { name: 'Reports', icon: BarChart3, href: '/dashboard/reports', requiredPermissions: ['view_reports'] },
-
-        // CMS
-        { name: 'Products', icon: Package, href: '/dashboard/products', requiredPermissions: ['view_products'] },
-        { name: 'Projects', icon: FolderPlus, href: '/dashboard/projects', requiredPermissions: ['view_projects'] },
-        { name: 'Brands', icon: LayoutGrid, href: '/dashboard/brands', requiredPermissions: ['view_brands'] },
-        { name: 'Services', icon: Wrench, href: '/dashboard/services', requiredPermissions: ['view_services'] },
-
-        { name: 'Settings', icon: Settings, href: '/dashboard/settings', requiredRoles: ['Super Admin'] },
-    ];
-
-    const menuItems = allMenuItems.filter(item => {
-        if (user?.roles?.includes('Super Admin')) return true;
-
-        if (item.requiredRoles && item.requiredRoles.length > 0) {
-            const hasRole = item.requiredRoles.some(role => user?.roles?.includes(role));
-            if (!hasRole) return false;
-        }
-
-        if (item.requiredPermissions && item.requiredPermissions.length > 0) {
-            const hasPermission = item.requiredPermissions.some(permission => user?.permissions?.includes(permission));
-            if (!hasPermission) return false;
-        }
-
-        return true;
-    });
+    const toggleGroup = (label: string) => {
+        setExpandedGroups(prev => {
+            const next = { ...prev, [label]: !prev[label] };
+            saveExpandedGroups(next);
+            return next;
+        });
+    };
 
     const userDisplayName = user?.firstName
         ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
         : 'User';
+
+    // Get primary role display name
+    const userRoleDisplay = user?.roles?.[0] || 'User';
 
     return (
         <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased relative overflow-hidden">
@@ -180,14 +276,14 @@ export default function AdminLayout({
                         </Button>
                     </div>
 
-                    {/* Navigation Pills List (Upper Level - Elevated Translucent Tabs) */}
-                    <nav className="flex-1 px-4 pt-6 pb-2 space-y-2.5 overflow-y-auto min-w-[17.5rem] scrollbar-none">
-                        {menuItems.map((item) => {
+                    {/* Navigation — Dashboard + Grouped Sections */}
+                    <nav className="flex-1 px-4 pt-4 pb-2 space-y-1 overflow-y-auto min-w-[17.5rem] scrollbar-none">
+                        {/* Dashboard — Always visible, ungrouped */}
+                        {(() => {
                             const currentPath = (pathname || '').replace(/\/$/, '');
-                            const targetPath = item.href.replace(/\/$/, '');
-                            const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
+                            const isActive = currentPath === '/dashboard';
                             return (
-                                <Link key={item.name} href={item.href} className="block">
+                                <Link href="/dashboard" className="block mb-3">
                                     <span
                                         className={cn(
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
@@ -196,20 +292,33 @@ export default function AdminLayout({
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
-                                        <item.icon
+                                        <DashboardGridIcon
                                             className={cn(
                                                 "h-5 w-5 shrink-0",
                                                 isActive ? "text-neutral-950" : "text-neutral-600"
                                             )}
                                         />
-                                        <span className="truncate">{item.name}</span>
+                                        <span className="truncate">Dashboard</span>
                                     </span>
                                 </Link>
                             );
-                        })}
+                        })()}
+
+                        {/* Collapsible Groups */}
+                        <div className="space-y-3">
+                            {navGroups.map((group) => (
+                                <SidebarGroup
+                                    key={group.label}
+                                    group={group}
+                                    isExpanded={expandedGroups[group.label] ?? true}
+                                    onToggle={() => toggleGroup(group.label)}
+                                    pathname={pathname || ''}
+                                />
+                            ))}
+                        </div>
 
                         {/* Help / Support Link */}
-                        <div className="pt-2">
+                        <div className="pt-3">
                             <Link href="/dashboard" className="block">
                                 <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950">
                                     <HelpCircle className="h-5 w-5 text-neutral-600 shrink-0" />
@@ -317,7 +426,7 @@ export default function AdminLayout({
                                             </div>
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-bold text-neutral-900 truncate leading-tight">{userDisplayName}</p>
-                                                <p className="text-xs text-neutral-500 truncate mt-0.5">{user?.email || 'admin@titec.lk'}</p>
+                                                <p className="text-xs text-neutral-500 truncate mt-0.5">{userRoleDisplay}</p>
                                             </div>
                                         </div>
                                         <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer hover:bg-neutral-100 transition-colors">
@@ -346,6 +455,7 @@ export default function AdminLayout({
                     </main>
                 </div>
             </div>
+            <Toaster />
         </div>
     );
 }

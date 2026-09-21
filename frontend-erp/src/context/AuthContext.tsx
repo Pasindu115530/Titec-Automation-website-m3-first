@@ -1,7 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { isERPUser, ROLES } from '@/lib/rbac';
 
 export type UserRole = 'customer' | 'admin';
 
@@ -24,6 +25,12 @@ interface AuthContextType {
     logout: () => void;
     isAdmin: boolean;
     isCustomer: boolean;
+    /** Check if user has a specific Spatie role */
+    hasRole: (role: string) => boolean;
+    /** Check if user has any of the given Spatie roles */
+    hasAnyRole: (roles: string[]) => boolean;
+    /** Check if user has a specific Spatie permission (dot-notation) */
+    hasPermission: (permission: string) => boolean;
     // Allows external flows (e.g., Laravel login page) to update auth state immediately
     setUserExternal: (payload: Omit<Partial<User>, 'id'> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
 }
@@ -87,13 +94,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const data = await response.json();
             console.log('[AuthSystem] Login successful, user payload received:', data.user);
 
-            // Map Spatie roles to old local roles
-            const isSuperAdmin = data.user.roles?.includes('Super Admin');
-            const actualRole = isSuperAdmin ? 'admin' : 'customer';
+            // Map Spatie roles to local role: any ERP role → 'admin', otherwise 'customer'
+            const userRoles = data.user.roles || [];
+            const hasERPAccess = isERPUser({ roles: userRoles });
+            const actualRole: UserRole = hasERPAccess ? 'admin' : 'customer';
 
             // Verify the role matches what's expected
             if (actualRole !== role) {
-                console.warn(`[AuthSystem] Role mismatch: User has '${actualRole}', requested '${role}'`);
+                console.warn(`[AuthSystem] Role mismatch: User has '${actualRole}' (roles: ${userRoles.join(', ')}), requested '${role}'`);
                 throw new Error(`Invalid credentials for ${role} login`);
             }
 
@@ -106,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 lastName: nameParts.slice(1).join(' ') || '',
                 role: actualRole,
                 token: data.access_token, // ERP format uses access_token
-                roles: data.user.roles || [],
+                roles: userRoles,
                 permissions: data.user.permissions || [],
                 requiresPasswordReset: data.user.requires_password_reset || false,
             };
@@ -162,19 +170,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    // ── RBAC Helpers ────────────────────────────────
+
+    const hasRole = useCallback((role: string): boolean => {
+        if (!user?.roles) return false;
+        if (user.roles.includes(ROLES.SUPER_ADMIN)) return true;
+        return user.roles.includes(role);
+    }, [user?.roles]);
+
+    const hasAnyRole = useCallback((roles: string[]): boolean => {
+        if (!user?.roles) return false;
+        if (user.roles.includes(ROLES.SUPER_ADMIN)) return true;
+        return roles.some(role => user.roles!.includes(role));
+    }, [user?.roles]);
+
+    const hasPermission = useCallback((permission: string): boolean => {
+        if (!user) return false;
+        if (user.roles?.includes(ROLES.SUPER_ADMIN)) return true;
+        return user.permissions?.includes(permission) ?? false;
+    }, [user]);
+
     const isAdmin = user?.role === 'admin';
     const isCustomer = user?.role === 'customer';
 
+    const contextValue = useMemo(() => ({
+        user,
+        isLoading,
+        login,
+        logout,
+        isAdmin,
+        isCustomer,
+        hasRole,
+        hasAnyRole,
+        hasPermission,
+        setUserExternal,
+    }), [user, isLoading, isAdmin, isCustomer, hasRole, hasAnyRole, hasPermission]);
+
     return (
-        <AuthContext.Provider value={{
-            user,
-            isLoading,
-            login,
-            logout,
-            isAdmin,
-            isCustomer,
-            setUserExternal,
-        }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
@@ -187,3 +220,4 @@ export function useAuth() {
     }
     return context;
 }
+

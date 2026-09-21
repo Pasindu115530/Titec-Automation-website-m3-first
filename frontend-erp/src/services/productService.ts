@@ -22,5 +22,12 @@ export const productService = {
     async getProductById(id: string): Promise<Product> {
         const response = await api.get<{ data: Product }>(`/api/products/${id}`);
         return response.data.data;
+    },
+
+    async toggleVisibility(id: string | number, field: 'on_store' | 'show_price', value: boolean): Promise<Product> {
+        const response = await api.patch<{ data: Product }>(`/api/products/${id}/visibility`, {
+            [field]: value,
+        });
+        return response.data.data;
     }
 };

@@ -1,202 +1,261 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { inventoryService, InventoryItem } from '@/services/inventoryService';
-import InventoryTable from '@/components/erp/inventory-table';
-import Loader from '@/components/loader';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Package, Search, Plus, Filter, Tag, DollarSign, PackageMinus, PackageX, History } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { productService } from '@/services/productService';
 import { toast } from 'sonner';
+import { Product } from '@/types';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
+import { PERMISSIONS } from '@/lib/rbac';
+
+// Components
+import ProductHubTable from '@/components/erp/product-hub-table';
+import AddProductModal from '@/components/admin/add-product-modal';
+import EditProductModal from '@/components/admin/edit-product-modal';
+import DeleteConfirmationModal from '@/components/admin/delete-confirmation-modal';
 import StockAdjustModal from '@/components/erp/stock-adjust-modal';
 import StockReceiveModal from '@/components/erp/stock-receive-modal';
 import StockHistoryDrawer from '@/components/erp/stock-history-drawer';
+import { InventoryItem } from '@/services/inventoryService';
+import { api } from '@/lib/api';
 
-export default function InventoryPage() {
-    const [inventory, setInventory] = useState<InventoryItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
+type FilterType = 'all' | 'on_web' | 'off_web' | 'low_stock' | 'out_of_stock';
+
+export default function ProductAndInventoryHubPage() {
+    const { hasPermission } = useAuth();
+    const canCreate = hasPermission(PERMISSIONS.PRODUCTS_CREATE || 'products.create');
+    const canDelete = hasPermission(PERMISSIONS.PRODUCTS_DELETE || 'products.delete');
+
+    const [loading, setLoading] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
     
-    // Pagination & Search
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('');
+    // Search & Filter State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
-    const [stats, setStats] = useState({ total: 0, lowStock: 0, outOfStock: 0 });
+    // Modal States
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    
+    const [stockAdjustItem, setStockAdjustItem] = useState<InventoryItem | null>(null);
+    const [stockReceiveItem, setStockReceiveItem] = useState<InventoryItem | null>(null);
+    const [stockHistoryItem, setStockHistoryItem] = useState<InventoryItem | null>(null);
 
-    // Modals
-    const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-    const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
-    const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false);
-    const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
-
+    // Debounce search
     useEffect(() => {
-        loadInventory(1, true);
-    }, [searchTerm, statusFilter]);
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
-    const loadInventory = async (pageNum: number, isInitial: boolean) => {
-        if (isInitial) setLoading(true);
-        else setLoadingMore(true);
-
+    const fetchProducts = async () => {
         try {
-            const response = await inventoryService.getInventory({
-                page: pageNum,
-                search: searchTerm || undefined,
-                status: statusFilter || undefined,
-            });
-
-            const newItems = response.data;
-
-            if (isInitial) {
-                setInventory(newItems);
-            } else {
-                setInventory(prev => [...prev, ...newItems]);
-            }
-            
-            setHasMore(response.current_page < response.last_page);
-            
-            if (isInitial && response.stats) {
-                setStats(response.stats);
-            }
+            setLoading(true);
+            const data = await productService.getProducts(debouncedSearch, true);
+            setProducts(data || []);
         } catch (error) {
-            toast.error('Failed to load inventory.');
+            console.error('Failed to fetch products', error);
+            toast.error('Failed to load products');
         } finally {
             setLoading(false);
-            setLoadingMore(false);
         }
     };
 
-    const handleLoadMore = () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        loadInventory(nextPage, false);
+    useEffect(() => {
+        fetchProducts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedSearch]);
+
+    // Handle Delete
+    const handleDelete = async () => {
+        if (!productToDelete) return;
+
+        try {
+            setDeletingId(productToDelete.id);
+            await api.delete(`/api/products/${productToDelete.id}`);
+            toast.success('Product permanently deleted');
+            fetchProducts();
+            setProductToDelete(null);
+        } catch (error: any) {
+            console.error('Failed to delete product', error);
+            const msg = error.response?.data?.message || 'Failed to delete product.';
+            toast.error(msg);
+        } finally {
+            setDeletingId(null);
+        }
     };
 
-    const handleAdjustStock = (item: InventoryItem) => {
-        setSelectedItem(item);
-        setIsAdjustModalOpen(true);
-    };
+    // Derived Stats
+    const stats = useMemo(() => {
+        const total = products.length;
+        const onWeb = products.filter(p => p.on_store).length;
+        const showingPrice = products.filter(p => p.show_price).length;
+        const lowStock = products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 5).length;
+        const outOfStock = products.filter(p => (p.stock || 0) === 0).length;
 
-    const handleReceiveStock = (item: InventoryItem) => {
-        setSelectedItem(item);
-        setIsReceiveModalOpen(true);
-    };
+        return { total, onWeb, showingPrice, lowStock, outOfStock };
+    }, [products]);
 
-    const handleViewHistory = (item: InventoryItem) => {
-        setSelectedItem(item);
-        setIsHistoryDrawerOpen(true);
-    };
+    // Filtered Products
+    const filteredProducts = useMemo(() => {
+        switch (activeFilter) {
+            case 'on_web': return products.filter(p => p.on_store);
+            case 'off_web': return products.filter(p => !p.on_store);
+            case 'low_stock': return products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 5);
+            case 'out_of_stock': return products.filter(p => (p.stock || 0) === 0);
+            default: return products;
+        }
+    }, [products, activeFilter]);
 
-    const handleStockUpdated = () => {
-        setPage(1);
-        loadInventory(1, true);
-    };
+    const statCards = [
+        { id: 'all' as FilterType, label: 'Total Products', value: stats.total, icon: Package, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+        { id: 'on_web' as FilterType, label: 'On Website', value: stats.onWeb, icon: Tag, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { id: 'show_price' as FilterType, label: 'Showing Price', value: stats.showingPrice, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
+        { id: 'low_stock' as FilterType, label: 'Low Stock (≤5)', value: stats.lowStock, icon: PackageMinus, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+        { id: 'out_of_stock' as FilterType, label: 'Out of Stock', value: stats.outOfStock, icon: PackageX, color: 'text-red-600', bg: 'bg-red-50' },
+    ];
 
     return (
-        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center flex-wrap gap-4">
+        <div className="max-w-7xl mx-auto space-y-6">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
-                    <p className="text-gray-500 mt-1">Track and manage product stock levels.</p>
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600">
+                        Products & Stock Hub
+                    </h1>
+                    <p className="text-gray-500 mt-1">Manage your catalog, inventory, and web visibility in one place.</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors shadow-sm">
-                        Export CSV
-                    </button>
-                    {/* Bulk receive disabled for MVP, use item-level receive */}
-                </div>
+                {canCreate && (
+                    <Button onClick={() => setIsAddModalOpen(true)} className="gap-2 btn-gradient-primary border-0 shadow-md">
+                        <Plus className="h-4 w-4" />
+                        <span>Add New Product</span>
+                    </Button>
+                )}
             </div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Products</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.total || inventory.length}</p>
-                    </div>
-                    <div className="h-10 w-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                    </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-yellow-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-sm text-yellow-600 font-medium">Low Stock</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.lowStock || 0}</p>
-                    </div>
-                    <div className="h-10 w-10 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    </div>
-                </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-red-100 flex items-center justify-between">
-                    <div>
-                        <p className="text-sm text-red-600 font-medium">Out of Stock</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.outOfStock || 0}</p>
-                    </div>
-                    <div className="h-10 w-10 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {statCards.map((stat, i) => (
+                    <motion.div
+                        key={stat.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        onClick={() => stat.id !== 'show_price' && setActiveFilter(stat.id)}
+                        className={`bg-white rounded-xl p-4 border shadow-sm transition-all duration-200 ${
+                            stat.id !== 'show_price' ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : ''
+                        } ${activeFilter === stat.id ? 'ring-2 ring-indigo-500 border-indigo-500' : ''}`}
+                    >
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
+                                <stat.icon className="h-5 w-5" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-600">{stat.label}</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
+                    </motion.div>
+                ))}
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex-1">
-                    <input 
-                        type="text" 
-                        placeholder="Search products by name or SKU..." 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+            {/* Main Content Area */}
+            <div className="space-y-4">
+                {/* Toolbar */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg border shadow-sm">
+                    {/* Filter Tabs */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg w-full md:w-auto overflow-x-auto">
+                        {[
+                            { id: 'all', label: 'All' },
+                            { id: 'on_web', label: 'On Web' },
+                            { id: 'off_web', label: 'Off Web' },
+                            { id: 'low_stock', label: 'Low Stock' },
+                            { id: 'out_of_stock', label: 'Out of Stock' },
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveFilter(tab.id as FilterType)}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md whitespace-nowrap transition-all ${
+                                    activeFilter === tab.id
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                                }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="relative w-full md:w-72">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                        <Input
+                            placeholder="Search by name, SKU, category..."
+                            className="pl-9 bg-gray-50 border-gray-200 w-full"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
-                <div className="sm:w-48">
-                    <select 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="in_stock">In Stock</option>
-                        <option value="low_stock">Low Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                </div>
+
+                {/* Unified Table */}
+                <ProductHubTable
+                    products={filteredProducts}
+                    onRefresh={fetchProducts}
+                    isLoading={loading}
+                    onEdit={setEditingProduct}
+                    onDelete={setProductToDelete}
+                    onAdjustStock={setStockAdjustItem}
+                    onReceiveStock={setStockReceiveItem}
+                    onViewHistory={setStockHistoryItem}
+                />
             </div>
 
-            <InventoryTable 
-                items={inventory} 
-                loading={loading}
-                onAdjustStock={handleAdjustStock}
-                onReceiveStock={handleReceiveStock}
-                onViewHistory={handleViewHistory}
+            {/* Modals */}
+            <AddProductModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={fetchProducts}
             />
 
-            {hasMore && !loading && (
-                <div className="flex justify-center pt-4">
-                    <button
-                        onClick={handleLoadMore}
-                        disabled={loadingMore}
-                        className="px-6 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors shadow-sm"
-                    >
-                        {loadingMore ? 'Loading...' : 'Load More'}
-                    </button>
-                </div>
-            )}
-
-            <StockAdjustModal 
-                isOpen={isAdjustModalOpen} 
-                onClose={() => setIsAdjustModalOpen(false)} 
-                item={selectedItem}
-                onSuccess={handleStockUpdated}
+            <EditProductModal
+                isOpen={!!editingProduct}
+                onClose={() => setEditingProduct(null)}
+                product={editingProduct}
+                onSuccess={fetchProducts}
             />
+
+            <DeleteConfirmationModal
+                isOpen={!!productToDelete}
+                onClose={() => setProductToDelete(null)}
+                onConfirm={handleDelete}
+                itemName={productToDelete?.name || ''}
+                itemIdentifier={productToDelete?.sku ? `SKU: ${productToDelete.sku}` : undefined}
+                itemType="Product"
+                isDeleting={!!deletingId}
+            />
+
+            <StockAdjustModal
+                isOpen={!!stockAdjustItem}
+                onClose={() => setStockAdjustItem(null)}
+                item={stockAdjustItem}
+                onSuccess={fetchProducts}
+            />
+
             <StockReceiveModal
-                isOpen={isReceiveModalOpen}
-                onClose={() => setIsReceiveModalOpen(false)}
-                item={selectedItem}
-                onSuccess={handleStockUpdated}
+                isOpen={!!stockReceiveItem}
+                onClose={() => setStockReceiveItem(null)}
+                item={stockReceiveItem}
+                onSuccess={fetchProducts}
             />
+
             <StockHistoryDrawer
-                isOpen={isHistoryDrawerOpen}
-                onClose={() => setIsHistoryDrawerOpen(false)}
-                item={selectedItem}
+                isOpen={!!stockHistoryItem}
+                onClose={() => setStockHistoryItem(null)}
+                item={stockHistoryItem}
             />
         </div>
     );

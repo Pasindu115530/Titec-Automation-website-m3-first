@@ -17,7 +17,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // PERMISSIONS — Granular access control
         // ═══════════════════════════════════════════════
 
-        // Content Management (existing admin panel features)
+        // Content Management (website CMS features)
         $contentPermissions = [
             'products.view',
             'products.create',
@@ -41,7 +41,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'dashboard.view',
         ];
 
-        // ERP Permissions (Phase 2 — create now, assign later)
+        // ERP Permissions
         $erpPermissions = [
             // Clients
             'clients.view',
@@ -70,11 +70,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'reports.sales',
             'reports.inventory',
             'reports.warranty',
-            // System
+            // System / HR
             'users.view',
             'users.create',
             'users.edit',
             'users.delete',
+            'employees.view',
+            'employees.edit',
             'settings.manage',
         ];
 
@@ -85,24 +87,28 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // ═══════════════════════════════════════════════
-        // ROLES — Role definitions with permission sets
+        // ROLES — 6 active roles + 1 future (Client)
         // ═══════════════════════════════════════════════
 
-        // Super Admin — unrestricted access to everything
+        // ── Super Admin ─────────────────────────────
+        // Unrestricted access to everything (R, W, D)
         $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'sanctum']);
         $superAdmin->syncPermissions($allPermissions);
 
-        // Content Editor — manage website content (products, projects, brands, services)
-        $contentEditor = Role::firstOrCreate(['name' => 'Content Editor', 'guard_name' => 'sanctum']);
-        $contentEditor->syncPermissions([
-            'products.view', 'products.create', 'products.edit', 'products.delete',
-            'projects.view', 'projects.create', 'projects.edit', 'projects.delete',
-            'brands.view', 'brands.create', 'brands.edit', 'brands.delete',
-            'services.view', 'services.create', 'services.edit', 'services.delete',
+        // ── Web Admin ───────────────────────────────
+        // Manages website content (Products, Projects, Brands, Services) + Quotations (R, W)
+        $webAdmin = Role::firstOrCreate(['name' => 'Web Admin', 'guard_name' => 'sanctum']);
+        $webAdmin->syncPermissions([
+            'products.view', 'products.create', 'products.edit',
+            'projects.view', 'projects.create', 'projects.edit',
+            'brands.view', 'brands.create', 'brands.edit',
+            'services.view', 'services.create', 'services.edit',
+            'quotations.view', 'quotations.reply', 'quotations.create',
             'dashboard.view',
         ]);
 
-        // Sales — POS, invoicing, client management, quotations
+        // ── Sales ───────────────────────────────────
+        // POS, invoicing, client management, quotations (R, W)
         $sales = Role::firstOrCreate(['name' => 'Sales', 'guard_name' => 'sanctum']);
         $sales->syncPermissions([
             'products.view',
@@ -115,26 +121,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'reports.sales',
         ]);
 
-        // Technician — installations, service history, field work
-        $technician = Role::firstOrCreate(['name' => 'Technician', 'guard_name' => 'sanctum']);
-        $technician->syncPermissions([
-            'products.view',
-            'clients.view',
-            'installations.view', 'installations.update_status',
-            'service_logs.view', 'service_logs.create', 'service_logs.edit',
-        ]);
-
-        // Manager — full ERP access, no user/system management
-        $manager = Role::firstOrCreate(['name' => 'Manager', 'guard_name' => 'sanctum']);
-        $manager->syncPermissions(array_diff($allPermissions, [
-            'users.create', 'users.edit', 'users.delete',
-            'settings.manage',
-        ]));
-
-        // Accountant — read-only financial access
+        // ── Accountant ──────────────────────────────
+        // Financial oversight — read-only + payment recording (R, limited W)
         $accountant = Role::firstOrCreate(['name' => 'Accountant', 'guard_name' => 'sanctum']);
         $accountant->syncPermissions([
             'invoices.view',
+            'invoices.edit',        // Needed for recording payments
             'clients.view',
             'reports.sales',
             'reports.inventory',
@@ -142,13 +134,31 @@ class RolesAndPermissionsSeeder extends Seeder
             'dashboard.view',
         ]);
 
-        // Store Keeper — inventory management
-        $storeKeeper = Role::firstOrCreate(['name' => 'Store Keeper', 'guard_name' => 'sanctum']);
-        $storeKeeper->syncPermissions([
-            'products.view',
-            'brands.view',
-            'inventory.view', 'inventory.adjust', 'inventory.receive',
-            'reports.inventory',
+        // ── HR Admin ────────────────────────────────
+        // Employee & user management (R, W, D on users/employees)
+        $hrAdmin = Role::firstOrCreate(['name' => 'HR Admin', 'guard_name' => 'sanctum']);
+        $hrAdmin->syncPermissions([
+            'users.view', 'users.create', 'users.edit', 'users.delete',
+            'employees.view', 'employees.edit',
+            'settings.manage',
+            'dashboard.view',
         ]);
+
+        // ── Technician ──────────────────────────────
+        // Field work: installations, service logs, warranty, stock receiving (R, W own scope)
+        // Includes former Store Keeper inventory permissions
+        $technician = Role::firstOrCreate(['name' => 'Technician', 'guard_name' => 'sanctum']);
+        $technician->syncPermissions([
+            'products.view',
+            'clients.view',
+            'installations.view', 'installations.update_status',
+            'service_logs.view', 'service_logs.create', 'service_logs.edit',
+            'inventory.view', 'inventory.receive',
+            'dashboard.view',
+        ]);
+
+        // ── Client (Future) ─────────────────────────
+        // Seeded for future client portal — no ERP permissions currently
+        Role::firstOrCreate(['name' => 'Client', 'guard_name' => 'sanctum']);
     }
 }

@@ -70,7 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── Content Management ──────────────────────
     Route::middleware('permission:products.create')->post('/products', [ProductController::class, 'store']);
-    Route::middleware('permission:products.edit')->put('/products/{product}', [ProductController::class, 'update']);
+    Route::middleware('permission:products.edit')->group(function () {
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::patch('/products/{product}/visibility', [ProductController::class, 'toggleVisibility']);
+    });
     Route::middleware('permission:products.delete')->delete('/products/{product}', [ProductController::class, 'destroy']);
 
     Route::middleware('permission:projects.create')->post('/projects', [ProjectController::class, 'store']);

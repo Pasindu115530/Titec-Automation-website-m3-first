@@ -247,6 +247,24 @@ class ProductController extends Controller
     }
 
     /**
+     * Toggle the visibility of the product on the store or toggle price visibility.
+     */
+    public function toggleVisibility(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'on_store' => 'sometimes|boolean',
+            'show_price' => 'sometimes|boolean',
+        ]);
+
+        $product->update($validated);
+
+        return response()->json([
+            'data' => $product->fresh(),
+            'message' => 'Visibility updated successfully',
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Product $product)
