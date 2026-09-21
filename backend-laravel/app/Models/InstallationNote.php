@@ -12,6 +12,16 @@ class InstallationNote extends Model
         'attachments' => 'array',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        if (is_array($this->attachments) && count($this->attachments) > 0) {
+            return $this->attachments[0];
+        }
+        return null;
+    }
+
     public function installation()
     {
         return $this->belongsTo(Installation::class);
