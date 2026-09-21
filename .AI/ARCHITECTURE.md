@@ -88,6 +88,19 @@ Titec-Automation-website-m3-first/
 
 ## Technology Stack
 
+### Core System Runtime Requirements (All Subprojects)
+
+> [!IMPORTANT]
+> See [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md) for full device diagnosis and automated fix instructions (`bash .AI/scripts/ensure-env.sh`).
+
+| Runtime / Tool | Required Version | Constraints & Details |
+|---|---|---|
+| **Node.js** | **`v20.19.0+`** or **`v22.12.0+`** | Target: **`v20.20.2+` (LTS Iron)**. Node 18 will crash Vite 7 (`crypto.hash`). |
+| **NPM** | **`v10.0.0+`** | Package management. |
+| **PHP** | **`8.2+`** | Target: PHP 8.3+. Required by Laravel 12. |
+| **Composer** | **`2.2+`** | Dependency management & dev task orchestration (`composer run dev`). |
+| **MySQL** | **`8.0+`** | Relational database. |
+
 ### Frontend (`frontend-next`)
 
 | Technology          | Version | Purpose                              |
@@ -110,6 +123,8 @@ Titec-Automation-website-m3-first/
 |------------------|---------|-----------------------------------|
 | PHP              | 8.2+    | Runtime                           |
 | Laravel          | 12.x    | API framework                     |
+| Vite             | 7.x     | Asset bundler & HMR (`crypto.hash` requires Node 20.19+) |
+| Tailwind CSS     | 4.x     | CSS styling via `@tailwindcss/vite` |
 | Laravel Sanctum  | 4.x     | Bearer token authentication       |
 | DomPDF           | 3.x     | PDF generation for quotations     |
 | MySQL            | -       | Primary database                  |

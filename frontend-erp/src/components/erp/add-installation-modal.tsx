@@ -20,7 +20,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         description: '',
         priority: 'medium',
         scheduled_date: '',
-        location_address: '',
+        location: '',
     });
 
     useEffect(() => {
@@ -33,7 +33,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
                 description: '',
                 priority: 'medium',
                 scheduled_date: '',
-                location_address: '',
+                location: '',
             });
         }
     }, [isOpen]);
@@ -68,8 +68,12 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         const toastId = toast.loading('Creating installation...');
         
         try {
+            const selectedClient = clients.find(c => c.id === Number(formData.client_id));
+            const locationToUse = formData.location || selectedClient?.address || 'Unknown Location';
+
             await installationService.createInstallation({
                 ...formData,
+                location: locationToUse,
                 client_id: Number(formData.client_id)
             });
             toast.success('Installation created successfully!', { id: toastId });
@@ -172,14 +176,14 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
                     </div>
 
                     <div>
-                        <label htmlFor="location_address" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
                             Location / Address
                         </label>
                         <input
                             type="text"
-                            id="location_address"
-                            name="location_address"
-                            value={formData.location_address}
+                            id="location"
+                            name="location"
+                            value={formData.location}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             placeholder="Site address (leave blank to use client's address)"

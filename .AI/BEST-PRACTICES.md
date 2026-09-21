@@ -11,6 +11,7 @@
 2. **Admin panel and public site are isolated** via Next.js route groups. Changes in one should not break the other.
 3. **Backend is API-only** — no server-rendered HTML views (except email templates and PDF templates).
 4. **Mobile responsiveness** is critical — the admin needs to send quotations from mobile devices.
+5. **Runtime version compliance is mandatory** — Every developer or AI agent must ensure the host device runs Node.js `>= 20.19.0` (target: `v20.20.2+`) and PHP `>= 8.2`. Run `bash .AI/scripts/ensure-env.sh` on any new machine/terminal before launching dev servers (see [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md)).
 
 ---
 
@@ -180,3 +181,4 @@
 6. **CORS updates**: When adding new domains, update BOTH `config/cors.php` AND `config/sanctum.php` stateful domains.
 7. **Cache busting**: The `VersionManager` component handles frontend cache busting. Don't remove it.
 8. **Admin routes not role-protected**: Don't assume backend validates admin role — it only checks authentication.
+9. **Node 18 breaking Vite 7 (`crypto.hash`)**: Do not allow `/usr/bin/node` (Node 18) to run Vite 7 in `backend-laravel`. Vite 7 requires Node `>= 20.19.0` or `>= 22.12.0`. In subshells (`composer run dev`), ensure `~/.local/bin` symlinks point to Node 20 as documented in [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md).
