@@ -16,18 +16,17 @@ import ProductHubTable from '@/components/erp/product-hub-table';
 import AddProductModal from '@/components/admin/add-product-modal';
 import EditProductModal from '@/components/admin/edit-product-modal';
 import DeleteConfirmationModal from '@/components/admin/delete-confirmation-modal';
-import StockAdjustModal from '@/components/erp/stock-adjust-modal';
-import StockReceiveModal from '@/components/erp/stock-receive-modal';
+import NewStockModal from '@/components/erp/new-stock-modal';
 import StockHistoryDrawer from '@/components/erp/stock-history-drawer';
 import { InventoryItem } from '@/services/inventoryService';
 import { api } from '@/lib/api';
 
-type FilterType = 'all' | 'on_web' | 'off_web' | 'low_stock' | 'out_of_stock';
+type FilterType = 'all' | 'on_web' | 'off_web' | 'low_stock' | 'out_of_stock' | 'show_price';
 
 export default function ProductAndInventoryHubPage() {
     const { hasPermission } = useAuth();
-    const canCreate = hasPermission(PERMISSIONS.PRODUCTS_CREATE || 'products.create');
-    const canDelete = hasPermission(PERMISSIONS.PRODUCTS_DELETE || 'products.delete');
+    const canCreate = hasPermission('products.create');
+    const canDelete = hasPermission('products.delete');
 
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
@@ -43,8 +42,7 @@ export default function ProductAndInventoryHubPage() {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
     
-    const [stockAdjustItem, setStockAdjustItem] = useState<InventoryItem | null>(null);
-    const [stockReceiveItem, setStockReceiveItem] = useState<InventoryItem | null>(null);
+    const [isNewStockModalOpen, setIsNewStockModalOpen] = useState(false);
     const [stockHistoryItem, setStockHistoryItem] = useState<InventoryItem | null>(null);
 
     // Debounce search
@@ -110,6 +108,7 @@ export default function ProductAndInventoryHubPage() {
             case 'off_web': return products.filter(p => !p.on_store);
             case 'low_stock': return products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 5);
             case 'out_of_stock': return products.filter(p => (p.stock || 0) === 0);
+            case 'show_price': return products.filter(p => p.show_price);
             default: return products;
         }
     }, [products, activeFilter]);
@@ -131,12 +130,20 @@ export default function ProductAndInventoryHubPage() {
                     </h1>
                     <p className="text-gray-500 mt-1">Manage your catalog, inventory, and web visibility in one place.</p>
                 </div>
-                {canCreate && (
-                    <Button onClick={() => setIsAddModalOpen(true)} className="gap-2 btn-gradient-primary border-0 shadow-md">
-                        <Plus className="h-4 w-4" />
-                        <span>Add New Product</span>
-                    </Button>
-                )}
+                <div className="flex gap-3">
+                    {canCreate && (
+                        <Button onClick={() => setIsAddModalOpen(true)} variant="outline" className="gap-2 border-gray-300">
+                            <Plus className="h-4 w-4" />
+                            <span>Add Product</span>
+                        </Button>
+                    )}
+                    {(hasPermission('inventory.adjust') || hasPermission('inventory.receive')) && (
+                        <Button onClick={() => setIsNewStockModalOpen(true)} className="gap-2 btn-gradient-primary border-0 shadow-md">
+                            <Plus className="h-4 w-4" />
+                            <span>New Stock</span>
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {/* Stats Row */}
@@ -147,10 +154,10 @@ export default function ProductAndInventoryHubPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        onClick={() => stat.id !== 'show_price' && setActiveFilter(stat.id)}
-                        className={`bg-white rounded-xl p-4 border shadow-sm transition-all duration-200 ${
-                            stat.id !== 'show_price' ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : ''
-                        } ${activeFilter === stat.id ? 'ring-2 ring-indigo-500 border-indigo-500' : ''}`}
+                        onClick={() => setActiveFilter(stat.id)}
+                        className={`bg-white rounded-xl p-4 border shadow-sm transition-all duration-200 cursor-pointer hover:shadow-md hover:border-gray-300 ${
+                            activeFilter === stat.id ? 'ring-2 ring-indigo-500 border-indigo-500' : ''
+                        }`}
                     >
                         <div className="flex items-center gap-3 mb-2">
                             <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
@@ -208,8 +215,6 @@ export default function ProductAndInventoryHubPage() {
                     isLoading={loading}
                     onEdit={setEditingProduct}
                     onDelete={setProductToDelete}
-                    onAdjustStock={setStockAdjustItem}
-                    onReceiveStock={setStockReceiveItem}
                     onViewHistory={setStockHistoryItem}
                 />
             </div>
@@ -238,18 +243,14 @@ export default function ProductAndInventoryHubPage() {
                 isDeleting={!!deletingId}
             />
 
-            <StockAdjustModal
-                isOpen={!!stockAdjustItem}
-                onClose={() => setStockAdjustItem(null)}
-                item={stockAdjustItem}
+            <NewStockModal
+                isOpen={isNewStockModalOpen}
+                onClose={() => setIsNewStockModalOpen(false)}
                 onSuccess={fetchProducts}
-            />
-
-            <StockReceiveModal
-                isOpen={!!stockReceiveItem}
-                onClose={() => setStockReceiveItem(null)}
-                item={stockReceiveItem}
-                onSuccess={fetchProducts}
+                onAddNewProduct={() => {
+                    setIsNewStockModalOpen(false);
+                    setIsAddModalOpen(true);
+                }}
             />
 
             <StockHistoryDrawer

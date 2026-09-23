@@ -141,7 +141,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inventory', [\App\Http\Controllers\InventoryController::class, 'index']);
         Route::get('/inventory/{product}/movements', [\App\Http\Controllers\InventoryController::class, 'movements']);
     });
-    Route::middleware('permission:inventory.adjust')->post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust']);
+    Route::middleware('permission:inventory.adjust')->group(function () {
+        Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust']);
+        Route::post('/inventory/movement', [\App\Http\Controllers\InventoryController::class, 'createMovement']);
+        Route::post('/inventory/movements/bulk', [\App\Http\Controllers\InventoryController::class, 'createBulkMovement']);
+    });
     Route::middleware('permission:inventory.receive')->post('/inventory/{product}/receive', [\App\Http\Controllers\InventoryController::class, 'receive']);
 
     // ── Installations ────────────────────────────

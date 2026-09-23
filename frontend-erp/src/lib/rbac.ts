@@ -88,7 +88,7 @@ export const PERMISSIONS = {
 // ═══════════════════════════════════════════════
 
 // Custom SVG icon type for DashboardGridIcon
-type IconComponent = LucideIcon | React.ComponentType<{ className?: string }>;
+type IconComponent = any;
 
 export interface NavItem {
     name: string;

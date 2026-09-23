@@ -49,13 +49,18 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
     const getMovementIcon = (type: string) => {
         switch (type) {
             case 'receive':
+            case 'received':
                 return <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg></div>;
             case 'sale':
+            case 'sold':
                 return <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg></div>;
             case 'adjust':
+            case 'adjustment':
                 return <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></div>;
             case 'return':
                 return <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg></div>;
+            case 'damaged':
+                return <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>;
             default:
                 return <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>;
         }
@@ -93,17 +98,18 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                             {movements.map((movement) => (
                                 <div key={movement.id} className="relative pl-6">
                                     <div className="absolute -left-4 top-0 bg-white p-1">
-                                        {getMovementIcon(movement.type)}
+                                        {getMovementIcon(movement.movement_type || movement.type)}
                                     </div>
                                     <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4">
                                         <div className="flex justify-between items-start mb-2">
                                             <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium capitalize
-                                                ${movement.type === 'receive' ? 'bg-green-100 text-green-700' : 
-                                                  movement.type === 'sale' ? 'bg-blue-100 text-blue-700' : 
-                                                  movement.type === 'return' ? 'bg-purple-100 text-purple-700' :
+                                                ${(movement.movement_type || movement.type) === 'receive' || (movement.movement_type || movement.type) === 'received' ? 'bg-green-100 text-green-700' : 
+                                                  (movement.movement_type || movement.type) === 'sale' || (movement.movement_type || movement.type) === 'sold' ? 'bg-blue-100 text-blue-700' : 
+                                                  (movement.movement_type || movement.type) === 'return' ? 'bg-purple-100 text-purple-700' :
+                                                  (movement.movement_type || movement.type) === 'damaged' ? 'bg-red-100 text-red-700' :
                                                   'bg-yellow-100 text-yellow-700'}`}
                                             >
-                                                {movement.type}
+                                                {movement.movement_type || movement.type}
                                             </span>
                                             <span className="text-xs text-gray-500">
                                                 {new Date(movement.created_at).toLocaleString('en-US', {
@@ -119,7 +125,7 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                                             </strong>
                                         </div>
                                         <div className="text-xs text-gray-500 mt-1">
-                                            Stock changed from {movement.previous_stock} to {movement.new_stock}
+                                            Stock changed from {movement.stock_before} to {movement.stock_after}
                                         </div>
                                         
                                         {movement.notes && (

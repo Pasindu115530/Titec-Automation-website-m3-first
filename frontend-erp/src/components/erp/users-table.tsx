@@ -45,8 +45,8 @@ export default function UsersTable() {
                 userService.getUsers(),
                 userService.getRoles()
             ]);
-            setUsers(usersRes.data || usersRes);
-            setRoles(rolesRes.data || rolesRes);
+            setUsers((usersRes as any).data || usersRes);
+            setRoles((rolesRes as any).data || rolesRes);
         } catch (error) {
             toast.error('Failed to load users and roles.');
         } finally {

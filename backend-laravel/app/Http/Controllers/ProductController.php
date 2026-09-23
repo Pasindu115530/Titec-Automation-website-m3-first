@@ -50,7 +50,7 @@ class ProductController extends Controller
             'category' => 'required|string|max:100',
             'brand' => 'nullable|string|max:100',
             'brand_id' => 'nullable|exists:brands,id',
-            'stock' => 'required|integer',
+            'stock' => 'nullable|integer',
             'unit' => 'nullable|string:max:20',
             'sku' => 'nullable|string|max:50',
             'on_store' => 'nullable|boolean',
@@ -59,6 +59,8 @@ class ProductController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
         ]);
+
+        $validated['stock'] = $validated['stock'] ?? 0;
 
         // Handle Images
         $imagePaths = [];
@@ -152,7 +154,7 @@ class ProductController extends Controller
             'category' => 'sometimes|required|string|max:100',
             'brand' => 'nullable|string|max:100',
             'brand_id' => 'nullable|exists:brands,id',
-            'stock' => 'sometimes|required|integer',
+            'stock' => 'nullable|integer',
             'unit' => 'nullable|string:max:20',
             'sku' => 'nullable|string|max:50',
             'on_store' => 'nullable|boolean',

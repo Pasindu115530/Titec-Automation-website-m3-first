@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
 
 export interface InventoryItem {
-    id: number;
+    id: string | number;
     name: string;
     description: string | null;
     slug: string;
@@ -19,15 +19,16 @@ export interface InventoryItem {
 
 export interface InventoryMovement {
     id: number;
-    product_id: number;
-    type: 'receive' | 'adjust' | 'sale' | 'return';
+    product_id: string | number;
+    type: 'receive' | 'adjust' | 'sale' | 'return' | 'damaged' | 'sold' | 'void' | 'received' | 'adjustment';
+    movement_type?: 'receive' | 'adjust' | 'sale' | 'return' | 'damaged' | 'sold' | 'void' | 'received' | 'adjustment';
     quantity: number;
-    previous_stock: number;
-    new_stock: number;
+    stock_before: number;
+    stock_after: number;
     reference_type: string | null;
     reference_id: number | null;
     notes: string | null;
-    created_by: number;
+    user_id: number;
     created_at: string;
     updated_at: string;
     user?: {
@@ -47,7 +48,7 @@ export const inventoryService = {
         }
     },
 
-    async getMovements(productId: number, page: number = 1): Promise<any> {
+    async getMovements(productId: string | number, page: number = 1): Promise<any> {
         try {
             const response = await api.get(`/api/inventory/${productId}/movements`, { params: { page } });
             return response.data;
@@ -57,7 +58,36 @@ export const inventoryService = {
         }
     },
 
-    async adjustStock(productId: number, quantity: number, notes?: string): Promise<any> {
+    async createMovement(productId: string | number, movementType: string, quantity: number, notes?: string): Promise<any> {
+        try {
+            const response = await api.post('/api/inventory/movement', {
+                product_id: productId,
+                movement_type: movementType,
+                quantity,
+                notes
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to create stock movement:', error);
+            throw error;
+        }
+    },
+
+    async createBulkMovements(items: { product_id: string | number, quantity: number }[], movementType: string, notes?: string): Promise<any> {
+        try {
+            const response = await api.post('/api/inventory/movements/bulk', {
+                items,
+                movement_type: movementType,
+                notes
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Failed to create bulk stock movements:', error);
+            throw error;
+        }
+    },
+
+    async adjustStock(productId: string | number, quantity: number, notes?: string): Promise<any> {
         try {
             const response = await api.post(`/api/inventory/${productId}/adjust`, { quantity, notes });
             return response.data;
@@ -67,7 +97,7 @@ export const inventoryService = {
         }
     },
 
-    async receiveStock(productId: number, quantity: number, notes?: string): Promise<any> {
+    async receiveStock(productId: string | number, quantity: number, notes?: string): Promise<any> {
         try {
             const response = await api.post(`/api/inventory/${productId}/receive`, { quantity, notes });
             return response.data;

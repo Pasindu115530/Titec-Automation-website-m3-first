@@ -16,12 +16,9 @@ interface ProductHubTableProps {
     isLoading?: boolean;
     onEdit: (product: Product) => void;
     onDelete: (product: Product) => void;
-    onAdjustStock: (item: InventoryItem) => void;
-    onReceiveStock: (item: InventoryItem) => void;
     onViewHistory: (item: InventoryItem) => void;
 }
 
-// Adapter to map Product to InventoryItem for the stock modals
 const mapToInventoryItem = (product: Product): InventoryItem => ({
     id: product.id,
     product_code: product.sku || product.model_number || '-',
@@ -30,7 +27,7 @@ const mapToInventoryItem = (product: Product): InventoryItem => ({
     price: typeof product.price === 'string' ? parseFloat(product.price) : (product.price || 0),
     stock_quantity: product.stock || 0,
     min_stock_level: 5 // Default for now
-});
+} as unknown as InventoryItem);
 
 export default function ProductHubTable({ 
     products, 
@@ -38,17 +35,13 @@ export default function ProductHubTable({
     isLoading,
     onEdit,
     onDelete,
-    onAdjustStock,
-    onReceiveStock,
     onViewHistory
 }: ProductHubTableProps) {
     const { hasPermission } = useAuth();
     const [togglingId, setTogglingId] = useState<string | null>(null);
 
-    const canEdit = hasPermission(PERMISSIONS.PRODUCTS_EDIT || 'products.edit');
-    const canDelete = hasPermission(PERMISSIONS.PRODUCTS_DELETE || 'products.delete');
-    const canAdjust = hasPermission(PERMISSIONS.INVENTORY_ADJUST || 'inventory.adjust');
-    const canReceive = hasPermission(PERMISSIONS.INVENTORY_RECEIVE || 'inventory.receive');
+    const canEdit = hasPermission('products.edit');
+    const canDelete = hasPermission('products.delete');
 
     const handleToggle = async (product: Product, field: 'on_store' | 'show_price', currentValue: boolean) => {
         try {
@@ -188,30 +181,6 @@ export default function ProductHubTable({
                                         )}
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                                                {canAdjust && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        title="Adjust Stock"
-                                                        className="h-8 px-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 border border-transparent hover:border-indigo-100"
-                                                        onClick={() => onAdjustStock(invItem)}
-                                                    >
-                                                        <ArrowRightLeft className="h-4 w-4 mr-1" />
-                                                        <span className="text-xs">Adjust</span>
-                                                    </Button>
-                                                )}
-                                                {canReceive && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        title="Receive Stock"
-                                                        className="h-8 px-2 text-green-600 hover:text-green-700 hover:bg-green-50 border border-transparent hover:border-green-100"
-                                                        onClick={() => onReceiveStock(invItem)}
-                                                    >
-                                                        <PlusSquare className="h-4 w-4 mr-1" />
-                                                        <span className="text-xs">Receive</span>
-                                                    </Button>
-                                                )}
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"

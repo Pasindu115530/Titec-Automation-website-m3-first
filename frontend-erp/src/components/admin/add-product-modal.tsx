@@ -44,7 +44,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
         price: '',
         category: '',
         brand_id: '',
-        stock: '',
         unit: 'nos',
         sku: '',
         on_store: true,
@@ -91,7 +90,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
             if (formData.brand_id) {
                 data.append('brand_id', formData.brand_id);
             }
-            data.append('stock', formData.stock);
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
@@ -122,7 +120,6 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 price: '',
                 category: '',
                 brand_id: '',
-                stock: '',
                 unit: 'nos',
                 sku: '',
                 on_store: true,
@@ -210,7 +207,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Price</label>
                                 <div className="relative">
@@ -226,20 +223,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Stock</label>
-                                <div className="relative">
-                                    <Package2 className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        name="stock"
-                                        type="number"
-                                        className="pl-9"
-                                        value={formData.stock}
-                                        onChange={handleInputChange}
-                                        placeholder="Qty"
-                                    />
-                                </div>
-                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Unit</label>
                                 <div className="relative">

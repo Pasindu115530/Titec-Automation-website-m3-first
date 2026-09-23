@@ -36,7 +36,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         price: '',
         category: '',
         brand: '',
-        stock: '',
         unit: 'nos',
         sku: '',
         on_store: true,
@@ -51,7 +50,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 price: product.price ? String(product.price) : '',
                 category: product.category || '',
                 brand: product.brand || '',
-                stock: product.stock ? String(product.stock) : '',
                 unit: product.unit || 'nos',
                 sku: product.sku || '',
                 on_store: product.on_store !== undefined ? product.on_store : true,
@@ -110,7 +108,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('price', formData.price);
             data.append('category', formData.category);
             data.append('brand', formData.brand || '');
-            data.append('stock', formData.stock);
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
@@ -218,7 +215,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Price</label>
                                 <div className="relative">
@@ -233,19 +230,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Stock</label>
-                                <div className="relative">
-                                    <Package2 className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        name="stock"
-                                        type="number"
-                                        className="pl-9"
-                                        value={formData.stock}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Unit</label>
                                 <div className="relative">
