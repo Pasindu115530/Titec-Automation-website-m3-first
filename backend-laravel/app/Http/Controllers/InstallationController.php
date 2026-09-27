@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Installation;
+use App\Models\InstallationNote;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +43,7 @@ class InstallationController extends Controller
 
     public function show(Installation $installation)
     {
-        $installation->load(['client', 'invoice', 'technicians', 'notes.user']);
+        $installation->load(['client', 'invoice', 'technicians', 'notes.user', 'notes.reviewedByUser']);
         return response()->json($installation);
     }
 
@@ -126,24 +128,135 @@ class InstallationController extends Controller
 
     public function addNote(Request $request, Installation $installation)
     {
-        $validated = $request->validate([
-            'content' => 'required|string',
-            'image' => 'nullable|image|max:5120',
-        ]);
+        $type = $request->input('type', 'progress');
 
+        // ── Build dynamic validation rules per type ──
+        $rules = [
+            'content'          => 'required|string',
+            'type'             => 'required|in:progress,completion,extra_cost,defect,additional_parts',
+            'cost_description' => 'nullable|string|max:255',
+        ];
+
+        // Image requirement varies by type
+        $requiresImage  = in_array($type, ['completion', 'extra_cost', 'defect']);
+        $rules['images']   = $requiresImage ? 'required|array|min:1' : 'nullable|array';
+        $rules['images.*'] = 'image|max:5120'; // 5MB per image
+
+        // Cost requirement varies by type
+        $requiresCost = in_array($type, ['extra_cost', 'additional_parts']);
+        $rules['cost_amount'] = $requiresCost ? 'required|numeric|min:0.01' : 'nullable|numeric|min:0';
+
+        $validated = $request->validate($rules);
+
+        // ── Store all uploaded images ────────────────
         $attachments = [];
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('notes', 'public');
-            $attachments[] = $path;
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $attachments[] = $image->store('notes', 'public');
+            }
+        }
+        // Also handle legacy single 'image' field for backward compat
+        if (empty($attachments) && $request->hasFile('image')) {
+            $attachments[] = $request->file('image')->store('notes', 'public');
         }
 
+        // ── Determine review status ─────────────────
+        $reviewStatus = in_array($type, InstallationNote::REVIEWABLE_TYPES) ? 'pending' : null;
+
         $note = $installation->notes()->create([
-            'user_id' => auth()->id() ?? 1,
-            'content' => $validated['content'],
-            'attachments' => empty($attachments) ? null : $attachments,
+            'user_id'          => auth()->id() ?? 1,
+            'content'          => $validated['content'],
+            'type'             => $type,
+            'attachments'      => empty($attachments) ? null : $attachments,
+            'cost_amount'      => $validated['cost_amount'] ?? null,
+            'cost_description' => $validated['cost_description'] ?? null,
+            'review_status'    => $reviewStatus,
         ]);
 
+        $note->load('user');
+
         return response()->json($note, 201);
+    }
+
+    /**
+     * Accountant reviews a financial note (approve / reject).
+     * On approval with cost, auto-creates an adjustment InvoiceItem on the linked Invoice.
+     */
+    public function reviewNote(Request $request, Installation $installation, InstallationNote $note)
+    {
+        // Ensure the note belongs to this installation
+        if ($note->installation_id !== $installation->id) {
+            return response()->json(['message' => 'Note does not belong to this installation.'], 404);
+        }
+
+        if ($note->review_status !== 'pending') {
+            return response()->json(['message' => 'This note has already been reviewed.'], 422);
+        }
+
+        $validated = $request->validate([
+            'action'           => 'required|in:approve,reject',
+            'rejection_reason' => 'required_if:action,reject|nullable|string|max:500',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $note->update([
+                'review_status'    => $validated['action'] === 'approve' ? 'approved' : 'rejected',
+                'reviewed_by'      => auth()->id(),
+                'reviewed_at'      => now(),
+                'rejection_reason' => $validated['action'] === 'reject' ? $validated['rejection_reason'] : null,
+            ]);
+
+            // ── Auto-add to linked Invoice on approval ──
+            if ($validated['action'] === 'approve' && $note->cost_amount > 0 && $installation->invoice_id) {
+                $typeLabels = [
+                    'extra_cost'       => 'Extra Cost',
+                    'defect'           => 'Defect Repair',
+                    'additional_parts' => 'Additional Parts',
+                ];
+                $label = $typeLabels[$note->type] ?? 'Adjustment';
+                $description = $note->cost_description
+                    ? "{$label}: {$note->cost_description}"
+                    : "{$label} — {$installation->reference_number}";
+
+                InvoiceItem::create([
+                    'invoice_id'   => $installation->invoice_id,
+                    'product_id'   => null,
+                    'product_name' => $description,
+                    'quantity'     => 1,
+                    'unit_price'   => $note->cost_amount,
+                    'line_total'   => $note->cost_amount,
+                ]);
+
+                // Recalculate invoice totals
+                $invoice = $installation->invoice;
+                if ($invoice) {
+                    $invoice->calculateTotals();
+                    $invoice->save();
+                }
+            }
+
+            DB::commit();
+
+            $note->load(['user', 'reviewedByUser']);
+            return response()->json($note);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to review note.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * List all notes pending accountant review (across all installations).
+     */
+    public function pendingReviews(Request $request)
+    {
+        $notes = InstallationNote::with(['installation.client', 'user'])
+            ->pendingReview()
+            ->latest()
+            ->paginate(20);
+
+        return response()->json($notes);
     }
 
     public function assign(Request $request, Installation $installation)
