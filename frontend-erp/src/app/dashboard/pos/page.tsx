@@ -130,32 +130,51 @@ export default function POSPage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8.5rem)]">
       {/* Left Area - POS Input (70%) */}
       <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-        <div className="bg-[#111827] border border-white/10 p-4 rounded-lg shadow-lg">
+        {/* Client Picker */}
+        <div className="z-20">
           <ClientPicker 
             selectedClient={selectedClient} 
             onSelectClient={setSelectedClient} 
           />
         </div>
 
+        {/* Product Search */}
         <div className="z-10">
           <POSProductSearch onAddProduct={handleAddProduct} />
         </div>
 
-        <div className="flex-1 bg-[#111827] border border-white/10 rounded-lg overflow-hidden flex flex-col shadow-lg">
-          <div className="p-4 bg-white/5 border-b border-white/10 flex justify-between items-center text-sm font-semibold text-gray-300 uppercase tracking-wider">
-            <span>Invoice Items ({items.length})</span>
-            <Button variant="ghost" size="sm" onClick={() => setItems([])} className="text-red-400 hover:text-red-300 h-8 text-xs">
+        {/* Invoice Items Card */}
+        <div className="flex-1 bg-white/85 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.05)] min-h-[360px]">
+          <div className="px-5 py-4 bg-white/40 border-b border-neutral-200/70 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
+            <div className="flex items-center gap-2.5">
+              <span>Invoice Items</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-900 text-[#D7FC45] shadow-2xs">
+                {items.length}
+              </span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setItems([])} 
+              disabled={items.length === 0}
+              className="text-neutral-400 hover:text-red-600 hover:bg-red-50 h-8 px-3 rounded-xl text-xs font-semibold transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            >
               Clear All
             </Button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5">
             {items.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-gray-500 gap-4 opacity-50">
-                <Package className="h-16 w-16" />
-                <p>Scan barcode or search to add products</p>
+              <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-neutral-400 gap-3 py-10">
+                <div className="w-16 h-16 rounded-2xl bg-neutral-100/90 border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
+                  <Package className="h-8 w-8 stroke-[1.75]" />
+                </div>
+                <div className="text-center">
+                  <p className="font-bold text-neutral-700 text-sm sm:text-base">No items in invoice yet</p>
+                  <p className="text-xs text-neutral-400 mt-0.5 font-medium">Scan barcode or search products above to start adding</p>
+                </div>
               </div>
             ) : (
               items.map((item, index) => (
@@ -174,7 +193,7 @@ export default function POSPage() {
       </div>
 
       {/* Right Area - Summary (30%) */}
-      <div className="w-full lg:w-[400px] flex flex-col gap-4">
+      <div className="w-full lg:w-[410px] flex flex-col gap-4">
         <POSSummary 
           subtotal={subtotal}
           taxRate={taxRate}
@@ -189,28 +208,27 @@ export default function POSPage() {
         <div className="grid grid-cols-2 gap-3 mt-auto">
           <Button 
             variant="outline" 
-            className="h-16 border-white/10 hover:bg-white/5 text-gray-300"
+            className="h-14 bg-white/80 hover:bg-white text-neutral-800 border-white/90 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.04)] font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
             onClick={() => router.push('/dashboard/invoices')}
           >
-            <History className="mr-2 h-5 w-5" /> Recent Invoices
+            <History className="mr-2 h-4 w-4 text-neutral-600" /> Recent Invoices
           </Button>
           <Button 
             variant="outline" 
-            className="h-16 border-amber-500/30 hover:bg-amber-500/10 text-amber-500"
+            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border-amber-200/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
             onClick={() => {
-              // Usually saves as draft
               if(!selectedClient) toast.error('Select a client first');
               else toast.info('Draft saving to be implemented');
             }}
           >
-            <Save className="mr-2 h-5 w-5" /> Save Draft
+            <Save className="mr-2 h-4 w-4 text-amber-600" /> Save Draft
           </Button>
           <Button 
-            className="h-20 col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/20 text-lg font-bold font-orbitron"
+            className="h-16 col-span-2 bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none"
             disabled={items.length === 0 || !selectedClient}
             onClick={() => setIsConfirmModalOpen(true)}
           >
-            <FileText className="mr-2 h-6 w-6" /> Complete Order
+            <FileText className="mr-2 h-5 w-5 text-current" /> Complete Order
           </Button>
         </div>
       </div>

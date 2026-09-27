@@ -51,26 +51,26 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-[#111827] text-white border-white/10">
+      <DialogContent className="sm:max-w-[520px] bg-white text-neutral-900 border border-neutral-200/90 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.18)] p-6">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle className="font-orbitron tracking-wider text-xl">Complete Order</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Complete Order</DialogTitle>
           </DialogHeader>
           
-          <div className="py-6 space-y-4">
-            <div className="p-4 bg-[#1f2937] border border-blue-500/30 rounded-lg text-center mb-6 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-              <div className="text-gray-400 text-sm">Grand Total</div>
-              <div className="text-3xl font-bold text-white">Rs. {grandTotal.toLocaleString()}</div>
+          <div className="py-4 space-y-4">
+            <div className="p-4 bg-neutral-950 text-white rounded-2xl text-center mb-4 border border-neutral-800 shadow-sm">
+              <div className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">Grand Total</div>
+              <div className="text-3xl font-extrabold text-[#D7FC45] tracking-tight mt-0.5">Rs. {grandTotal.toLocaleString()}</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Payment Method</Label>
+            <div className="grid grid-cols-2 gap-3.5">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-neutral-700">Payment Method</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <SelectTrigger className="bg-[#1f2937] border-white/10">
+                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1f2937] text-white border-white/10">
+                  <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
                     <SelectItem value="cash">Cash</SelectItem>
                     <SelectItem value="card">Card / POS</SelectItem>
                     <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -81,13 +81,13 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
               </div>
 
               {paymentMethod !== 'credit' && (
-                <div className="space-y-2">
-                  <Label>Amount Paid</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-neutral-700">Amount Paid</Label>
                   <Input 
                     type="number" 
                     value={amountPaid} 
                     onChange={(e) => setAmountPaid(parseFloat(e.target.value) || 0)}
-                    className="bg-[#1f2937] border-white/10"
+                    className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white"
                     min="0"
                   />
                 </div>
@@ -95,45 +95,48 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
             </div>
 
             {paymentMethod === 'credit' && (
-              <div className="space-y-2">
-                <Label>Due Date</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold text-neutral-700">Due Date</Label>
                 <Input 
                   type="date" 
                   value={dueDate} 
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="bg-[#1f2937] border-white/10"
+                  className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white"
                   required
                 />
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label>Internal Notes</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-neutral-700">Internal Notes</Label>
               <Textarea 
                 value={notes} 
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes for internal reference"
-                className="bg-[#1f2937] border-white/10 resize-none h-20"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-white"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Invoice Terms & Conditions</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-neutral-700">Invoice Terms & Conditions</Label>
               <Textarea 
                 value={terms} 
                 onChange={(e) => setTerms(e.target.value)}
                 placeholder="Printed on the invoice (e.g. Warranty details)"
-                className="bg-[#1f2937] border-white/10 resize-none h-20"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-white"
               />
             </div>
-
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="border-white/10 hover:bg-white/5">
+          <DialogFooter className="gap-2 sm:gap-0 pt-2">
+            <Button type="button" variant="outline" onClick={onClose} className="border-neutral-200 text-neutral-700 hover:bg-neutral-100 rounded-xl font-medium">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="bg-[#D7FC45] hover:bg-[#C9F335] text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-5 transition-all"
+            >
               {isSubmitting ? 'Processing...' : 'Confirm Order'}
             </Button>
           </DialogFooter>
