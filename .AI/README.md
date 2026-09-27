@@ -9,6 +9,7 @@
 |------|-----------|
 | [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md) | **MANDATORY**: Runtime versions, device environment fix (Node 20+ requirement for Vite 7 / Next 16), subshell fix |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | High-level system overview, tech stack, entity relationships, environment setup, deployment |
+| [ERP-FRONTEND.md](./ERP-FRONTEND.md) | ERP Frontend App Router structure, offline Dexie.js architecture, component breakdown |
 | [FRONTEND.md](./FRONTEND.md) | Next.js App Router structure, components, state management, API communication, styling |
 | [BACKEND.md](./BACKEND.md) | Laravel models, controllers, auth (Sanctum), mail system, file storage, database |
 | [API-REFERENCE.md](./API-REFERENCE.md) | Complete REST API endpoint reference with request/response examples |
@@ -28,7 +29,8 @@
 
 - **Runtimes Required**: Node.js `>= 20.19.0` (e.g. `v20.20.2+`), PHP `>= 8.2`, Composer `>= 2.2`
 - **Frontend**: Next.js 16, React 19, TailwindCSS v4, TypeScript
+- **ERP Frontend**: Next.js 16, Dexie.js (Offline), Framer Motion, Spatie RBAC
 - **Backend**: Laravel 12, Vite 7, PHP 8.2+, MySQL, Sanctum Bearer Tokens
-- **Two route groups**: `(admin)` for admin panel, `(client)` for public site
+- **Route groups**: `(admin)` for legacy admin, `(client)` for public site, `dashboard/` for ERP
 - **Auth**: Bearer tokens stored in localStorage, NOT cookie-based
 - **Hosting**: cPanel (custom `server.js` for Next.js)

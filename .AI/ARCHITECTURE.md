@@ -67,16 +67,16 @@ Titec-Automation-website-m3-first/
 └── backend-laravel/        ← Laravel 12 API backend
     ├── app/
     │   ├── Http/
-    │   │   ├── Controllers/ ← 10 API controllers
+    │   │   ├── Controllers/ ← 18 API controllers
     │   │   ├── Middleware/   ← CSRF + Cookie encryption
     │   │   └── Resources/   ← API Resources (ProductResource, QuotationRequestResource)
-    │   ├── Models/          ← 9 Eloquent models
-    │   ├── Mail/            ← 5 Mailable classes
+    │   ├── Models/          ← 17 Eloquent models
+    │   ├── Mail/            ← 8 Mailable classes
     │   └── Providers/
     ├── config/              ← App, auth, CORS, Sanctum, mail, etc.
     ├── database/
-    │   ├── migrations/      ← 25 migrations
-    │   └── seeders/         ← 9 seeders
+    │   ├── migrations/      ← 44 migrations
+    │   └── seeders/         ← 14 seeders
     ├── routes/
     │   └── api.php          ← All API route definitions
     ├── resources/views/     ← Blade templates (PDF/email)
@@ -156,8 +156,8 @@ Customer browses store → Adds products to cart (localStorage)
 
 ### 2. Admin Content Management
 ```
-Admin logs in via /admin/login (Sanctum token)
-→ CRUD operations on: Products, Projects, Brands, Services
+Admin logs in via /dashboard/login (Sanctum token)
+→ CRUD operations on: Products, Projects, Brands, Services, Invoices, Clients
 → All changes reflect on public website via SSR/API
 ```
 
@@ -189,13 +189,14 @@ erDiagram
 | Model              | Key Fields                                    | Relationships                          |
 |--------------------|-----------------------------------------------|----------------------------------------|
 | `User`             | name, email, password, role                   | hasMany QuotationRequests              |
-| `Product`          | name, price, images[], brand_id, on_store     | belongsTo Brand, belongsToMany QuotationRequest |
+| `Product`          | name, price, images[], brand_id, on_store, warranty_months | belongsTo Brand, belongsToMany QuotationRequest |
 | `Brand`            | name, slug, logo_path                         | hasMany Products                       |
 | `Project`          | title, client, description, thumbnail_path    | —                                      |
 | `ServiceCategory`  | title, slug, image_path, sort_order           | hasMany ServiceItems                   |
 | `ServiceItem`      | title, description, sort_order                | belongsTo ServiceCategory              |
 | `QuotationRequest` | name, email, phone, status, customer_notes    | belongsToMany Products, hasOne Quotation|
 | `Quotation`        | grand_total, pdf_path, valid_until, remarks   | belongsTo QuotationRequest, belongsTo User|
+| `Invoice`          | uuid, client_id, subtotal, grand_total, status| belongsTo Client, hasMany InvoiceItems |
 | `ContactMessage`   | name, email, message                          | —                                      |
 
 ---

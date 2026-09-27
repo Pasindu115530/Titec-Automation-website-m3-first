@@ -46,7 +46,7 @@
 
 | Aspect | `frontend-next` | `frontend-erp` |
 |--------|-----------------|----------------|
-| Output | SSR (Node server) | Static Export (`output: 'export'`) |
+| Output | SSR (Node server) | Next.js Server (same as frontend-next) |
 | Purpose | Public website + old admin | ERP-only (internal) |
 | SEO | Full SEO, OpenGraph | `noindex, nofollow` |
 | Offline | None | Dexie.js (IndexedDB) for POS/Service Logs |
@@ -55,7 +55,7 @@
 | Icons | lucide-react | lucide-react (same) |
 | Animations | framer-motion | framer-motion (same) |
 | Font | Geist Sans/Mono | Inter + Orbitron (display) + Michroma |
-| Deployment | cPanel via `server.js` | cPanel `public_html/erp/` static files |
+| Deployment | cPanel via `server.js` | cPanel via `server.js` |
 
 ---
 
@@ -66,9 +66,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',          // Static HTML export — no Node server needed
   images: {
-    unoptimized: true,        // Required for static export
+    unoptimized: true,        // Required for deployment without sharp
   },
   trailingSlash: true,        // Generates /page/index.html structure
 };
@@ -88,8 +87,8 @@ export default nextConfig;
 ```
 
 - Dev runs on port `3001` (avoids clash with `frontend-next` on `3000`)
-- Production build outputs to `out/` directory
-- Served via `npx serve out` locally, deployed to `public_html/erp/` on cPanel
+- Production build outputs to `.next/` directory
+- Served via `node server.js` locally, deployed to cPanel running custom server script
 
 ---
 
