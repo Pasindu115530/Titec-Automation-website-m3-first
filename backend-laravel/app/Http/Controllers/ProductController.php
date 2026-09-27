@@ -30,7 +30,10 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->latest()->get();
+        $cacheKey = 'products_index_' . md5(json_encode($request->all()));
+        $products = \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(5), function () use ($query) {
+            return $query->latest()->get();
+        });
 
         return response()->json([
             'data' => $products,

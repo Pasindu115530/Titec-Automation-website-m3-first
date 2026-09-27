@@ -9,6 +9,7 @@ import { productService } from '@/services/productService';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS } from '@/lib/rbac';
 import { InventoryItem } from '@/services/inventoryService';
+import { Pagination } from '@/components/ui/pagination';
 
 interface ProductHubTableProps {
     products: Product[];
@@ -42,6 +43,18 @@ export default function ProductHubTable({
 
     const canEdit = hasPermission('products.edit');
     const canDelete = hasPermission('products.delete');
+
+    // Client-side pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 15;
+    const totalPages = Math.ceil(products.length / pageSize);
+    
+    // Reset to page 1 when products change
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [products]);
+
+    const paginatedProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const handleToggle = async (product: Product, field: 'on_store' | 'show_price', currentValue: boolean) => {
         try {
@@ -87,14 +100,14 @@ export default function ProductHubTable({
                                     <Loader variant="inline" size={80} />
                                 </td>
                             </tr>
-                        ) : products.length === 0 ? (
+                        ) : paginatedProducts.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    No products found matching your criteria.
+                                    No products found matching your criteria on this page.
                                 </td>
                             </tr>
                         ) : (
-                            products.map((product) => {
+                            paginatedProducts.map((product) => {
                                 const thumbnail = getThumbnail(product);
                                 const isTogglingStore = togglingId === `${product.id}-on_store`;
                                 const isTogglingPrice = togglingId === `${product.id}-show_price`;
@@ -222,6 +235,18 @@ export default function ProductHubTable({
                     </tbody>
                 </table>
             </div>
+            {totalPages > 1 && (
+                <div className="p-4 border-t bg-white">
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                    <div className="text-center text-xs text-gray-500 mt-2">
+                        Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, products.length)} of {products.length} products
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

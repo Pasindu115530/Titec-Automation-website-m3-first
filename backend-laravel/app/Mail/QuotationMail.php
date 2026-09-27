@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 
-class QuotationMail extends Mailable
+class QuotationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
