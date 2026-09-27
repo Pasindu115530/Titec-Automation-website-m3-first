@@ -41,11 +41,12 @@ export function RecordPaymentModal({ isOpen, onClose, invoice, onPaymentRecorded
     try {
       const response = await invoiceService.recordPayment(invoice.id, amount, method);
       toast.success('Payment recorded successfully');
-      onPaymentRecorded(response.invoice);
+      onPaymentRecorded(response.invoice || response);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to record payment', error);
-      toast.error('Failed to record payment');
+      const msg = error.response?.data?.message || 'Failed to record payment';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

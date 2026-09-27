@@ -14,6 +14,7 @@ export interface PendingInvoice {
   tax_amount: number;
   grand_total: number;
   payment_method?: string;
+  amount_paid?: number;
   notes?: string;
   terms?: string;
   due_date?: string;

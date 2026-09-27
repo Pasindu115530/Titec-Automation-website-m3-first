@@ -210,8 +210,37 @@ class InvoiceController extends Controller
             'payment_date' => 'required|date',
         ]);
 
-        if (in_array($invoice->status, ['draft', 'void', 'paid'])) {
+        if (in_array($invoice->status, ['void', 'paid'])) {
             return response()->json(['message' => 'Cannot apply payment to this invoice.'], 422);
+        }
+
+        if ($invoice->status === 'draft') {
+            try {
+                DB::transaction(function () use ($invoice) {
+                    foreach ($invoice->items as $item) {
+                        if ($item->product_id) {
+                            $product = Product::lockForUpdate()->find($item->product_id);
+                            if ($product->stock < $item->quantity) {
+                                throw new \Exception("Insufficient stock for {$product->name}.");
+                            }
+                        }
+                    }
+
+                    foreach ($invoice->items as $item) {
+                        if ($item->product_id) {
+                            $product = Product::find($item->product_id);
+                            $product->deductStock($item->quantity, auth()->id() ?? 1, $invoice->id);
+                        }
+                        $item->setWarrantyDates(now());
+                        $item->save();
+                    }
+
+                    $invoice->update(['status' => 'confirmed']);
+                });
+                $invoice->refresh();
+            } catch (\Exception $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
         }
 
         $newPaidAmount = $invoice->amount_paid + $validated['amount'];
@@ -223,6 +252,11 @@ class InvoiceController extends Controller
             'payment_date' => $validated['payment_date'],
             'status' => $status,
         ]);
+
+        if ($invoice->client?->email) {
+            \Illuminate\Support\Facades\Mail::to($invoice->client->email)
+                ->send(new \App\Mail\InvoiceReceiptMail($invoice, $validated['amount']));
+        }
 
         return response()->json($invoice);
     }
@@ -322,6 +356,36 @@ class InvoiceController extends Controller
 
                 $invoice->calculateTotals();
                 $invoice->save();
+                
+                // Confirm invoice (deduct stock)
+                foreach ($invoice->items as $item) {
+                    if ($item->product_id) {
+                        $product = Product::find($item->product_id);
+                        if ($product) {
+                            $product->deductStock($item->quantity, auth()->id() ?? 1, $invoice->id);
+                        }
+                    }
+                    $item->setWarrantyDates(now());
+                    $item->save();
+                }
+                $invoice->status = 'confirmed';
+                $invoice->save();
+
+                // Process payment if not credit
+                $paymentMethod = $invoiceData['payment_method'] ?? null;
+                $amountPaid = $invoiceData['amount_paid'] ?? 0;
+                
+                if ($paymentMethod && $paymentMethod !== 'credit' && $amountPaid > 0) {
+                    $newPaidAmount = $invoice->amount_paid + $amountPaid;
+                    $status = $newPaidAmount >= $invoice->grand_total ? 'paid' : 'partially_paid';
+
+                    $invoice->update([
+                        'amount_paid' => $newPaidAmount,
+                        'payment_date' => now()->toDateString(),
+                        'status' => $status,
+                    ]);
+                }
+
                 DB::commit();
 
                 $results[] = [

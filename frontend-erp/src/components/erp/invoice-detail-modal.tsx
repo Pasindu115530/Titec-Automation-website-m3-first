@@ -86,6 +86,12 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
                   <div className="flex-1">
                     <div className="font-medium">{item.product_name}</div>
                     <div className="text-xs text-gray-400">Qty: {item.quantity} x Rs. {Number(item.unit_price).toLocaleString()}</div>
+                    {item.warranty_months > 0 && (
+                      <div className="text-xs text-blue-400/80 mt-0.5">
+                        Warranty: {item.warranty_months} Months
+                        {item.warranty_start_date && item.warranty_end_date && ` (${new Date(item.warranty_start_date).toLocaleDateString()} - ${new Date(item.warranty_end_date).toLocaleDateString()})`}
+                      </div>
+                    )}
                   </div>
                   <div className="font-semibold">Rs. {Number(item.line_total).toLocaleString()}</div>
                 </div>
@@ -139,7 +145,7 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
           <Button type="button" variant="outline" onClick={onClose} className="border-white/10 hover:bg-white/5">
             Close
           </Button>
-          {balance > 0 && invoice.status !== 'voided' && (
+          {balance > 0 && (invoice.status === 'confirmed' || invoice.status === 'partially_paid') && (
             <Button type="button" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => onPayment(invoice)}>
               <CreditCard className="mr-2 h-4 w-4" /> Record Payment
             </Button>

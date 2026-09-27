@@ -67,6 +67,7 @@ class SyncService {
           discount_amount: inv.discount_amount,
           discount_type: inv.discount_type,
           payment_method: inv.payment_method,
+          amount_paid: inv.amount_paid,
           notes: inv.notes,
           terms: inv.terms,
           due_date: inv.due_date,
