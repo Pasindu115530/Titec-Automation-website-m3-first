@@ -62,6 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'installations.create',
             'installations.edit',
             'installations.update_status',
+            'installations.review_costs',
             // Service History
             'service_logs.view',
             'service_logs.create',
@@ -128,6 +129,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'invoices.view',
             'invoices.edit',        // Needed for recording payments
             'clients.view',
+            'installations.view',
+            'installations.review_costs',  // Review technician cost/defect notes
             'reports.sales',
             'reports.inventory',
             'reports.warranty',
