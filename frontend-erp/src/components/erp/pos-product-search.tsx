@@ -55,8 +55,8 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 backdrop-blur-md rounded-2xl md:rounded-3xl border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-1.5 focus-within:bg-white/60 focus-within:border-white/80 focus-within:shadow-[0_12px_36px_rgba(0,0,0,0.06)] transition-all">
-        <div className="pl-4 pr-1 text-neutral-500 shrink-0">
+      <div className="relative flex items-center bg-white border border-neutral-200/90 rounded-2xl shadow-xs p-1.5 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/5 focus-within:shadow-sm transition-all">
+        <div className="pl-3.5 pr-1.5 text-neutral-400 shrink-0">
           <Search className="h-5 w-5" />
         </div>
         <input
@@ -64,7 +64,7 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
           placeholder="Scan barcode or search products by name, model, SKU..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-base md:text-lg font-medium text-neutral-900 placeholder:text-neutral-500 h-12 px-2"
+          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-sm sm:text-base font-medium text-neutral-900 placeholder:text-neutral-400 h-11 px-2"
           onFocus={() => {
             if (results.length > 0) setIsOpen(true);
           }}
@@ -77,12 +77,12 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 max-h-80 overflow-y-auto p-2">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 max-h-80 overflow-y-auto p-2">
           {results.map((product) => (
             <div
               key={product.id}
               onClick={() => handleSelect(product)}
-              className="p-3.5 hover:bg-neutral-100/80 rounded-2xl cursor-pointer border-b border-neutral-100 last:border-0 flex justify-between items-center transition-colors"
+              className="p-3.5 hover:bg-neutral-100/80 rounded-xl cursor-pointer border-b border-neutral-100 last:border-0 flex justify-between items-center transition-colors"
             >
               <div className="flex items-center gap-3.5">
                 <div className="h-12 w-12 bg-neutral-100 border border-neutral-200/70 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
@@ -119,7 +119,7 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-neutral-200/90 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 p-6 text-center text-neutral-500 text-sm">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 p-6 text-center text-neutral-500 text-sm">
           No products found matching &quot;{query}&quot;
         </div>
       )}

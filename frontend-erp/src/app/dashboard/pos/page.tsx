@@ -10,7 +10,7 @@ import { POSSummary } from '@/components/erp/pos-summary';
 import { POSConfirmModal } from '@/components/erp/pos-confirm-modal';
 import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
-import { FileText, Save, History, Printer, Package } from 'lucide-react';
+import { FileText, Save, History, Printer, Package, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -132,7 +132,7 @@ export default function POSPage() {
   return (
     <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8.5rem)]">
       {/* Left Area - POS Input (70%) */}
-      <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+      <div className="flex-1 flex flex-col gap-4">
         {/* Client Picker */}
         <div className="z-20">
           <ClientPicker 
@@ -147,10 +147,13 @@ export default function POSPage() {
         </div>
 
         {/* Invoice Items Card */}
-        <div className="flex-1 bg-white/85 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.05)] min-h-[360px]">
-          <div className="px-5 py-4 bg-white/40 border-b border-neutral-200/70 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
+        <div className="flex-1 bg-white/85 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] min-h-[360px]">
+          <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
             <div className="flex items-center gap-2.5">
-              <span>Invoice Items</span>
+              <div className="h-8 w-8 rounded-xl bg-neutral-900 text-[#D7FC45] flex items-center justify-center shadow-xs">
+                <Receipt className="h-4 w-4" />
+              </div>
+              <span className="font-bold text-base text-neutral-900">Invoice Items</span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-900 text-[#D7FC45] shadow-2xs">
                 {items.length}
               </span>
@@ -168,7 +171,7 @@ export default function POSPage() {
           <div className="flex-1 overflow-y-auto p-4 sm:p-5">
             {items.length === 0 ? (
               <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-neutral-400 gap-3 py-10">
-                <div className="w-16 h-16 rounded-2xl bg-neutral-100/90 border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
+                <div className="w-16 h-16 rounded-2xl bg-neutral-100 border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
                   <Package className="h-8 w-8 stroke-[1.75]" />
                 </div>
                 <div className="text-center">
