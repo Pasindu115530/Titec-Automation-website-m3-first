@@ -88,7 +88,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white border border-neutral-200/90 rounded-2xl shadow-xs p-1.5 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/5 focus-within:shadow-sm transition-all">
+      <div className="relative flex items-center bg-white/40 backdrop-blur-md rounded-[32px] p-1 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]  focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/5 focus-within:shadow-sm transition-all">
         <div className="pl-3.5 pr-1.5 text-neutral-400 shrink-0">
           <Search className="h-5 w-5" />
         </div>
@@ -110,7 +110,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
         <Button 
           type="button"
           onClick={() => setIsAddModalOpen(true)} 
-          className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm"
+          className="bg-[#D7FC45] hover:bg-[#d9fa4a] text-black rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
         >
           <UserPlus className="h-4 w-4 mr-1.5" /> New
         </Button>
