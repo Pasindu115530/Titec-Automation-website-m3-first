@@ -58,16 +58,16 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
           </DialogHeader>
           
           <div className="py-4 space-y-4">
-            <div className="p-4 bg-neutral-950 text-white rounded-2xl text-center mb-4 border border-neutral-800 shadow-sm">
-              <div className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">Grand Total</div>
-              <div className="text-3xl font-extrabold text-[#D7FC45] tracking-tight mt-0.5">Rs. {grandTotal.toLocaleString()}</div>
+            <div className="p-4 bg-neutral-50 text-neutral-900 rounded-2xl text-center mb-4 border border-neutral-200/80 shadow-2xs">
+              <div className="text-neutral-500 text-xs font-semibold uppercase tracking-wider">Grand Total</div>
+              <div className="text-3xl font-extrabold text-neutral-950 tracking-tight mt-0.5">Rs. {grandTotal.toLocaleString()}</div>
             </div>
 
             <div className="grid grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Payment Method</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white">
+                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus:ring-2 focus:ring-amber-200 focus:ring-offset-0 focus:outline-none transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
@@ -87,7 +87,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
                     type="number" 
                     value={amountPaid} 
                     onChange={(e) => setAmountPaid(parseFloat(e.target.value) || 0)}
-                    className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white"
+                    className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                     min="0"
                   />
                 </div>
@@ -101,7 +101,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
                   type="date" 
                   value={dueDate} 
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white"
+                  className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                   required
                 />
               </div>
@@ -113,7 +113,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
                 value={notes} 
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Optional notes for internal reference"
-                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-white"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
               />
             </div>
 
@@ -123,13 +123,13 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
                 value={terms} 
                 onChange={(e) => setTerms(e.target.value)}
                 placeholder="Printed on the invoice (e.g. Warranty details)"
-                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-white"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl resize-none h-18 focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
               />
             </div>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="border-neutral-200 text-neutral-700 hover:bg-neutral-100 rounded-xl font-medium">
+            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium shadow-2xs">
               Cancel
             </Button>
             <Button 

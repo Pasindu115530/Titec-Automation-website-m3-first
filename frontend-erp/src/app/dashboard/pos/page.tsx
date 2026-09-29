@@ -147,14 +147,14 @@ export default function POSPage() {
         </div>
 
         {/* Invoice Items Card */}
-        <div className="flex-1 bg-white/85 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] min-h-[360px]">
+        <div className="flex-1 bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] min-h-[360px]">
           <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
-            <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-xl bg-neutral-900 text-[#D7FC45] flex items-center justify-center shadow-xs">
+            <div className="flex items-center gap-2.5 ">
+              <div className="h-8 w-8 rounded-xl bg-[#C7F3ED] text-neutral-900 flex items-center justify-center border border-white/80 shadow-xs">
                 <Receipt className="h-4 w-4" />
               </div>
               <span className="font-bold text-base text-neutral-900">Invoice Items</span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-900 text-[#D7FC45] shadow-2xs">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C7F3ED] text-neutral-900 shadow-2xs">
                 {items.length}
               </span>
             </div>
@@ -171,7 +171,7 @@ export default function POSPage() {
           <div className="flex-1 overflow-y-auto p-4 sm:p-5">
             {items.length === 0 ? (
               <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-neutral-400 gap-3 py-10">
-                <div className="w-16 h-16 rounded-2xl bg-neutral-100 border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
+                <div className="w-16 h-16 rounded-2xl bg-[#E6F9F7] border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
                   <Package className="h-8 w-8 stroke-[1.75]" />
                 </div>
                 <div className="text-center">
@@ -211,14 +211,14 @@ export default function POSPage() {
         <div className="grid grid-cols-2 gap-3 mt-auto">
           <Button 
             variant="outline" 
-            className="h-14 bg-white/80 hover:bg-white text-neutral-800 border-white/90 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.04)] font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+            className="h-14 bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             onClick={() => router.push('/dashboard/invoices')}
           >
-            <History className="mr-2 h-4 w-4 text-neutral-600" /> Recent Invoices
+            <History className="mr-2 h-4 w-4 text-neutral-700" /> Recent Invoices
           </Button>
           <Button 
             variant="outline" 
-            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border-amber-200/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             onClick={() => {
               if(!selectedClient) toast.error('Select a client first');
               else toast.info('Draft saving to be implemented');

@@ -26,10 +26,10 @@ export function POSSummary({
   onUpdateDiscount,
 }: POSSummaryProps) {
   return (
-    <div className="bg-white/85 backdrop-blur-md border border-white/80 rounded-3xl p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] space-y-4">
+    <div className="bg-white/60 backdrop-blur-md border border-white/80 rounded-3xl p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] space-y-4">
       <div className="flex items-center gap-2.5 mb-2">
-        <div className="h-8 w-8 rounded-xl bg-neutral-900 text-[#D7FC45] flex items-center justify-center shadow-xs">
-          <Calculator className="h-4 w-4" />
+        <div className="h-8 w-8 rounded-xl bg-white/80 text-neutral-800 flex items-center justify-center border border-white/90 shadow-2xs">
+          <Calculator className="h-4 w-4 text-neutral-700" />
         </div>
         <h3 className="font-bold text-lg text-neutral-900 tracking-tight">Order Summary</h3>
       </div>
@@ -100,13 +100,13 @@ export function POSSummary({
       )}
 
       <div className="pt-2">
-        <div className="bg-neutral-950 text-white rounded-2xl p-5 shadow-[0_10px_25px_rgba(0,0,0,0.12)] flex justify-between items-end border border-neutral-800">
+        <div className="bg-sky-200/90 text-neutral-900 rounded-2xl p-5 shadow-xs flex justify-between items-end border border-white/80">
           <div>
-            <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block">Grand Total</span>
-            <span className="text-xs text-neutral-500 mt-0.5 block">Net payable amount</span>
+            <span className="text-[11px] font-bold text-neutral-600 uppercase tracking-wider block">Grand Total</span>
+            <span className="text-xs text-neutral-500 mt-0.5 block font-medium">Net payable amount</span>
           </div>
           <div className="text-right">
-            <span className="text-3xl font-extrabold text-[#D7FC45] tracking-tight leading-none">
+            <span className="text-3xl font-extrabold text-neutral-900 tracking-tight leading-none">
               Rs. {grandTotal.toLocaleString()}
             </span>
           </div>

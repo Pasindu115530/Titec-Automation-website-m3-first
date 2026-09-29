@@ -71,7 +71,7 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-white text-neutral-900 border border-neutral-200/90 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.15)] p-6">
+      <DialogContent className="sm:max-w-[600px] bg-white rounded-[32px] p-5 border border-white/60  ">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Add New Client</DialogTitle>
@@ -81,7 +81,7 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Client Type</Label>
                 <Select value={formData.client_type} onValueChange={(val) => handleSelectChange('client_type', val)}>
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white">
+                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus:ring-2 focus:ring-amber-200 focus:ring-offset-0 focus:outline-none transition-colors">
                     <SelectValue placeholder="Select Type" />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
@@ -93,12 +93,12 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
               {formData.client_type === 'business' ? (
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold text-neutral-700">Company Name *</Label>
-                  <Input name="company_name" value={formData.company_name} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                  <Input name="company_name" value={formData.company_name} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
                 </div>
               ) : (
                 <div className="space-y-1.5">
                   <Label className="text-xs font-semibold text-neutral-700">NIC</Label>
-                  <Input name="nic" value={formData.nic} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                  <Input name="nic" value={formData.nic} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
                 </div>
               )}
             </div>
@@ -106,51 +106,51 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Contact Person *</Label>
-                <Input name="contact_person" value={formData.contact_person} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="contact_person" value={formData.contact_person} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Phone *</Label>
-                <Input name="phone" value={formData.phone} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="phone" value={formData.phone} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Email</Label>
-                <Input name="email" type="email" value={formData.email} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="email" type="email" value={formData.email} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">Tax ID / TIN</Label>
-                <Input name="tax_id" value={formData.tax_id} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="tax_id" value={formData.tax_id} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-neutral-700">Address</Label>
-              <Input name="address" value={formData.address} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+              <Input name="address" value={formData.address} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">City</Label>
-                <Input name="city" value={formData.city} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="city" value={formData.city} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-neutral-700">District</Label>
-                <Input name="district" value={formData.district} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white" />
+                <Input name="district" value={formData.district} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
               </div>
             </div>
 
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-neutral-700">Notes</Label>
-              <Textarea name="notes" value={formData.notes} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-white h-20" />
+              <Textarea name="notes" value={formData.notes} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors h-20" />
             </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="border-neutral-200 text-neutral-700 hover:bg-neutral-100 rounded-xl font-medium">
+            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl font-semibold shadow-xs">
+            <Button type="submit" disabled={isSubmitting} className="bg-sky-200 border border-sky-300 hover:bg-sky-300 text-sky-600 rounded-xl font-semibold shadow-xs">
               {isSubmitting ? 'Saving...' : 'Save Client'}
             </Button>
           </DialogFooter>
