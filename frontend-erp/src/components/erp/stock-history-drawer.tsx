@@ -65,7 +65,7 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                 );
             case 'adjust':
                 return (
-                    <div className="h-8 w-8 rounded-xl bg-[#FFF4E8] border border-amber-200/60 shadow-2xs flex items-center justify-center text-[#E0781E]">
+                    <div className="h-8 w-8 rounded-xl bg-amber-50 border border-amber-200/80 shadow-2xs flex items-center justify-center text-amber-600">
                         <RefreshCw className="w-4 h-4" />
                     </div>
                 );
@@ -129,7 +129,7 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                                                 movement.type === 'receive' ? 'bg-[#E6F9F7] text-[#0D9488] border-teal-200' :
                                                 movement.type === 'sale' ? 'bg-[#F1EBFF] text-[#7C3AED] border-purple-200' :
                                                 movement.type === 'return' ? 'bg-purple-50 text-purple-700 border-purple-200' :
-                                                'bg-[#FFF4E8] text-[#E0781E] border-amber-200'
+                                                'bg-amber-50 text-amber-800 border-amber-200'
                                             }`}>
                                                 {movement.type}
                                             </Badge>

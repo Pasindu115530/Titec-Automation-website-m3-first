@@ -176,12 +176,12 @@ export default function InventoryPage() {
                 <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex items-center justify-between transition-all hover:scale-[1.01]">
                     <div>
                         <p className="text-xs font-bold uppercase tracking-wider text-amber-600">Low Stock</p>
-                        <p className="text-3xl font-extrabold text-amber-700 tracking-tight mt-1">
+                        <p className="text-3xl font-extrabold text-amber-600 tracking-tight mt-1">
                             {stats.lowStock || 0}
                         </p>
                     </div>
-                    <div className="h-12 w-12 rounded-2xl bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs flex items-center justify-center shrink-0">
-                        <AlertTriangle className="w-6 h-6 text-[#E0781E]" />
+                    <div className="h-12 w-12 rounded-2xl bg-amber-50 text-amber-600 border border-white/80 shadow-2xs flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-6 h-6 text-amber-600" />
                     </div>
                 </div>
 

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Package, SlidersHorizontal, ArrowDownToLine, History } from 'lucide-react';
+import { SlidersHorizontal, ArrowDownToLine, History } from 'lucide-react';
 
 interface InventoryTableProps {
     items: InventoryItem[];
@@ -79,11 +79,7 @@ export default function InventoryTable({
                 <TableBody>
                     {items.map((item) => (
                         <TableRow key={item.id} className="border-b border-neutral-200/50 hover:bg-white/60 transition-colors">
-                            <TableCell className="py-4 px-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-2xl bg-neutral-100 flex items-center justify-center font-bold text-neutral-700 shrink-0 border border-white/80 shadow-2xs">
-                                        <Package className="h-5 w-5 text-neutral-600" />
-                                    </div>
+                                <TableCell className="py-4 px-6">
                                     <div>
                                         <div className="font-bold text-neutral-900 text-sm tracking-tight">
                                             {item.name}
@@ -92,44 +88,43 @@ export default function InventoryTable({
                                             {item.description || 'No description provided'}
                                         </div>
                                     </div>
-                                </div>
-                            </TableCell>
-                            <TableCell className="py-4">
-                                <span className="font-mono text-sm font-semibold text-neutral-700">
-                                    {item.product_code || '-'}
-                                </span>
-                            </TableCell>
-                            <TableCell className="py-4 font-mono font-bold text-sm text-neutral-900">
-                                Rs. {Number(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </TableCell>
-                            <TableCell className="py-4">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="font-bold text-neutral-900 text-sm font-mono">{item.stock_quantity}</span>
-                                    {item.min_stock_level !== null && (
-                                        <span className="text-xs text-neutral-400 font-medium">(Min: {item.min_stock_level})</span>
-                                    )}
-                                </div>
-                            </TableCell>
-                            <TableCell className="py-4 text-center">
-                                <div className="flex justify-center">
-                                    {item.stock_quantity > (item.min_stock_level || 5) ? (
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 shadow-2xs">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#0D9488]" />
-                                            In Stock
-                                        </span>
-                                    ) : item.stock_quantity > 0 ? (
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-amber-200/60 shadow-2xs">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#E0781E]" />
-                                            Low Stock
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/60 shadow-2xs">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                                            Out of Stock
-                                        </span>
-                                    )}
-                                </div>
-                            </TableCell>
+                                </TableCell>
+                                <TableCell className="py-4">
+                                    <span className="font-mono text-sm font-semibold text-neutral-700">
+                                        {item.product_code || '-'}
+                                    </span>
+                                </TableCell>
+                                <TableCell className="py-4 font-mono font-bold text-sm text-neutral-900">
+                                    Rs. {Number(item.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </TableCell>
+                                <TableCell className="py-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-bold text-neutral-900 text-sm font-mono">{item.stock_quantity}</span>
+                                        {item.min_stock_level !== null && (
+                                            <span className="text-xs text-neutral-400 font-medium">(Min: {item.min_stock_level})</span>
+                                        )}
+                                    </div>
+                                </TableCell>
+                                <TableCell className="py-4 text-center">
+                                    <div className="flex justify-center">
+                                        {item.stock_quantity > (item.min_stock_level || 5) ? (
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 shadow-2xs">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#0D9488]" />
+                                                In Stock
+                                            </span>
+                                        ) : item.stock_quantity > 0 ? (
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                Low Stock
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/60 shadow-2xs">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                                Out of Stock
+                                            </span>
+                                        )}
+                                    </div>
+                                </TableCell>
                             <TableCell className="py-4 px-6 text-right">
                                 <div className="flex justify-end gap-2">
                                     <Button
