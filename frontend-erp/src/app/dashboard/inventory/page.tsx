@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService, InventoryItem } from '@/services/inventoryService';
 import InventoryTable from '@/components/erp/inventory-table';
-import Loader from '@/components/loader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Search, Download, RefreshCw, Package, AlertTriangle, AlertCircle } from 'lucide-react';
 import StockAdjustModal from '@/components/erp/stock-adjust-modal';
 import StockReceiveModal from '@/components/erp/stock-receive-modal';
 import StockHistoryDrawer from '@/components/erp/stock-history-drawer';
@@ -90,74 +92,166 @@ export default function InventoryPage() {
         loadInventory(1, true);
     };
 
+    const handleExportCSV = () => {
+        if (inventory.length === 0) {
+            toast.error('No inventory items to export.');
+            return;
+        }
+
+        const headers = ['ID', 'Product Name', 'Code / SKU', 'Price', 'Stock Quantity', 'Min Stock Level', 'Status'];
+        const rows = inventory.map(item => {
+            const status = item.stock_quantity > (item.min_stock_level || 5) 
+                ? 'In Stock' 
+                : item.stock_quantity > 0 
+                    ? 'Low Stock' 
+                    : 'Out of Stock';
+            return [
+                item.id,
+                `"${(item.name || '').replace(/"/g, '""')}"`,
+                `"${(item.product_code || '').replace(/"/g, '""')}"`,
+                item.price,
+                item.stock_quantity,
+                item.min_stock_level ?? '-',
+                status
+            ];
+        });
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `inventory_export_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success('Inventory exported to CSV');
+    };
+
     return (
-        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center flex-wrap gap-4">
+        <div className="space-y-6">
+            {/* Top Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
-                    <p className="text-gray-500 mt-1">Track and manage product stock levels.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight">
+                        Inventory Management
+                    </h1>
+                    <p className="text-neutral-500 mt-1 text-sm font-medium">
+                        Track and manage product stock levels
+                    </p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors shadow-sm">
+                <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <Button
+                        onClick={() => loadInventory(1, true)}
+                        variant="outline"
+                        className="h-11 px-5 rounded-2xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 text-neutral-700 ${loading ? 'animate-spin' : ''}`} />
+                        Refresh
+                    </Button>
+                    <Button
+                        onClick={handleExportCSV}
+                        variant="outline"
+                        className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                    >
+                        <Download className="h-4 w-4 text-neutral-700" />
                         Export CSV
-                    </button>
-                    {/* Bulk receive disabled for MVP, use item-level receive */}
+                    </Button>
                 </div>
             </div>
 
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex items-center justify-between transition-all hover:scale-[1.01]">
                     <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Products</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.total || inventory.length}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">Total Products</p>
+                        <p className="text-3xl font-extrabold text-neutral-900 tracking-tight mt-1">
+                            {stats.total || inventory.length}
+                        </p>
                     </div>
-                    <div className="h-10 w-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    <div className="h-12 w-12 rounded-2xl bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs flex items-center justify-center shrink-0">
+                        <Package className="w-6 h-6 text-[#7C3AED]" />
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-yellow-100 flex items-center justify-between">
+
+                <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex items-center justify-between transition-all hover:scale-[1.01]">
                     <div>
-                        <p className="text-sm text-yellow-600 font-medium">Low Stock</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.lowStock || 0}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider text-amber-600">Low Stock</p>
+                        <p className="text-3xl font-extrabold text-amber-700 tracking-tight mt-1">
+                            {stats.lowStock || 0}
+                        </p>
                     </div>
-                    <div className="h-10 w-10 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    <div className="h-12 w-12 rounded-2xl bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-6 h-6 text-[#E0781E]" />
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-red-100 flex items-center justify-between">
+
+                <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] flex items-center justify-between transition-all hover:scale-[1.01]">
                     <div>
-                        <p className="text-sm text-red-600 font-medium">Out of Stock</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.outOfStock || 0}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider text-rose-600">Out of Stock</p>
+                        <p className="text-3xl font-extrabold text-rose-700 tracking-tight mt-1">
+                            {stats.outOfStock || 0}
+                        </p>
                     </div>
-                    <div className="h-10 w-10 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div className="h-12 w-12 rounded-2xl bg-rose-50 text-rose-600 border border-white/80 shadow-2xs flex items-center justify-center shrink-0">
+                        <AlertCircle className="w-6 h-6 text-rose-600" />
                     </div>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex-1">
-                    <input 
-                        type="text" 
-                        placeholder="Search products by name or SKU..." 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            {/* Filters & Search */}
+            <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                <div className="relative flex-1 w-full flex items-center">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <Input 
+                        placeholder="Search products by name, code, or SKU..." 
+                        className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-amber-50/30 border-white focus:border-amber-200 text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="sm:w-48">
-                    <select 
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+
+                {/* Status Filter Tabs (Matching Quotation Tabs style) */}
+                <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 overflow-x-auto w-full md:w-auto">
+                    <button
+                        onClick={() => setStatusFilter('')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                            statusFilter === ''
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
                     >
-                        <option value="">All Statuses</option>
-                        <option value="in_stock">In Stock</option>
-                        <option value="low_stock">Low Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
+                        All
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('in_stock')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                            statusFilter === 'in_stock'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        In Stock
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('low_stock')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                            statusFilter === 'low_stock'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        Low Stock
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('out_of_stock')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                            statusFilter === 'out_of_stock'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        Out of Stock
+                    </button>
                 </div>
             </div>
 
@@ -170,14 +264,15 @@ export default function InventoryPage() {
             />
 
             {hasMore && !loading && (
-                <div className="flex justify-center pt-4">
-                    <button
+                <div className="flex justify-center pt-2">
+                    <Button
                         onClick={handleLoadMore}
                         disabled={loadingMore}
-                        className="px-6 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors shadow-sm"
+                        variant="outline"
+                        className="px-6 h-11 bg-white/80 hover:bg-white text-neutral-900 border border-white/80 rounded-2xl text-sm font-semibold shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
                     >
-                        {loadingMore ? 'Loading...' : 'Load More'}
-                    </button>
+                        {loadingMore ? 'Loading more products...' : 'Load More Products'}
+                    </Button>
                 </div>
             )}
 

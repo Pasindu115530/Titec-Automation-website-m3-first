@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { InventoryItem, inventoryService } from '@/services/inventoryService';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowDownToLine } from 'lucide-react';
 
 interface StockReceiveModalProps {
     isOpen: boolean;
@@ -14,7 +20,7 @@ export default function StockReceiveModal({ isOpen, onClose, item, onSuccess }: 
     const [notes, setNotes] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    if (!isOpen || !item) return null;
+    if (!item) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,70 +46,77 @@ export default function StockReceiveModal({ isOpen, onClose, item, onSuccess }: 
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-            <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
-            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                    <h3 className="text-lg font-semibold text-gray-900">Receive Stock</h3>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 transition-colors">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div className="bg-green-50/50 border border-green-100 rounded-lg p-3 mb-4">
-                        <p className="text-sm text-gray-600">Product: <span className="font-semibold text-gray-900">{item.name}</span></p>
-                        <p className="text-sm text-gray-600">Current Stock: <span className="font-bold text-gray-900">{item.stock_quantity}</span></p>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[480px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-6 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+                <form onSubmit={handleSubmit}>
+                    <DialogHeader className="mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-[#E6F9F7] text-[#0D9488] flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                <ArrowDownToLine className="h-5 w-5 text-[#0D9488]" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Receive Stock</DialogTitle>
+                                <p className="text-xs text-neutral-500 font-medium mt-0.5">Add newly acquired inventory items</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="bg-[#E6F9F7]/60 border border-teal-100 rounded-2xl p-3.5 shadow-2xs">
+                            <p className="text-xs font-semibold text-neutral-600">Product: <span className="font-bold text-neutral-900">{item.name}</span></p>
+                            <p className="text-xs font-semibold text-neutral-600 mt-1">Current Stock: <span className="font-bold text-neutral-900 font-mono">{item.stock_quantity}</span></p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="quantity" className="text-xs font-semibold text-neutral-700">
+                                Quantity Received *
+                            </Label>
+                            <Input
+                                type="number"
+                                id="quantity"
+                                required
+                                min="1"
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
+                                placeholder="e.g. 10"
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="notes" className="text-xs font-semibold text-neutral-700">
+                                Reference / Notes
+                            </Label>
+                            <Textarea
+                                id="notes"
+                                rows={3}
+                                value={notes}
+                                onChange={(e) => setNotes(e.target.value)}
+                                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors resize-none"
+                                placeholder="e.g. PO-12345 or supplier delivery note"
+                            />
+                        </div>
                     </div>
 
-                    <div>
-                        <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                            Quantity Received
-                        </label>
-                        <input
-                            type="number"
-                            id="quantity"
-                            required
-                            min="1"
-                            value={quantity}
-                            onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                            placeholder="e.g. 10"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-                            Reference / Notes
-                        </label>
-                        <textarea
-                            id="notes"
-                            rows={3}
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-                            placeholder="e.g. PO-12345 or supplier delivery note"
-                        />
-                    </div>
-
-                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                        <button
+                    <DialogFooter className="gap-2 sm:gap-0 pt-4 mt-2">
+                        <Button
                             type="button"
+                            variant="outline"
                             onClick={onClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                            className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium"
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
                             disabled={isSubmitting || quantity === ''}
-                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 transition-colors"
+                            className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_8px_20px_rgba(215,252,69,0.35)] rounded-xl px-5 transition-all"
                         >
-                            {isSubmitting ? 'Receiving...' : 'Receive Stock'}
-                        </button>
-                    </div>
+                            {isSubmitting ? 'Receiving...' : 'Confirm Stock'}
+                        </Button>
+                    </DialogFooter>
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 }
