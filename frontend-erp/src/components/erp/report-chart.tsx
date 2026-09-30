@@ -16,7 +16,7 @@ export default function ReportChart({ data, height = 250, color = 'bg-blue-500' 
     }
 
     const maxValue = Math.max(...data.map(d => d.value));
-    
+
     return (
         <div className="w-full" style={{ height }}>
             <div className="flex h-full items-end justify-between gap-2 pt-4">
@@ -28,13 +28,13 @@ export default function ReportChart({ data, height = 250, color = 'bg-blue-500' 
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-2 text-xs font-semibold text-gray-700 whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm border border-gray-100 absolute -mt-10 z-10 pointer-events-none">
                                 Rs. {item.value.toLocaleString()}
                             </div>
-                            
+
                             {/* Bar */}
-                            <div 
+                            <div
                                 className={`w-full max-w-[40px] rounded-t-sm transition-all duration-500 ${color} opacity-80 group-hover:opacity-100`}
                                 style={{ height: `${Math.max(barHeight, 2)}%` }}
                             ></div>
-                            
+
                             {/* Label */}
                             <div className="text-[10px] sm:text-xs text-gray-500 mt-2 truncate w-full text-center" title={item.label}>
                                 {item.label}
