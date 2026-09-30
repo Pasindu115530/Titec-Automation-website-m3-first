@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash, Send, FileText, Eye, Edit2, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,11 @@ interface QuotationModalProps {
 }
 
 export default function QuotationModal({ isOpen, onClose, mode, request, onSend }: QuotationModalProps) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     // Unique key for local storage persistence based on mode and request ID
     const storageKeyInfo = mode === 'reply' ? `reply_${request?.id}` : 'direct_new';
     const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
@@ -202,12 +208,12 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
     const vatAmount = subTotal * (vat / 100);
     const grandTotal = subTotal + vatAmount;
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
     if (isPreviewMode) {
-        return (
+        return createPortal(
             <AnimatePresence>
-                <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/40 backdrop-blur-sm overflow-y-auto">
+                <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-start justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -257,13 +263,14 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         </div>
                     </motion.div>
                 </div>
-            </AnimatePresence>
+            </AnimatePresence>,
+            document.body
         );
     }
 
-    return (
+    return createPortal(
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -615,6 +622,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                     </div>
                 </motion.div>
             </div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
