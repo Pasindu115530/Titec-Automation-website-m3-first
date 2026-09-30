@@ -45,14 +45,16 @@ export default function InventoryTable({
                                 Product
                             </span>
                         </TableHead>
-                        <TableHead className="py-3">
-                            <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
-                                Code / SKU
-                            </span>
+                        <TableHead className="py-3 text-center">
+                            <div className="flex justify-center">
+                                <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                    Code / SKU
+                                </span>
+                            </div>
                         </TableHead>
                         <TableHead className="py-3">
                             <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
-                                Price (Rs.)
+                                Price
                             </span>
                         </TableHead>
                         <TableHead className="py-3">
@@ -68,7 +70,7 @@ export default function InventoryTable({
                             </div>
                         </TableHead>
                         <TableHead className="py-3 px-6 text-right">
-                            <div className="flex justify-end">
+                            <div className="flex justify-center">
                                 <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/80 text-neutral-600 border border-white/80 shadow-2xs">
                                     Actions
                                 </span>
@@ -89,7 +91,7 @@ export default function InventoryTable({
                                         </div>
                                     </div>
                                 </TableCell>
-                                <TableCell className="py-4">
+                                <TableCell className="py-4 text-center">
                                     <span className="font-mono text-sm font-semibold text-neutral-700">
                                         {item.product_code || '-'}
                                     </span>
