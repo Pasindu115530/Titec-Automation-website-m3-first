@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = async (email: string, password: string, role: UserRole) => {
         try {
             console.log(`[AuthSystem] Login process started | Email: ${email} | Expected Role: ${role}`);
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
             console.log(`[AuthSystem] Sending POST request to ${backendUrl}/api/login...`);
             
             let response: Response;

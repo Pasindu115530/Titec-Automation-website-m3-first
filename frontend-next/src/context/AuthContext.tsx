@@ -50,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
             console.log(`[Auth] Sending POST request to ${backendUrl}/api/login...`);
-            
             const response = await fetch(`${backendUrl}/api/login`, {
                 method: 'POST',
                 headers: {
