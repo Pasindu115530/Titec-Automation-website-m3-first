@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { Edit2, Trash2, Calendar, CheckCircle } from 'lucide-react';
+import { Edit2, Trash2, Calendar, CheckCircle, Folder } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import EditProjectModal from './edit-project-modal';
 import DeleteConfirmationModal from './delete-confirmation-modal';
 import Loader from '@/components/loader';
 import { getImageUrl } from '@/utils/image-utils';
+import { toast } from 'sonner';
 
 interface Project {
     id: number;
@@ -24,8 +25,6 @@ interface ProjectsTableProps {
     isLoading?: boolean;
 }
 
-import { toast } from 'sonner';
-
 export default function ProjectsTable({ projects, onRefresh, isLoading }: ProjectsTableProps) {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -39,10 +38,6 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
 
     const handleDelete = async () => {
         if (!projectToDelete) return;
-
-        // Check for admin role in localStorage
-        const userStr = localStorage.getItem('user');
-        // ... existing auth logic ...
 
         try {
             setDeletingId(projectToDelete.id);
@@ -61,40 +56,62 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow border overflow-hidden">
-                <div className="p-4 border-b bg-gray-50">
-                    <h3 className="font-semibold text-gray-700">Existing Projects</h3>
+            <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
+                    <h3 className="font-bold text-neutral-800 text-sm">Existing Projects</h3>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="px-6 py-3 font-medium text-gray-500">Project</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Client</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Status</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Date</th>
-                                <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
+                    <table className="w-full text-left text-sm border-collapse">
+                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                            <tr className="hover:bg-transparent">
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                        Project
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                        Client
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
+                                        Status
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F6FFD3] text-[#4D6300] border border-[#E9FF7A]/80 shadow-2xs">
+                                        Date
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3 text-right">
+                                    <div className="flex justify-end">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                            Actions
+                                        </span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y">
+                        <tbody className="divide-y divide-neutral-100/80">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={5} className="h-64 bg-gray-50/50">
+                                    <td colSpan={5} className="py-20 text-center">
                                         <Loader variant="inline" size={80} text="Loading projects..." />
                                     </td>
                                 </tr>
                             ) : projects.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={5} className="px-6 py-16 text-center text-neutral-500 font-medium">
                                         No projects found. Add one above.
                                     </td>
                                 </tr>
                             ) : (
                                 projects.map((project) => (
-                                    <tr key={project.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={project.id} className="hover:bg-white/50 transition-colors border-b border-neutral-100/70">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border">
+                                                <div className="h-11 w-11 rounded-xl bg-white border border-white/80 shadow-2xs overflow-hidden shrink-0 flex items-center justify-center">
                                                     {project.thumbnail_path ? (
                                                         <img
                                                             src={getImageUrl(project.thumbnail_path, '')}
@@ -102,30 +119,32 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                                             className="h-full w-full object-cover"
                                                         />
                                                     ) : (
-                                                        <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">
-                                                            No img
-                                                        </div>
+                                                        <Folder className="h-5 w-5 text-neutral-400" />
                                                     )}
                                                 </div>
-                                                <span className="font-medium text-gray-900">{project.title}</span>
+                                                <span className="font-bold text-neutral-900 text-sm">{project.title}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600">
+                                        <td className="px-6 py-4 text-neutral-700 font-medium">
                                             {project.client || '-'}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                ${(project.status || '').toLowerCase() === 'completed' ? 'bg-green-100 text-green-800' :
-                                                    (project.status || '').toLowerCase() === 'in progress' ? 'bg-blue-100 text-blue-600' :
-                                                        (project.status || '').toLowerCase() === 'maintenance' ? 'bg-blue-100 text-red-600' :
-                                                            'bg-gray-100 text-gray-800'}`}>
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs border ${
+                                                (project.status || '').toLowerCase() === 'completed'
+                                                    ? 'bg-[#DCFCE7] text-[#15803D] border-green-200/80'
+                                                    : (project.status || '').toLowerCase() === 'in progress'
+                                                    ? 'bg-[#E0F2FE] text-[#0284C7] border-sky-200/80'
+                                                    : (project.status || '').toLowerCase() === 'maintenance'
+                                                    ? 'bg-[#FFF4E8] text-[#E0781E] border-amber-200/80'
+                                                    : 'bg-neutral-100 text-neutral-700 border-neutral-200/80'
+                                            }`}>
                                                 {(project.status || '').toLowerCase() === 'completed' && <CheckCircle className="w-3 h-3 mr-1" />}
                                                 {project.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600">
-                                            <div className="flex items-center gap-1">
-                                                <Calendar className="w-3 h-3 text-gray-400" />
+                                        <td className="px-6 py-4 text-neutral-600 font-medium text-xs">
+                                            <div className="flex items-center gap-1.5">
+                                                <Calendar className="w-3.5 h-3.5 text-neutral-400" />
                                                 {project.completion_date || '-'}
                                             </div>
                                         </td>
@@ -134,22 +153,22 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                     onClick={() => setEditingProject(project)}
                                                 >
-                                                    <Edit2 className="h-4 w-4" />
+                                                    <Edit2 className="h-3.5 w-3.5" />
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                     onClick={() => openDeleteModal(project)}
                                                     disabled={deletingId === project.id}
                                                 >
                                                     {deletingId === project.id ? (
-                                                        <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        <div className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
                                                     ) : (
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <Trash2 className="h-3.5 w-3.5" />
                                                     )}
                                                 </Button>
                                             </div>
