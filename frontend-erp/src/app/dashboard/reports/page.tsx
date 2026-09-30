@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { reportService } from '@/services/reportService';
 import Loader from '@/components/loader';
 import ReportChart from '@/components/erp/report-chart';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown, Check } from 'lucide-react';
 
 export default function ReportsPage() {
     const [activeTab, setActiveTab] = useState<'sales' | 'inventory' | 'warranty'>('sales');
@@ -12,10 +19,23 @@ export default function ReportsPage() {
 
     // Sales Report State
     const [dateRange, setDateRange] = useState('month'); // week, month, year
+    const [warrantyPeriod, setWarrantyPeriod] = useState('30'); // 30, 60, 90
+
+    const dateRangeLabels: Record<string, string> = {
+        week: 'This Week',
+        month: 'This Month',
+        year: 'This Year',
+    };
+
+    const periodLabels: Record<string, string> = {
+        '30': 'Next 30 days',
+        '60': 'Next 60 days',
+        '90': 'Next 90 days',
+    };
 
     useEffect(() => {
         loadReportData();
-    }, [activeTab, dateRange]);
+    }, [activeTab, dateRange, warrantyPeriod]);
 
     const loadReportData = async () => {
         setLoading(true);
@@ -28,7 +48,7 @@ export default function ReportsPage() {
                 const res = await reportService.getInventoryValuation();
                 setData(res.data || res);
             } else if (activeTab === 'warranty') {
-                const res = await reportService.getWarrantyExpiry({ period: '30' });
+                const res = await reportService.getWarrantyExpiry({ period: warrantyPeriod });
                 setData(res.data || res);
             }
         } catch (error) {
@@ -53,15 +73,30 @@ export default function ReportsPage() {
             <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-gray-900">Sales Summary</h2>
-                    <select
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value)}
-                        className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
-                    >
-                        <option value="week">This Week</option>
-                        <option value="month">This Month</option>
-                        <option value="year">This Year</option>
-                    </select>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="h-10 px-4 bg-white/80 hover:bg-white text-neutral-800 border border-white/80 backdrop-blur-md rounded-2xl font-semibold text-sm shadow-xs transition-all flex items-center gap-2.5 cursor-pointer hover:scale-[1.01] active:scale-[0.99] outline-none">
+                                <span>{dateRangeLabels[dateRange] || 'This Month'}</span>
+                                <ChevronDown className="h-4 w-4 text-neutral-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.08)] text-neutral-800 p-1.5 min-w-[140px] z-50">
+                            {Object.entries(dateRangeLabels).map(([key, label]) => (
+                                <DropdownMenuItem
+                                    key={key}
+                                    onClick={() => setDateRange(key)}
+                                    className={`rounded-xl px-3.5 py-2 text-xs font-semibold cursor-pointer flex items-center justify-between transition-all ${
+                                        dateRange === key
+                                            ? 'bg-white text-neutral-950 font-bold shadow-xs border border-white/80'
+                                            : 'text-neutral-700 hover:bg-white/60 hover:text-neutral-950'
+                                    }`}
+                                >
+                                    <span>{label}</span>
+                                    {dateRange === key && <Check className="h-3.5 w-3.5 text-neutral-900 stroke-[2.5]" />}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -187,11 +222,30 @@ export default function ReportsPage() {
                     <h2 className="text-lg font-bold text-gray-900">Warranty Expiry Alerts</h2>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-500">Period:</span>
-                        <select className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white">
-                            <option value="30">Next 30 days</option>
-                            <option value="60">Next 60 days</option>
-                            <option value="90">Next 90 days</option>
-                        </select>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="h-10 px-4 bg-white/80 hover:bg-white text-neutral-800 border border-white/80 backdrop-blur-md rounded-2xl font-semibold text-sm shadow-xs transition-all flex items-center gap-2.5 cursor-pointer hover:scale-[1.01] active:scale-[0.99] outline-none">
+                                    <span>{periodLabels[warrantyPeriod] || 'Next 30 days'}</span>
+                                    <ChevronDown className="h-4 w-4 text-neutral-500" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.08)] text-neutral-800 p-1.5 min-w-[150px] z-50">
+                                {Object.entries(periodLabels).map(([key, label]) => (
+                                    <DropdownMenuItem
+                                        key={key}
+                                        onClick={() => setWarrantyPeriod(key)}
+                                        className={`rounded-xl px-3.5 py-2 text-xs font-semibold cursor-pointer flex items-center justify-between transition-all ${
+                                            warrantyPeriod === key
+                                                ? 'bg-white text-neutral-950 font-bold shadow-xs border border-white/80'
+                                                : 'text-neutral-700 hover:bg-white/60 hover:text-neutral-950'
+                                        }`}
+                                    >
+                                        <span>{label}</span>
+                                        {warrantyPeriod === key && <Check className="h-3.5 w-3.5 text-neutral-900 stroke-[2.5]" />}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
 
