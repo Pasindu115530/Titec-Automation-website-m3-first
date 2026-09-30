@@ -356,7 +356,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                             value={customerName}
                                             onChange={(e) => setCustomerName(e.target.value)}
                                             placeholder="John Doe"
-                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
                                     <div className="space-y-1.5">
@@ -365,7 +365,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                             value={customerEmail}
                                             onChange={(e) => setCustomerEmail(e.target.value)}
                                             placeholder="john@example.com"
-                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
                                     <div className="space-y-1.5">
@@ -374,7 +374,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                             value={customerPhone}
                                             onChange={(e) => setCustomerPhone(e.target.value)}
                                             placeholder="+94 77..."
-                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
                                 </div>
@@ -428,7 +428,8 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                             setItems(newItems);
                                                                         }}
                                                                         placeholder="Search product..."
-                                                                        className="h-9 rounded-xl border-neutral-200"
+                                                                        className="w-full"
+                                                                        inputClassName="h-9 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                     />
                                                                 )}
                                                             </td>
@@ -437,7 +438,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                     type="number"
                                                                     value={item.quantity || ""}
                                                                     onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
-                                                                    className="h-9 rounded-xl border-neutral-200"
+                                                                    className="h-9 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                 />
                                                             </td>
                                                             <td className="p-2.5">
@@ -445,7 +446,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                     type="text"
                                                                     value={item.unit || ''}
                                                                     onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
-                                                                    className={`h-9 w-20 rounded-xl border-neutral-200 ${!item.isUnitEditable ? 'bg-neutral-100 text-neutral-500' : ''}`}
+                                                                    className={`h-9 w-20 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors ${!item.isUnitEditable ? '!bg-neutral-100 text-neutral-500' : ''}`}
                                                                     placeholder="nos"
                                                                     readOnly={!item.isUnitEditable}
                                                                 />
@@ -455,7 +456,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                     type="number"
                                                                     value={item.price}
                                                                     onChange={(e) => handleItemChange(index, 'price', Number(e.target.value))}
-                                                                    className="h-9 rounded-xl border-neutral-200 text-right"
+                                                                    className="h-9 rounded-xl border-neutral-200 bg-white text-right focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                 />
                                                             </td>
                                                             <td className="p-2.5 text-right font-bold text-neutral-900">
@@ -490,7 +491,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                     type="number"
                                                                     value={vat}
                                                                     onChange={(e) => setVat(Number(e.target.value))}
-                                                                    className="w-16 h-8 text-right rounded-lg border-neutral-200"
+                                                                    className="w-16 h-8 text-right rounded-lg border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                     min={0}
                                                                 />
                                                                 <span>%</span>
@@ -565,7 +566,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 <Textarea
                                     value={termsInput}
                                     onChange={(e) => setTermsInput(e.target.value)}
-                                    className="min-h-[140px] font-mono text-xs rounded-2xl border-neutral-200 bg-white"
+                                    className="min-h-[140px] font-mono text-xs rounded-2xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                     placeholder="Enter terms, one per line..."
                                 />
                             ) : (
@@ -583,7 +584,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         <div className="space-y-2 pb-6">
                             <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Message to Customer</label>
                             <Textarea
-                                className="min-h-[100px] rounded-2xl border-neutral-200 bg-white"
+                                className="min-h-[100px] rounded-2xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                 placeholder="Add a personal note or message..."
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
