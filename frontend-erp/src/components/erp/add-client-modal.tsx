@@ -71,7 +71,7 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-white rounded-[32px] p-5 border border-white/60  ">
+      <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-6 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Add New Client</DialogTitle>

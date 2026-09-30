@@ -28,7 +28,7 @@ export function POSSummary({
   return (
     <div className="bg-white/60 backdrop-blur-md border border-white/80 rounded-3xl p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] space-y-4">
       <div className="flex items-center gap-2.5 mb-2">
-        <div className="h-8 w-8 rounded-xl bg-white/80 text-neutral-800 flex items-center justify-center border border-white/90 shadow-2xs">
+        <div className="h-8 w-8 rounded-xl bg-sky-200/90 text-neutral-800 flex items-center justify-center shadow-2xs">
           <Calculator className="h-4 w-4 text-neutral-700" />
         </div>
         <h3 className="font-bold text-lg text-neutral-900 tracking-tight">Order Summary</h3>

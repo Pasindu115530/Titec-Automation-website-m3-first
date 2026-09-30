@@ -51,7 +51,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[520px] bg-white text-neutral-900 border border-neutral-200/90 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.18)] p-6">
+      <DialogContent className="sm:max-w-[520px] bg-white/95 backdrop-blur-xl text-neutral-900 border border-white/80 rounded-[32px] sm:rounded-[32px] shadow-[0_24px_60px_rgba(0,0,0,0.15)] p-6">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Complete Order</DialogTitle>

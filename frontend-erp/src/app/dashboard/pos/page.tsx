@@ -150,7 +150,7 @@ export default function POSPage() {
         <div className="flex-1 bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] min-h-[360px]">
           <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
             <div className="flex items-center gap-2.5 ">
-              <div className="h-8 w-8 rounded-xl bg-[#C7F3ED] text-neutral-900 flex items-center justify-center border border-white/80 shadow-xs">
+              <div className="h-8 w-8 rounded-xl bg-[#C7F3ED] text-neutral-900 flex items-center justify-center shadow-xs">
                 <Receipt className="h-4 w-4" />
               </div>
               <span className="font-bold text-base text-neutral-900">Invoice Items</span>

@@ -34,7 +34,7 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] bg-white rounded-[32px] p-6 border border-white/60 shadow-[0_25px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+      <DialogContent className="sm:max-w-[700px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-6 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
         <DialogHeader>
           <div className="flex justify-between items-center pr-6">
             <DialogTitle className="font-bold tracking-tight text-2xl text-neutral-900 flex items-center gap-2">
