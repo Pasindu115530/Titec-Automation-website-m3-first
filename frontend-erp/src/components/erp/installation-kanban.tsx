@@ -1,5 +1,6 @@
 import React from 'react';
 import { Installation } from '@/services/installationService';
+import Loader from '@/components/loader';
 import { Calendar, Clock, AlertCircle, CheckCircle2, Building2, MapPin } from 'lucide-react';
 
 interface InstallationKanbanProps {
@@ -20,8 +21,7 @@ export default function InstallationKanban({
     if (loading) {
         return (
             <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
-                <div className="animate-spin h-9 w-9 border-3 border-neutral-900 border-t-transparent rounded-full mx-auto mb-3" />
-                <p className="text-neutral-500 font-semibold text-sm">Loading installation board...</p>
+                <Loader variant="inline" size={80} text="Loading installation board..." />
             </div>
         );
     }

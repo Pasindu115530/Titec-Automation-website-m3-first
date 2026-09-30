@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table';
 import AddServiceLogModal from '@/components/erp/add-service-log-modal';
 import ServiceLogDetailModal from '@/components/erp/service-log-detail-modal';
+import Loader from '@/components/loader';
 
 export default function ServiceLogsPage() {
     const [logs, setLogs] = useState<ServiceLog[]>([]);
@@ -281,8 +282,7 @@ export default function ServiceLogsPage() {
             {/* Table or Empty State */}
             {loading ? (
                 <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
-                    <div className="animate-spin h-9 w-9 border-3 border-neutral-900 border-t-transparent rounded-full mx-auto mb-3" />
-                    <p className="text-neutral-500 font-semibold text-sm">Loading service logs...</p>
+                    <Loader variant="inline" size={80} text="Loading service logs..." />
                 </div>
             ) : logs.length === 0 ? (
                 <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InventoryItem, InventoryMovement, inventoryService } from '@/services/inventoryService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import Loader from '@/components/loader';
 import { History, ArrowDownToLine, ShoppingCart, SlidersHorizontal, Undo2, Calendar } from 'lucide-react';
 
 interface StockHistoryDrawerProps {
@@ -128,9 +129,8 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                 {/* Movements List Container */}
                 <div className="mt-4 max-h-[50vh] overflow-y-auto pr-1 space-y-3.5">
                     {loading ? (
-                        <div className="py-16 text-center">
-                            <div className="animate-spin h-9 w-9 border-3 border-neutral-900 border-t-transparent rounded-full mx-auto mb-3" />
-                            <p className="text-neutral-500 font-semibold text-sm">Loading movement history...</p>
+                        <div className="py-12 text-center">
+                            <Loader variant="inline" size={70} text="Loading movement history..." />
                         </div>
                     ) : movements.length === 0 ? (
                         <div className="text-center py-16 px-4 bg-neutral-50/50 border-2 border-dashed border-neutral-200/80 rounded-2xl">

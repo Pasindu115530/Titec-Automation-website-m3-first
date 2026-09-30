@@ -77,7 +77,7 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={7} className="h-64 bg-gray-50/50">
-                                        <Loader variant="inline" size={80} />
+                                        <Loader variant="inline" size={80} text="Loading products..." />
                                     </td>
                                 </tr>
                             ) : products.length === 0 ? (

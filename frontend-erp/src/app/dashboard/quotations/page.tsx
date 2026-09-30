@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { quotationService } from '@/services/quotationService';
 import { Quotation } from '@/types/quotation';
 import QuotationModal from '@/components/admin/quotation-modal';
+import Loader from '@/components/loader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -207,8 +208,7 @@ export default function AdminQuotationsPage() {
       {/* Table Content */}
       {loading ? (
         <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
-          <div className="animate-spin h-9 w-9 border-3 border-neutral-900 border-t-transparent rounded-full mx-auto mb-3" />
-          <p className="text-neutral-500 font-semibold text-sm">Loading quotation requests...</p>
+          <Loader variant="inline" size={80} text="Loading quotation requests..." />
         </div>
       ) : (
         <div className="space-y-4">

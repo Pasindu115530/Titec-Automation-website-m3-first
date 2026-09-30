@@ -7,6 +7,7 @@ import { Brand } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
 import { brandService } from '@/services/brandService';
 import { toast } from 'sonner';
+import Loader from '@/components/loader';
 
 interface BrandsTableProps {
     brands: Brand[];
@@ -57,7 +58,9 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                         <tbody className="divide-y">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={3} className="p-8 text-center text-gray-500">Loading brands...</td>
+                                    <td colSpan={3} className="h-64 bg-gray-50/50">
+                                        <Loader variant="inline" size={80} text="Loading brands..." />
+                                    </td>
                                 </tr>
                             ) : brands.length === 0 ? (
                                 <tr>

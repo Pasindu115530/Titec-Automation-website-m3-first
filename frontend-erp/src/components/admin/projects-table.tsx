@@ -80,7 +80,7 @@ export default function ProjectsTable({ projects, onRefresh, isLoading }: Projec
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={5} className="h-64 bg-gray-50/50">
-                                        <Loader variant="inline" size={80} />
+                                        <Loader variant="inline" size={80} text="Loading projects..." />
                                     </td>
                                 </tr>
                             ) : projects.length === 0 ? (

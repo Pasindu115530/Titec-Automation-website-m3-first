@@ -295,7 +295,7 @@ export default function ReportsPage() {
             <div className="min-h-[400px]">
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <Loader size={48} />
+                        <Loader variant="inline" size={90} text="Loading reports..." />
                     </div>
                 ) : (
                     <>

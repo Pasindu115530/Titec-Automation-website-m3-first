@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Loader from '@/components/loader';
 import { dashboardService, DashboardStats } from '@/services/dashboardService';
 import {
     ResponsiveContainer,
@@ -61,10 +62,10 @@ export default function AdminDashboard() {
         }
     };
 
-    if (isAuthLoading) {
+    if (isAuthLoading || (isDataLoading && !dashboardData)) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900"></div>
+            <div className="flex h-[80vh] items-center justify-center">
+                <Loader variant="inline" size={100} text="Loading dashboard..." />
             </div>
         );
     }

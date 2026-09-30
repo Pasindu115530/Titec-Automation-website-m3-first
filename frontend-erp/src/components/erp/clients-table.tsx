@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Client } from '@/services/clientService';
+import Loader from '@/components/loader';
 import {
   Table,
   TableBody,
@@ -34,8 +35,7 @@ export function ClientsTable({ clients, isLoading, onEdit, onView, onDelete }: C
   if (isLoading) {
     return (
       <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
-        <div className="animate-spin h-9 w-9 border-3 border-neutral-900 border-t-transparent rounded-full mx-auto mb-3" />
-        <p className="text-neutral-500 font-semibold text-sm">Loading clients...</p>
+        <Loader variant="inline" size={80} text="Loading clients..." />
       </div>
     );
   }

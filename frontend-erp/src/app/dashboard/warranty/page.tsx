@@ -89,8 +89,7 @@ export default function WarrantyCheckerPage() {
 
                     {isChecking && (
                         <div className="h-full flex flex-col items-center justify-center py-12">
-                            <Loader size={48} />
-                            <p className="text-gray-500 mt-4">Querying database...</p>
+                            <Loader variant="inline" size={80} text="Querying database..." />
                         </div>
                     )}
 
