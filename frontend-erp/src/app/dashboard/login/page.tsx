@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Shield, AlertTriangle } from 'lucide-react';
+import { Mail, Lock, ShieldCheck, AlertTriangle, AlertCircle, ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
+import TitecErpLogo from '@/components/titec-erp-logo';
 import { api } from '@/lib/api';
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { isAdmin, setUserExternal } = useAuth();
@@ -146,94 +148,141 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 py-12 px-4">
+        <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F0F2F5] overflow-hidden select-none selection:bg-[#D7FC45] selection:text-neutral-900">
+            {/* Ambient Dashboard Background Glow Blobs */}
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#D7FC45]/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-indigo-300/10 rounded-full blur-[130px] pointer-events-none" />
+
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md"
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="w-full max-w-md relative z-10 flex flex-col items-center"
             >
-                <Card className="shadow-xl border-purple-200">
-                    <CardHeader className="space-y-1 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-t-lg">
-                        <div className="flex items-center justify-center mb-3">
-                            <div className="p-3 bg-purple-600 rounded-full">
-                                <Shield className="w-8 h-8 text-white" />
+                {/* Official TiTec ERP Animated Brand Header */}
+                <div className="mb-6 flex flex-col items-center">
+                    <TitecErpLogo logoHeight={48} speed={4} badgeVariant="badge" />
+                </div>
+
+                {/* Glassmorphic Login Card */}
+                <div className="w-full bg-white/80 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.08)] rounded-[2rem] p-8 sm:p-10 relative overflow-hidden">
+                    {/* Top Multi-Tone Accent Line */}
+                    <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-[#192a55] to-[#D7FC45]" />
+
+                    {/* Card Header */}
+                    <div className="text-center mb-6">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100/90 border border-neutral-200/60 text-[11px] font-bold text-neutral-700 tracking-wide uppercase mb-3">
+                            <ShieldCheck className="w-3.5 h-3.5 text-neutral-900" />
+                            <span>System Administrator</span>
+                        </div>
+                        <h1 className="text-2xl font-black text-neutral-900 tracking-tight">Admin Access</h1>
+                        <p className="text-xs sm:text-sm text-neutral-500 font-medium mt-1">
+                            Restricted area • Authorized personnel only
+                        </p>
+                    </div>
+
+                    {/* Warning Notice Box */}
+                    <div className="mb-6 p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/60 flex items-start gap-2.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                        <p className="text-xs text-amber-900/90 font-medium leading-relaxed">
+                            This is a restricted login portal for system administrators only. Unauthorized access attempts are monitored and logged.
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Admin Email Input */}
+                        <div className="space-y-1.5">
+                            <Label htmlFor="email" className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                Admin Email
+                            </Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="admin@titec.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="pl-10 h-11 bg-neutral-50/80 hover:bg-neutral-50 focus:bg-white border-neutral-200/80 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 rounded-2xl text-neutral-900 placeholder:text-neutral-400 text-sm font-medium transition-all"
+                                    required
+                                />
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold text-center text-gray-800">Admin Access</CardTitle>
-                        <CardDescription className="text-center text-gray-600">
-                            Restricted area - Authorized personnel only
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-                            <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                            <p className="text-xs text-amber-800">
-                                This is a restricted login portal for system administrators only. Unauthorized access attempts are logged.
-                            </p>
+
+                        {/* Password Input */}
+                        <div className="space-y-1.5">
+                            <Label htmlFor="password" className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                Password
+                            </Label>
+                            <div className="relative">
+                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="pl-10 pr-10 h-11 bg-neutral-50/80 hover:bg-neutral-50 focus:bg-white border-neutral-200/80 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 rounded-2xl text-neutral-900 placeholder:text-neutral-400 text-sm font-medium transition-all"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="w-4 h-4" />
+                                    ) : (
+                                        <Eye className="w-4 h-4" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Admin Email</Label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="admin@titec.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="pl-10"
-                                        required
-                                    />
-                                </div>
+                        {/* Error Alert */}
+                        {error && (
+                            <div className="p-3 text-xs sm:text-sm text-red-700 bg-red-50/90 border border-red-200/80 rounded-2xl flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                                <span>{error}</span>
                             </div>
+                        )}
 
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        id="password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="pl-10"
-                                        required
-                                    />
+                        {/* Submit Button */}
+                        <Button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full h-12 bg-[#D7FC45] hover:bg-[#cbf033] text-neutral-950 font-bold rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 group active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-2"
+                        >
+                            {isLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
+                                    <span>Authenticating...</span>
                                 </div>
-                            </div>
-
-                            {error && (
-                                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
-                                    {error}
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <span>Sign in as Admin</span>
+                                    <ArrowRight className="w-4 h-4 text-neutral-950 transition-transform group-hover:translate-x-1" />
                                 </div>
                             )}
+                        </Button>
+                    </form>
 
-                            <Button
-                                type="submit"
-                                className="w-full bg-purple-600 hover:bg-purple-700"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Authenticating...' : 'Sign in as Admin'}
-                            </Button>
-                        </form>
+                    <div className="mt-6 text-center text-xs text-neutral-400">
+                        <p>Admin accounts are managed by system administrators.</p>
+                        <p className="mt-0.5">No registration is available through this portal.</p>
+                    </div>
+                </div>
 
-                        <div className="mt-6 text-center text-xs text-gray-500">
-                            <p>Admin accounts are managed by system administrators.</p>
-                            <p className="mt-1">No registration is available through this portal.</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div className="mt-4 text-center">
+                {/* Back to main site link */}
+                <div className="mt-5 text-center">
                     <button
                         onClick={() => router.push('/')}
-                        className="text-sm text-gray-600 hover:text-gray-900 underline"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
                     >
-                        ← Back to main site
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Back to main site</span>
                     </button>
                 </div>
             </motion.div>

@@ -209,6 +209,11 @@ export default function AdminLayout({
     // Get primary role display name
     const userRoleDisplay = user?.roles?.[0] || 'User';
 
+    // Do not render dashboard shell on the login page
+    if (pathname?.startsWith('/dashboard/login')) {
+        return <>{children}</>;
+    }
+
     return (
         <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased relative overflow-hidden">
             {/* Ambient Background Depth Layer (Down Level) */}
