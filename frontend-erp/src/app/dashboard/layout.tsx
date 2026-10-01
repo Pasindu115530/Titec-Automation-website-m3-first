@@ -88,10 +88,14 @@ function SidebarGroup({
                 {isExpanded && (
                     <motion.div
                         initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        animate={{
+                            height: 'auto',
+                            opacity: 1,
+                            transitionEnd: { overflow: 'visible' },
+                        }}
+                        exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
+                        className="-mx-2.5 px-2.5 py-1 -my-1 overflow-hidden"
                     >
                         <div className="space-y-1.5 pb-1">
                             {group.items.map((item) => {
@@ -99,12 +103,12 @@ function SidebarGroup({
                                 const targetPath = item.href.replace(/\/$/, '');
                                 const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
                                 return (
-                                    <Link key={item.name} href={item.href} className="block">
+                                    <Link key={item.name} href={item.href} className="block outline-none">
                                         <span
                                             className={cn(
                                                 "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
                                                 isActive
-                                                    ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02]"
+                                                    ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-300 scale-[1.02]"
                                                     : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                             )}
                                         >
@@ -271,12 +275,12 @@ export default function AdminLayout({
                             const currentPath = (pathname || '').replace(/\/$/, '');
                             const isActive = currentPath === '/dashboard';
                             return (
-                                <Link href="/dashboard" className="block mb-3">
+                                <Link href="/dashboard" className="block mb-3 outline-none">
                                     <span
                                         className={cn(
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
-                                                ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02]"
+                                                ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-300 scale-[1.02]"
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
