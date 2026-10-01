@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Upload, ImageIcon } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Plus, Trash2, Upload, ImageIcon, Wrench, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ServiceCategory } from '@/types';
 import { serviceService } from '@/services/serviceService';
 import { getImageUrl } from '@/utils/image-utils';
@@ -21,6 +24,7 @@ interface ServiceItemInput {
 }
 
 export default function AddServiceModal({ isOpen, onClose, onSuccess, editService }: AddServiceModalProps) {
+    const [mounted, setMounted] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [slug, setSlug] = useState('');
@@ -32,6 +36,10 @@ export default function AddServiceModal({ isOpen, onClose, onSuccess, editServic
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isEditing = !!editService;
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Populate form when editing
     useEffect(() => {
@@ -121,7 +129,7 @@ export default function AddServiceModal({ isOpen, onClose, onSuccess, editServic
 
         try {
             const formData = new FormData();
-            formData.append('title', title);
+            formData.append('title', title.trim());
             formData.append('description', description);
             formData.append('slug', slug);
             formData.append('sort_order', sortOrder.toString());
@@ -154,184 +162,223 @@ export default function AddServiceModal({ isOpen, onClose, onSuccess, editServic
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-8">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 animate-in fade-in-0 zoom-in-95">
-                {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b bg-gray-50 rounded-t-xl">
-                    <h2 className="text-xl font-bold text-gray-900">
-                        {isEditing ? 'Edit Service Category' : 'Add New Service Category'}
-                    </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-lg transition">
-                        <X className="h-5 w-5 text-gray-500" />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-                    {/* Title & Slug */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Title *</label>
-                            <input
-                                type="text"
-                                value={title}
-                                onChange={(e) => handleTitleChange(e.target.value)}
-                                placeholder="e.g. Industrial Automation Solutions"
-                                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Slug</label>
-                            <input
-                                type="text"
-                                value={slug}
-                                onChange={(e) => setSlug(e.target.value)}
-                                placeholder="auto-generated-from-title"
-                                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm bg-gray-50"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Brief description of this service category..."
-                            rows={3}
-                            className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none text-sm"
-                        />
-                    </div>
-
-                    {/* Sort Order & Image */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Sort Order</label>
-                            <input
-                                type="number"
-                                value={sortOrder}
-                                onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Image</label>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-full px-4 py-2.5 border-2 border-dashed rounded-lg hover:border-indigo-400 transition flex items-center justify-center gap-2 text-sm text-gray-600"
-                            >
-                                <Upload className="h-4 w-4" />
-                                {imageFile ? imageFile.name : 'Choose Image'}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Image Preview */}
-                    {imagePreview && (
-                        <div className="flex items-center gap-4">
-                            <div className="h-20 w-32 rounded-lg overflow-hidden bg-gray-100 border">
-                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+    return createPortal(
+        <AnimatePresence>
+            <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+                >
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-6 border-b border-neutral-100 sticky top-0 bg-white/95 backdrop-blur-md z-10 rounded-t-[32px]">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-[#F1EBFF] text-[#7C3AED] flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                <Wrench className="h-5 w-5 text-[#7C3AED]" />
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setImageFile(null);
-                                    setImagePreview(null);
-                                    if (fileInputRef.current) fileInputRef.current.value = '';
-                                }}
-                                className="text-sm text-red-600 hover:text-red-700"
-                            >
-                                Remove
-                            </button>
+                            <div>
+                                <h2 className="text-xl font-bold text-neutral-900 tracking-tight">
+                                    {isEditing ? 'Edit Service Category' : 'Add New Service Category'}
+                                </h2>
+                                <p className="text-xs text-neutral-500 mt-0.5 font-medium">
+                                    {isEditing ? 'Update service details, items, and image' : 'Create a new service category in catalog'}
+                                </p>
+                            </div>
                         </div>
-                    )}
-
-                    {/* Service Items */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3">
-                            <label className="text-sm font-medium text-gray-700">Service Items *</label>
-                            <button
-                                type="button"
-                                onClick={addItem}
-                                className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1 font-medium"
-                            >
-                                <Plus className="h-3.5 w-3.5" />
-                                Add Item
-                            </button>
-                        </div>
-
-                        <div className="space-y-3">
-                            {items.map((item, index) => (
-                                <div key={index} className="flex gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                    <span className="text-xs font-bold text-gray-400 mt-2.5 w-6 shrink-0">
-                                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
-                                    </span>
-                                    <div className="flex-1 space-y-2">
-                                        <input
-                                            type="text"
-                                            value={item.title}
-                                            onChange={(e) => updateItem(index, 'title', e.target.value)}
-                                            placeholder="Item title..."
-                                            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
-                                        />
-                                        <textarea
-                                            value={item.description}
-                                            onChange={(e) => updateItem(index, 'description', e.target.value)}
-                                            placeholder="Item description..."
-                                            rows={2}
-                                            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none text-sm"
-                                        />
-                                    </div>
-                                    {items.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeItem(index)}
-                                            className="mt-2 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-md transition self-start"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="text-neutral-400 hover:text-neutral-700 p-2 rounded-xl hover:bg-neutral-100 transition-colors cursor-pointer"
+                        >
+                            <X className="h-5 w-5" />
+                        </button>
                     </div>
-                </form>
 
-                {/* Footer */}
-                <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
-                    <Button type="button" variant="outline" onClick={onClose} disabled={submitting}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={submitting}
-                        className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-                    >
-                        {submitting ? (
-                            <>
-                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                                Saving...
-                            </>
-                        ) : isEditing ? (
-                            'Update Service'
-                        ) : (
-                            'Create Service'
-                        )}
-                    </Button>
-                </div>
+                    <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                        <div className="p-6 space-y-4 flex-1 overflow-y-auto">
+                            {/* Title & Slug */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Title *</label>
+                                    <Input
+                                        type="text"
+                                        value={title}
+                                        onChange={(e) => handleTitleChange(e.target.value)}
+                                        placeholder="e.g. Industrial Automation Solutions"
+                                        className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Slug</label>
+                                    <Input
+                                        type="text"
+                                        value={slug}
+                                        onChange={(e) => setSlug(e.target.value)}
+                                        placeholder="auto-generated-from-title"
+                                        className="h-11 rounded-2xl bg-neutral-50/80 border border-neutral-200 text-neutral-600 font-mono text-sm shadow-2xs font-medium"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Description</label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Brief description of this service category..."
+                                    rows={3}
+                                    className="w-full px-4 py-3 rounded-2xl border border-neutral-200 bg-white text-sm text-neutral-900 shadow-2xs placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-200/80 transition-all font-medium resize-none"
+                                />
+                            </div>
+
+                            {/* Sort Order & Image */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Sort Order</label>
+                                    <Input
+                                        type="number"
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
+                                        className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Image</label>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                    <div className="flex items-center gap-3 bg-white/80 border border-neutral-200/80 rounded-2xl p-2.5 shadow-2xs">
+                                        <div className="h-14 w-20 rounded-xl border border-neutral-200/80 bg-neutral-50 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                                            {imagePreview ? (
+                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <ImageIcon className="h-5 w-5 text-neutral-300" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1 flex items-center gap-2">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="h-9 px-3 rounded-xl bg-white text-xs font-bold text-neutral-800 border-neutral-200/80 shadow-2xs hover:bg-neutral-50 gap-1.5 cursor-pointer"
+                                            >
+                                                <Upload className="h-3.5 w-3.5 text-[#7C3AED]" />
+                                                {imageFile ? 'Change' : 'Upload'}
+                                            </Button>
+                                            {imagePreview && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    onClick={() => {
+                                                        setImageFile(null);
+                                                        setImagePreview(null);
+                                                        if (fileInputRef.current) fileInputRef.current.value = '';
+                                                    }}
+                                                    className="h-9 px-2.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 cursor-pointer"
+                                                >
+                                                    Remove
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Service Items */}
+                            <div className="space-y-3 pt-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Service Items *</label>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={addItem}
+                                        className="h-8 px-3 rounded-xl bg-[#F1EBFF] hover:bg-[#e7dcff] text-[#7C3AED] border border-[#d8c7fd] text-xs font-bold shadow-2xs gap-1 cursor-pointer"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Add Item
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {items.map((item, index) => (
+                                        <div key={index} className="flex gap-3 p-4 bg-white/70 rounded-2xl border border-neutral-200/80 shadow-2xs">
+                                            <span className="text-xs font-bold font-mono text-[#7C3AED] mt-2 px-2 py-0.5 rounded-lg bg-[#F1EBFF] border border-[#d8c7fd] shrink-0 h-fit">
+                                                {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                                            </span>
+                                            <div className="flex-1 space-y-2">
+                                                <Input
+                                                    type="text"
+                                                    value={item.title}
+                                                    onChange={(e) => updateItem(index, 'title', e.target.value)}
+                                                    placeholder="Item title..."
+                                                    className="h-10 rounded-xl bg-white border border-neutral-200 text-sm shadow-2xs font-medium"
+                                                />
+                                                <textarea
+                                                    value={item.description}
+                                                    onChange={(e) => updateItem(index, 'description', e.target.value)}
+                                                    placeholder="Item description..."
+                                                    rows={2}
+                                                    className="w-full px-3.5 py-2 rounded-xl bg-white border border-neutral-200 text-sm shadow-2xs outline-none resize-none font-medium focus-visible:ring-2 focus-visible:ring-neutral-200/80"
+                                                />
+                                            </div>
+                                            {items.length > 1 && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    onClick={() => removeItem(index)}
+                                                    className="mt-1 h-8 w-8 p-0 rounded-xl text-neutral-400 hover:text-rose-600 hover:bg-rose-50 border border-neutral-200/60 shadow-2xs cursor-pointer self-start"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-5 border-t border-neutral-100 bg-neutral-50/80 flex justify-end gap-3 rounded-b-[32px] sticky bottom-0 z-10 backdrop-blur-md">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={onClose}
+                                disabled={submitting}
+                                className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200/80 font-semibold shadow-xs cursor-pointer"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={submitting}
+                                className="h-11 px-6 rounded-2xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_8px_20px_rgba(215,252,69,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 cursor-pointer"
+                            >
+                                {submitting ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : isEditing ? (
+                                    'Update Service'
+                                ) : (
+                                    'Create Service'
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </motion.div>
             </div>
-        </div>
+        </AnimatePresence>,
+        document.body
     );
 }

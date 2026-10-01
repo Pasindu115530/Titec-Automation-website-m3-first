@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Trash2, Edit, GripVertical } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Trash2, Edit2, Wrench } from 'lucide-react';
 import DeleteConfirmationModal from './delete-confirmation-modal';
 import { Button } from '@/components/ui/button';
 import { ServiceCategory } from '@/types';
@@ -48,108 +47,135 @@ export default function ServicesTable({ services, onRefresh, onEdit, isLoading }
         }
     };
 
-    if (isLoading) {
-        return (
-            <div className="bg-white rounded-lg border shadow-sm p-8 text-center">
-                <Loader variant="inline" size={80} text="Loading services..." />
-            </div>
-        );
-    }
-
-    if (services.length === 0) {
-        return (
-            <div className="bg-white rounded-lg border shadow-sm p-12 text-center">
-                <GripVertical className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">No services yet</h3>
-                <p className="text-gray-400">Add your first service category to get started.</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {services.map((service) => {
-                            const imageUrl = service.image_path
-                                ? getImageUrl(service.image_path, '')
-                                : null;
-
-                            return (
-                                <tr key={service.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="h-12 w-20 rounded-lg overflow-hidden bg-gray-100">
-                                            {imageUrl ? (
-                                                <img
-                                                    src={imageUrl}
-                                                    alt={service.title}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                                    <GripVertical className="h-5 w-5" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium text-gray-900">{service.title}</div>
-                                        <div className="text-xs text-gray-400 mt-0.5">{service.slug}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">{service.description}</p>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            {service.items?.length || 0} items
+        <>
+            <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
+                    <h3 className="font-bold text-neutral-800 text-sm">Existing Services</h3>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm border-collapse">
+                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                            <tr className="hover:bg-transparent">
+                                <th className="px-6 py-3 w-[120px]">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                        Image
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                        Title
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
+                                        Description
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#EDE9FE] text-[#6D28D9] border border-white/80 shadow-2xs">
+                                        Items
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F6FFD3] text-[#4D6300] border border-[#E9FF7A]/80 shadow-2xs">
+                                        Order
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3 text-right">
+                                    <div className="flex justify-end">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                            Actions
                                         </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-600">{service.sort_order}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => onEdit(service)}
-                                                className="gap-1"
-                                            >
-                                                <Edit className="h-3.5 w-3.5" />
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => openDeleteModal(service)}
-                                                disabled={deletingId === service.id}
-                                                className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                                            >
-                                                {deletingId === service.id ? (
-                                                    <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                                                ) : (
-                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                )}
-                                                Delete
-                                            </Button>
-                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-neutral-100/80">
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={6} className="py-20 text-center">
+                                        <Loader variant="inline" size={80} text="Loading services..." />
                                     </td>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                            ) : services.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="p-12 text-center text-neutral-500 font-medium text-sm">
+                                        No services found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                services.map((service) => {
+                                    const imageUrl = service.image_path
+                                        ? getImageUrl(service.image_path, '')
+                                        : null;
+
+                                    return (
+                                        <tr key={service.id} className="hover:bg-white/50 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="h-12 w-20 relative flex items-center justify-center bg-white/80 rounded-2xl border border-neutral-200/80 p-1 shadow-2xs overflow-hidden">
+                                                    {imageUrl ? (
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt={service.title}
+                                                            className="w-full h-full object-cover rounded-xl"
+                                                        />
+                                                    ) : (
+                                                        <Wrench className="h-5 w-5 text-neutral-300" />
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-neutral-900 text-sm">{service.title}</div>
+                                                <div className="text-xs text-neutral-400 font-mono mt-0.5">{service.slug}</div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <p className="text-xs text-neutral-600 font-medium line-clamp-2 max-w-sm">
+                                                    {service.description || '-'}
+                                                </p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold bg-[#E0F2FE] text-[#0284C7] border border-sky-200/80 shadow-2xs">
+                                                    {service.items?.length || 0} items
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="font-mono font-bold text-neutral-700 text-xs px-2.5 py-1 rounded-xl bg-neutral-100/90 border border-neutral-200/60 shadow-2xs">
+                                                    {service.sort_order}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => onEdit(service)}
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    >
+                                                        <Edit2 className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => openDeleteModal(service)}
+                                                        disabled={deletingId === service.id}
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    >
+                                                        {deletingId === service.id ? (
+                                                            <div className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        ) : (
+                                                            <Trash2 className="h-3.5 w-3.5" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <DeleteConfirmationModal
@@ -160,6 +186,6 @@ export default function ServicesTable({ services, onRefresh, onEdit, isLoading }
                 itemType="Service Category"
                 isDeleting={!!deletingId}
             />
-        </div>
+        </>
     );
 }
