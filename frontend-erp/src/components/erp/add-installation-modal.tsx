@@ -2,12 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { installationService } from '@/services/installationService';
 import { clientService, Client } from '@/services/clientService';
 import { toast } from 'sonner';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Wrench } from 'lucide-react';
 
 interface AddInstallationModalProps {
     isOpen: boolean;
@@ -32,6 +26,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
     useEffect(() => {
         if (isOpen) {
             loadClients();
+            // Reset form
             setFormData({
                 title: '',
                 client_id: '',
@@ -46,6 +41,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
     const loadClients = async () => {
         setLoadingClients(true);
         try {
+            // Load a large enough page or search to get clients for dropdown
             const res = await clientService.getClients('', 1);
             setClients(res.data || []);
         } catch (error) {
@@ -64,12 +60,12 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         e.preventDefault();
         
         if (!formData.title || !formData.client_id) {
-            toast.error('Job Title and Client are required.');
+            toast.error('Title and Client are required.');
             return;
         }
 
         setIsSubmitting(true);
-        const toastId = toast.loading('Creating installation job...');
+        const toastId = toast.loading('Creating installation...');
         
         try {
             const selectedClient = clients.find(c => c.id === Number(formData.client_id));
@@ -91,152 +87,142 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[640px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <DialogHeader>
-                        <div className="flex items-center gap-3.5">
-                            <div className="h-12 w-12 rounded-2xl bg-[#F1EBFF] text-[#7C3AED] flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
-                                <Wrench className="h-6 w-6 text-[#7C3AED]" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-2xl font-bold text-neutral-900 tracking-tight">New Installation</DialogTitle>
-                                <p className="text-sm text-neutral-500 font-medium mt-0.5">Create and schedule a new installation or engineering service job</p>
-                            </div>
-                        </div>
-                    </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+            <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
+            <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h3 className="text-lg font-semibold text-gray-900">New Installation / Job</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-500 transition-colors">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
+                    <div>
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                            Job Title <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            required
+                            value={formData.title}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                            placeholder="e.g. VFD Installation at Main Plant"
+                        />
+                    </div>
 
-                    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-                        {/* Title */}
-                        <div className="space-y-2">
-                            <Label htmlFor="title" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                Job Title <span className="text-rose-500">*</span>
-                            </Label>
-                            <Input
-                                type="text"
-                                id="title"
-                                name="title"
-                                required
-                                value={formData.title}
-                                onChange={handleChange}
-                                className="h-12 px-4 text-base bg-neutral-50/80 border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all placeholder:text-neutral-400"
-                                placeholder="e.g. VFD Installation & Calibration at Main Plant"
-                            />
-                        </div>
+                    <div>
+                        <label htmlFor="client_id" className="block text-sm font-medium text-gray-700 mb-1">
+                            Client <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                            id="client_id"
+                            name="client_id"
+                            required
+                            value={formData.client_id}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                        >
+                            <option value="">Select a client...</option>
+                            {loadingClients ? (
+                                <option disabled>Loading clients...</option>
+                            ) : (
+                                clients.map(client => (
+                                    <option key={client.id} value={client.id}>
+                                        {client.company_name || client.contact_person}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </div>
 
-                        {/* Client Dropdown */}
-                        <div className="space-y-2">
-                            <Label htmlFor="client_id" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                Client <span className="text-rose-500">*</span>
-                            </Label>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">
+                                Priority
+                            </label>
                             <select
-                                id="client_id"
-                                name="client_id"
-                                required
-                                value={formData.client_id}
+                                id="priority"
+                                name="priority"
+                                value={formData.priority}
                                 onChange={handleChange}
-                                className="w-full h-12 px-4 text-sm bg-neutral-50/80 border border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus:outline-none transition-all cursor-pointer"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
                             >
-                                <option value="">Select a client...</option>
-                                {loadingClients ? (
-                                    <option disabled>Loading clients...</option>
-                                ) : (
-                                    clients.map(client => (
-                                        <option key={client.id} value={client.id}>
-                                            {client.company_name || client.contact_person}
-                                        </option>
-                                    ))
-                                )}
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
                             </select>
                         </div>
-
-                        {/* Priority & Date */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="priority" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                    Priority
-                                </Label>
-                                <select
-                                    id="priority"
-                                    name="priority"
-                                    value={formData.priority}
-                                    onChange={handleChange}
-                                    className="w-full h-12 px-4 text-sm bg-neutral-50/80 border border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus:outline-none transition-all cursor-pointer font-medium"
-                                >
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="scheduled_date" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                    Scheduled Date
-                                </Label>
-                                <Input
-                                    type="date"
-                                    id="scheduled_date"
-                                    name="scheduled_date"
-                                    value={formData.scheduled_date}
-                                    onChange={handleChange}
-                                    className="h-12 px-4 text-sm bg-neutral-50/80 border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Location */}
-                        <div className="space-y-2">
-                            <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                Location / Site Address
-                            </Label>
-                            <Input
-                                type="text"
-                                id="location"
-                                name="location"
-                                value={formData.location}
+                        <div>
+                            <label htmlFor="scheduled_date" className="block text-sm font-medium text-gray-700 mb-1">
+                                Scheduled Date
+                            </label>
+                            <input
+                                type="date"
+                                id="scheduled_date"
+                                name="scheduled_date"
+                                value={formData.scheduled_date}
                                 onChange={handleChange}
-                                className="h-12 px-4 text-base bg-neutral-50/80 border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all placeholder:text-neutral-400"
-                                placeholder="Site address (leave blank to use client's registered address)"
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-2">
-                            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                                Description / Requirements
-                            </Label>
-                            <Textarea
-                                id="description"
-                                name="description"
-                                rows={3}
-                                value={formData.description}
-                                onChange={handleChange}
-                                className="p-3.5 text-sm bg-neutral-50/80 border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all resize-none placeholder:text-neutral-400"
-                                placeholder="Specific instructions, technical requirements, or safety notes..."
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                             />
                         </div>
                     </div>
-                    <DialogFooter className="gap-3 sm:gap-3 pt-4 border-t border-neutral-100 flex items-center justify-end">
-                        <Button
+
+                    <div>
+                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                            Location / Address
+                        </label>
+                        <input
+                            type="text"
+                            id="location"
+                            name="location"
+                            value={formData.location}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                            placeholder="Site address (leave blank to use client's address)"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                            Description / Requirements
+                        </label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows={3}
+                            value={formData.description}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+                            placeholder="Detailed requirements for the installation..."
+                        />
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                        <button
                             type="button"
-                            variant="outline"
                             onClick={onClose}
-                            className="h-11 px-6 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200/80 font-bold text-sm shadow-2xs transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                         >
                             Cancel
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="h-11 px-7 rounded-2xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_4px_16px_rgba(215,252,69,0.4)] text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                         >
                             {isSubmitting ? 'Creating...' : 'Create Installation'}
-                        </Button>
-                    </DialogFooter>
+                        </button>
+                    </div>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }

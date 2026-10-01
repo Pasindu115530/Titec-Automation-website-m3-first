@@ -29,19 +29,19 @@ export default function AdminDashboard() {
         quoted: 0
     });
     const [recentRequests, setRecentRequests] = useState<any[]>([]);
-    const { user, isAdmin, isRetailer, isLoading } = useAuth();
+    const { user, isAdmin, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
         if (isLoading) return;
 
-        // Redirect to admin login if not authenticated as admin or retailer
-        if (!isAdmin && !isRetailer) {
+        // Redirect to admin login if not authenticated as admin
+        if (!isAdmin) {
             router.push('/admin/login');
             return;
         }
         fetchDashboardData();
-    }, [isAdmin, isRetailer, isLoading, router]);
+    }, [isAdmin, isLoading, router]);
 
     if (isLoading) {
         return (

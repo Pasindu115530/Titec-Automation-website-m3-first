@@ -358,7 +358,8 @@ export default function AdminLayout({
                             {/* Welcome Greeting Title */}
                             <div>
                                 <h1 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
-                                    Welcome, {user?.firstName || 'Hashan'}
+                                    Welcome, {user?.firstName || 'Josiah'}
+                                    <span className="text-xl inline-block animate-bounce">🎉</span>
                                 </h1>
                                 <p className="text-xs md:text-sm text-neutral-600 mt-0.5 font-normal">
                                     Here`s what happening in your store.

@@ -63,23 +63,19 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
 
   if (selectedClient) {
     return (
-      <div className="flex items-center justify-between p-3 bg-white border border-neutral-200/90 rounded-2xl shadow-xs transition-all">
-        <div className="flex items-center gap-3 pl-2">
-          <div className="h-11 w-11 bg-neutral-900 text-[#D7FC45] rounded-2xl flex items-center justify-center shadow-xs shrink-0">
-            {selectedClient.client_type === 'business' ? <Building2 className="h-5 w-5" /> : <User className="h-5 w-5" />}
+      <div className="flex items-center justify-between p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
+            {selectedClient.client_type === 'business' ? <Building2 className="h-5 w-5 text-white" /> : <User className="h-5 w-5 text-white" />}
           </div>
           <div>
-            <div className="font-bold text-neutral-900 text-base">
+            <div className="font-semibold text-white">
               {selectedClient.client_type === 'business' ? selectedClient.company_name : selectedClient.contact_person}
             </div>
-            <div className="text-xs text-neutral-500 font-medium flex items-center gap-2">
-              <span>{selectedClient.phone}</span>
-              <span className="text-neutral-300">•</span>
-              <span className="capitalize">{selectedClient.client_type}</span>
-            </div>
+            <div className="text-xs text-blue-300">{selectedClient.phone}</div>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => onSelectClient(null)} className="text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100/80 rounded-full h-9 w-9 mr-1">
+        <Button variant="ghost" size="icon" onClick={() => onSelectClient(null)} className="text-gray-400 hover:text-white hover:bg-white/10">
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -88,51 +84,46 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 backdrop-blur-md rounded-[32px] p-1 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]  focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/5 focus-within:shadow-sm transition-all">
-        <div className="pl-3.5 pr-1.5 text-neutral-400 shrink-0">
-          <Search className="h-5 w-5" />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search client by name, phone, or NIC..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="pl-9 bg-[#1f2937] border-white/10 text-white w-full"
+            onFocus={() => {
+              if (results.length > 0) setIsOpen(true);
+            }}
+          />
+          {isSearching && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
+          )}
         </div>
-        <input
-          type="text"
-          placeholder="Search client by name, phone, or NIC..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-sm sm:text-base font-medium text-neutral-900 placeholder:text-neutral-400 h-11 px-2"
-          onFocus={() => {
-            if (results.length > 0) setIsOpen(true);
-          }}
-        />
-        {isSearching && (
-          <div className="pr-3 shrink-0">
-            <div className="animate-spin h-5 w-5 border-2 border-neutral-900 border-t-transparent rounded-full"></div>
-          </div>
-        )}
-        <Button 
-          type="button"
-          onClick={() => setIsAddModalOpen(true)} 
-          className="bg-[#D7FC45] hover:bg-[#d9fa4a] text-black rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
-        >
-          <UserPlus className="h-4 w-4 mr-1.5" /> New
+        <Button onClick={() => setIsAddModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap">
+          <UserPlus className="h-4 w-4 mr-2" /> New
         </Button>
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 max-h-60 overflow-y-auto p-2">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1f2937] border border-white/10 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
           {results.map((client) => (
             <div
               key={client.id}
               onClick={() => handleSelect(client)}
-              className="p-3.5 hover:bg-neutral-100/80 rounded-xl cursor-pointer border-b border-neutral-100 last:border-0 flex justify-between items-center transition-colors"
+              className="p-3 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0 flex justify-between items-center"
             >
               <div>
-                <div className="font-bold text-neutral-900">
+                <div className="font-medium text-white">
                   {client.client_type === 'business' ? client.company_name : client.contact_person}
                 </div>
-                <div className="text-xs text-neutral-500 font-medium mt-0.5">
+                <div className="text-xs text-gray-400">
                   {client.phone} {client.client_type === 'business' ? `• ${client.contact_person}` : ''}
                 </div>
               </div>
-              <div className="text-xs px-2.5 py-1 bg-neutral-100 rounded-full text-neutral-700 font-semibold capitalize">
+              <div className="text-xs px-2 py-1 bg-white/5 rounded text-gray-300">
                 {client.client_type}
               </div>
             </div>
@@ -141,8 +132,8 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 p-6 text-center text-neutral-500 text-sm">
-          No clients found matching &quot;{query}&quot;
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1f2937] border border-white/10 rounded-lg shadow-xl z-50 p-4 text-center text-gray-400">
+          No clients found matching "{query}"
         </div>
       )}
 

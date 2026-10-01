@@ -51,7 +51,7 @@ export default function InstallationDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-full min-h-[400px]">
-                <Loader variant="inline" size={90} text="Loading installation details..." />
+                <Loader size={48} />
             </div>
         );
     }

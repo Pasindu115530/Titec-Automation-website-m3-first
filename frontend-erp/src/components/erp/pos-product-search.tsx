@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, Package } from 'lucide-react';
 import { productService } from '@/services/productService';
-import { cn } from '@/lib/utils';
 
 interface POSProductSearchProps {
   onAddProduct: (product: any) => void;
@@ -55,63 +54,56 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 backdrop-blur-md rounded-[32px] p-1 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]  focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/5 focus-within:shadow-sm transition-all">
-        <div className="pl-3.5 pr-1.5 text-neutral-400 shrink-0 ">
-          <Search className="h-5 w-5" />
-        </div>
-        <input
-          type="text"
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-400" />
+        <Input
           placeholder="Scan barcode or search products by name, model, SKU..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-sm sm:text-base font-medium text-neutral-900 placeholder:text-neutral-400 h-11 px-2"
+          className="pl-12 py-6 bg-[#000619] border-blue-900/50 text-lg text-white shadow-inner focus-visible:ring-blue-500 w-full"
           onFocus={() => {
             if (results.length > 0) setIsOpen(true);
           }}
+          autoFocus
         />
         {isSearching && (
-          <div className="pr-4 shrink-0">
-            <div className="animate-spin h-5 w-5 border-2 border-neutral-900 border-t-transparent rounded-full"></div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
           </div>
         )}
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 max-h-80 overflow-y-auto p-2">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#1f2937] border border-white/10 rounded-xl shadow-2xl z-50 max-h-80 overflow-y-auto">
           {results.map((product) => (
             <div
               key={product.id}
               onClick={() => handleSelect(product)}
-              className="p-3.5 hover:bg-neutral-100/80 rounded-xl cursor-pointer border-b border-neutral-100 last:border-0 flex justify-between items-center transition-colors"
+              className="p-4 hover:bg-white/5 cursor-pointer border-b border-white/5 last:border-0 flex justify-between items-center transition-colors"
             >
-              <div className="flex items-center gap-3.5">
-                <div className="h-12 w-12 bg-neutral-100 border border-neutral-200/70 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
                   {product.image ? (
-                    <img src={product.image} alt={product.name} className="h-full w-full object-cover rounded-xl" />
+                    <img src={product.image} alt={product.name} className="h-full w-full object-cover rounded-lg" />
                   ) : (
-                    <Package className="h-6 w-6 text-neutral-400" />
+                    <Package className="h-6 w-6 text-gray-500" />
                   )}
                 </div>
                 <div>
-                  <div className="font-bold text-neutral-900 text-base">{product.name}</div>
-                  <div className="text-xs text-neutral-500 font-medium flex items-center gap-2 mt-0.5">
+                  <div className="font-semibold text-white text-lg">{product.name}</div>
+                  <div className="text-sm text-gray-400 flex gap-2">
                     {product.model && <span>Model: {product.model}</span>}
                     {product.stock_quantity !== undefined && (
-                      <span className={cn(
-                        "px-2 py-0.5 rounded-full font-semibold text-[11px]",
-                        product.stock_quantity > 0 
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60" 
-                          : "bg-red-50 text-red-600 border border-red-200/60"
-                      )}>
-                        Stock: {product.stock_quantity}
+                      <span className={product.stock_quantity > 0 ? "text-green-400" : "text-red-400"}>
+                        • Stock: {product.stock_quantity}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-extrabold text-neutral-900 text-lg">Rs. {Number(product.price).toLocaleString()}</div>
-                {product.brand && <div className="text-xs text-neutral-400 font-medium">{product.brand.name}</div>}
+                <div className="font-bold text-blue-400 text-lg">Rs. {Number(product.price).toLocaleString()}</div>
+                {product.brand && <div className="text-xs text-gray-500">{product.brand.name}</div>}
               </div>
             </div>
           ))}
@@ -119,8 +111,8 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && !isSearching && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] z-50 p-6 text-center text-neutral-500 text-sm">
-          No products found matching &quot;{query}&quot;
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#1f2937] border border-white/10 rounded-xl shadow-2xl z-50 p-6 text-center text-gray-400">
+          No products found matching "{query}"
         </div>
       )}
     </div>

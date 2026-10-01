@@ -71,86 +71,86 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-6 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+      <DialogContent className="sm:max-w-[600px] bg-[#111827] text-white border-white/10">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Add New Client</DialogTitle>
+            <DialogTitle>Add New Client</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto px-1">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">Client Type</Label>
+              <div className="space-y-2">
+                <Label>Client Type</Label>
                 <Select value={formData.client_type} onValueChange={(val) => handleSelectChange('client_type', val)}>
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus:ring-2 focus:ring-amber-200 focus:ring-offset-0 focus:outline-none transition-colors">
+                  <SelectTrigger className="bg-[#1f2937] border-white/10">
                     <SelectValue placeholder="Select Type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
+                  <SelectContent className="bg-[#1f2937] text-white border-white/10">
                     <SelectItem value="business">Business</SelectItem>
                     <SelectItem value="individual">Individual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {formData.client_type === 'business' ? (
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-neutral-700">Company Name *</Label>
-                  <Input name="company_name" value={formData.company_name} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+                <div className="space-y-2">
+                  <Label>Company Name *</Label>
+                  <Input name="company_name" value={formData.company_name} onChange={handleChange} required className="bg-[#1f2937] border-white/10" />
                 </div>
               ) : (
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-neutral-700">NIC</Label>
-                  <Input name="nic" value={formData.nic} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+                <div className="space-y-2">
+                  <Label>NIC</Label>
+                  <Input name="nic" value={formData.nic} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
                 </div>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">Contact Person *</Label>
-                <Input name="contact_person" value={formData.contact_person} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>Contact Person *</Label>
+                <Input name="contact_person" value={formData.contact_person} onChange={handleChange} required className="bg-[#1f2937] border-white/10" />
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">Phone *</Label>
-                <Input name="phone" value={formData.phone} onChange={handleChange} required className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>Phone *</Label>
+                <Input name="phone" value={formData.phone} onChange={handleChange} required className="bg-[#1f2937] border-white/10" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">Email</Label>
-                <Input name="email" type="email" value={formData.email} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input name="email" type="email" value={formData.email} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">Tax ID / TIN</Label>
-                <Input name="tax_id" value={formData.tax_id} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>Tax ID / TIN</Label>
+                <Input name="tax_id" value={formData.tax_id} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-neutral-700">Address</Label>
-              <Input name="address" value={formData.address} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input name="address" value={formData.address} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">City</Label>
-                <Input name="city" value={formData.city} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Input name="city" value={formData.city} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold text-neutral-700">District</Label>
-                <Input name="district" value={formData.district} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors" />
+              <div className="space-y-2">
+                <Label>District</Label>
+                <Input name="district" value={formData.district} onChange={handleChange} className="bg-[#1f2937] border-white/10" />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-neutral-700">Notes</Label>
-              <Textarea name="notes" value={formData.notes} onChange={handleChange} className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors h-20" />
+            <div className="space-y-2">
+              <Label>Notes</Label>
+              <Textarea name="notes" value={formData.notes} onChange={handleChange} className="bg-[#1f2937] border-white/10 h-20" />
             </div>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium">
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} className="border-white/10 hover:bg-white/5">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-sky-200 border border-sky-300 hover:bg-sky-300 text-sky-600 rounded-xl font-semibold shadow-xs">
+            <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700 text-white">
               {isSubmitting ? 'Saving...' : 'Save Client'}
             </Button>
           </DialogFooter>

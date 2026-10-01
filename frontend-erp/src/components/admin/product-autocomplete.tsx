@@ -14,10 +14,9 @@ interface ProductAutocompleteProps {
     onSelect: (product: Product) => void;
     placeholder?: string;
     className?: string;
-    inputClassName?: string;
 }
 
-export function ProductAutocomplete({ value, onChange, onSelect, placeholder, className, inputClassName }: ProductAutocompleteProps) {
+export function ProductAutocomplete({ value, onChange, onSelect, placeholder, className }: ProductAutocompleteProps) {
     const [open, setOpen] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
@@ -113,26 +112,23 @@ export function ProductAutocomplete({ value, onChange, onSelect, placeholder, cl
     };
 
     return (
-        <div className={cn("relative w-full", className)} ref={containerRef}>
+        <div className={cn("relative", className)} ref={containerRef}>
             <div className="relative">
                 <Input
                     value={searchTerm}
                     onChange={handleInputChange}
                     placeholder={placeholder}
-                    className={cn(
-                        "h-9 rounded-xl border-neutral-200 bg-white pr-8 text-neutral-900 focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors",
-                        inputClassName
-                    )}
+                    className="pr-8"
                     onFocus={() => {
                         updateCoords();
                         if (products.length > 0) setOpen(true);
                     }}
                 />
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none">
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
                     {loading ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                        <Search className="h-3.5 w-3.5" />
+                        <Search className="h-4 w-4" />
                     )}
                 </div>
             </div>
@@ -147,19 +143,19 @@ export function ProductAutocomplete({ value, onChange, onSelect, placeholder, cl
                         width: containerRef.current?.getBoundingClientRect().width ?? 0,
                         zIndex: 9999
                     }}
-                    className="mt-1 bg-white border border-neutral-200 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+                    className="mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto"
                 >
                     {products.map((product) => (
                         <button
                             key={product.id}
-                            className="w-full text-left px-3 py-2 hover:bg-amber-50/70 transition-colors flex items-center justify-between group cursor-pointer"
+                            className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center justify-between group"
                             onClick={() => handleSelect(product)}
                         >
                             <div>
-                                <div className="font-medium text-sm text-neutral-900 group-hover:text-amber-950">{product.name}</div>
-                                <div className="text-xs text-neutral-500">
+                                <div className="font-medium text-sm text-gray-900">{product.name}</div>
+                                <div className="text-xs text-gray-500">
                                     {product.sku && <span className="mr-2">SKU: {product.sku}</span>}
-                                    <span className="font-medium text-amber-700">Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}</span>
+                                    <span className="font-medium text-gray-700">LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}</span>
                                 </div>
                             </div>
                         </button>

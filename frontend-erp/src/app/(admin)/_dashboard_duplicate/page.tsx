@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Loader from '@/components/loader';
 
 export default function AdminDashboard() {
     const [statsData, setStatsData] = useState({
@@ -47,7 +46,7 @@ export default function AdminDashboard() {
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center">
-                <Loader variant="inline" size={100} text="Loading dashboard..." />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
         );
     }

@@ -159,7 +159,7 @@ export default function UsersTable() {
     if (loading) {
         return (
             <div className="flex justify-center py-12">
-                <Loader variant="inline" size={80} text="Loading users..." />
+                <Loader size={40} />
             </div>
         );
     }

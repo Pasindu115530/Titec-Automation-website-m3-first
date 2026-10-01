@@ -9,7 +9,6 @@ import { ServiceCategory } from '@/types';
 import { serviceService } from '@/services/serviceService';
 import { toast } from 'sonner';
 import { getImageUrl } from '@/utils/image-utils';
-import Loader from '@/components/loader';
 
 interface ServicesTableProps {
     services: ServiceCategory[];
@@ -51,7 +50,8 @@ export default function ServicesTable({ services, onRefresh, onEdit, isLoading }
     if (isLoading) {
         return (
             <div className="bg-white rounded-lg border shadow-sm p-8 text-center">
-                <Loader variant="inline" size={80} text="Loading services..." />
+                <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-gray-500">Loading services...</p>
             </div>
         );
     }
