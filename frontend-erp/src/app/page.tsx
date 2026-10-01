@@ -42,10 +42,10 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F0F2F5] overflow-hidden select-none selection:bg-[#D7FC45] selection:text-neutral-900">
+        <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F0F2F5] overflow-hidden select-none selection:bg-sky-300 selection:text-neutral-900">
             {/* Ambient Dashboard Background Glow Blobs */}
             <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#D7FC45]/20 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-sky-300/20 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-indigo-300/10 rounded-full blur-[130px] pointer-events-none" />
 
             <motion.div
@@ -144,7 +144,7 @@ export default function LoginPage() {
                         <Button
                             type="submit"
                             disabled={isLoading || submitting}
-                            className="w-full h-12 bg-[#D7FC45] hover:bg-[#cbf033] text-neutral-950 font-bold rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 group active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-2"
+                            className="w-full h-12 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 group active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-2"
                         >
                             {isLoading || submitting ? (
                                 <div className="flex items-center gap-2">

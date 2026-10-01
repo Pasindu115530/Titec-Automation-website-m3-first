@@ -319,7 +319,7 @@ export default function ReportsPage() {
                 <button
                     onClick={() => setActiveTab('sales')}
                     className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'sales'
-                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                 >
@@ -328,7 +328,7 @@ export default function ReportsPage() {
                 <button
                     onClick={() => setActiveTab('inventory')}
                     className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'inventory'
-                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                 >
@@ -337,7 +337,7 @@ export default function ReportsPage() {
                 <button
                     onClick={() => setActiveTab('warranty')}
                     className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'warranty'
-                            ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
+                            ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                 >

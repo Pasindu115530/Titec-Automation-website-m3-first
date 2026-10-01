@@ -139,7 +139,7 @@ export default function InventoryTable({
                                     <Button
                                         size="sm"
                                         onClick={() => onReceiveStock(item)}
-                                        className="h-8 px-3 rounded-xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-2xs text-xs transition-all hover:scale-105 active:scale-95 cursor-pointer inline-flex items-center gap-1"
+                                        className="h-8 px-3 rounded-xl bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-2xs text-xs transition-all hover:scale-105 active:scale-95 cursor-pointer inline-flex items-center gap-1"
                                     >
                                         <ArrowDownToLine className="h-3 w-3 stroke-[2.5]" /> Receive
                                     </Button>

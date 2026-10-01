@@ -137,7 +137,7 @@ export default function WarrantyCheckerPage() {
                             <button
                                 type="submit"
                                 disabled={isChecking || !serialNumber.trim()}
-                                className="h-12 px-6 bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0 text-sm"
+                                className="h-12 px-6 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0 text-sm"
                             >
                                 <Search className="h-4 w-4 stroke-[2.5]" />
                                 {isChecking ? 'Checking...' : 'Check Status'}
@@ -319,7 +319,7 @@ export default function WarrantyCheckerPage() {
                                     <div className="pt-4 border-t border-neutral-200/60 flex flex-wrap items-center justify-center gap-3">
                                         <Link
                                             href="/dashboard/service-logs"
-                                            className="h-11 px-6 bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer text-sm"
+                                            className="h-11 px-6 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer text-sm"
                                         >
                                             <Wrench className="h-4 w-4" />
                                             Create Service Log

@@ -237,7 +237,7 @@ export default function POSPage() {
             <Save className="mr-2 h-4 w-4 text-amber-600" /> Save Draft
           </Button>
           <Button 
-            className="h-16 col-span-2 bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none"
+            className="h-16 col-span-2 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none"
             disabled={items.length === 0 || !selectedClient}
             onClick={() => setIsConfirmModalOpen(true)}
           >

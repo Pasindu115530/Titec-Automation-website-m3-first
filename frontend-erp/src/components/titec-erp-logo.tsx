@@ -59,7 +59,7 @@ export default function TitecErpLogo({
             {showBadge && (
                 <div className="flex items-center self-end mb-1">
                     {badgeVariant === 'badge' && (
-                        <span className="px-2 py-0.5 rounded-md text-[11px] font-black tracking-widest uppercase bg-neutral-950 text-[#D7FC45] shadow-2xs">
+                        <span className="px-2 py-0.5 rounded-md text-[11px] font-black tracking-widest uppercase bg-neutral-950 text-sky-300 shadow-2xs">
                             ERP
                         </span>
                     )}

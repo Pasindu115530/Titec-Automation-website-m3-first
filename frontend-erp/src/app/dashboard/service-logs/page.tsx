@@ -150,7 +150,7 @@ export default function ServiceLogsPage() {
                     </Button>
                     <Button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-5 h-11 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 cursor-pointer"
+                        className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 px-5 h-11 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 cursor-pointer"
                     >
                         <Plus className="mr-1 h-4 w-4 stroke-[2.5]" /> New Service Log
                     </Button>
@@ -230,7 +230,7 @@ export default function ServiceLogsPage() {
                         onClick={() => setTypeFilter('')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             typeFilter === ''
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -240,7 +240,7 @@ export default function ServiceLogsPage() {
                         onClick={() => setTypeFilter('warranty')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             typeFilter === 'warranty'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -250,7 +250,7 @@ export default function ServiceLogsPage() {
                         onClick={() => setTypeFilter('repair')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             typeFilter === 'repair'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -260,7 +260,7 @@ export default function ServiceLogsPage() {
                         onClick={() => setTypeFilter('maintenance')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             typeFilter === 'maintenance'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -270,7 +270,7 @@ export default function ServiceLogsPage() {
                         onClick={() => setTypeFilter('installation')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             typeFilter === 'installation'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -295,7 +295,7 @@ export default function ServiceLogsPage() {
                     </p>
                     <Button
                         onClick={() => setIsAddModalOpen(true)}
-                        className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-6 h-11 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer inline-flex items-center gap-2"
+                        className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 px-6 h-11 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer inline-flex items-center gap-2"
                     >
                         <Plus className="mr-1 h-4 w-4 stroke-[2.5]" /> Record Service Log
                     </Button>

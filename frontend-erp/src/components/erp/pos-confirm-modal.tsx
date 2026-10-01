@@ -135,7 +135,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
             <Button 
               type="submit" 
               disabled={isSubmitting} 
-              className="bg-[#D7FC45] hover:bg-[#C9F335] text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-5 transition-all"
+              className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 px-5 transition-all"
             >
               {isSubmitting ? 'Processing...' : 'Confirm Order'}
             </Button>

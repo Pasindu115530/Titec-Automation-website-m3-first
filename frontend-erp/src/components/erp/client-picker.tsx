@@ -65,7 +65,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
     return (
       <div className="flex items-center justify-between p-3 bg-white border border-neutral-200/90 rounded-2xl shadow-xs transition-all">
         <div className="flex items-center gap-3 pl-2">
-          <div className="h-11 w-11 bg-neutral-900 text-[#D7FC45] rounded-2xl flex items-center justify-center shadow-xs shrink-0">
+          <div className="h-11 w-11 bg-neutral-900 text-sky-300 rounded-2xl flex items-center justify-center shadow-xs shrink-0">
             {selectedClient.client_type === 'business' ? <Building2 className="h-5 w-5" /> : <User className="h-5 w-5" />}
           </div>
           <div>
@@ -110,7 +110,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
         <Button 
           type="button"
           onClick={() => setIsAddModalOpen(true)} 
-          className="bg-[#D7FC45] hover:bg-[#d9fa4a] text-black rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
+          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02]"
         >
           <UserPlus className="h-4 w-4 mr-1.5" /> New
         </Button>

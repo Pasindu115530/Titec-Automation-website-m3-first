@@ -230,7 +230,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="h-11 px-7 rounded-2xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_4px_16px_rgba(215,252,69,0.4)] text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                            className="h-11 px-7 rounded-2xl bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-[0_4px_16px_rgba(125,211,252,0.4)] text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
                         >
                             {isSubmitting ? 'Creating...' : 'Create Installation'}
                         </Button>

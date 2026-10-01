@@ -102,7 +102,7 @@ export function RecordPaymentModal({ isOpen, onClose, invoice, onPaymentRecorded
             <Button 
               type="submit" 
               disabled={isSubmitting} 
-              className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-5 transition-all"
+              className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 px-5 transition-all"
             >
               {isSubmitting ? 'Recording...' : 'Record Payment'}
             </Button>

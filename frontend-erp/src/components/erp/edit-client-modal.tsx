@@ -135,7 +135,7 @@ export function EditClientModal({ isOpen, onClose, onClientUpdated, client }: Ed
             <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_8px_20px_rgba(215,252,69,0.35)] rounded-xl px-5 transition-all">
+            <Button type="submit" disabled={isSubmitting} className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-[0_8px_20px_rgba(125,211,252,0.35)] rounded-xl px-5 transition-all">
               {isSubmitting ? 'Saving...' : 'Update Client'}
             </Button>
           </DialogFooter>

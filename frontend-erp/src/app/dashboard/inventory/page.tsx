@@ -216,7 +216,7 @@ export default function InventoryPage() {
                         onClick={() => setStatusFilter('')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             statusFilter === ''
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -226,7 +226,7 @@ export default function InventoryPage() {
                         onClick={() => setStatusFilter('in_stock')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             statusFilter === 'in_stock'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -236,7 +236,7 @@ export default function InventoryPage() {
                         onClick={() => setStatusFilter('low_stock')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             statusFilter === 'low_stock'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
@@ -246,7 +246,7 @@ export default function InventoryPage() {
                         onClick={() => setStatusFilter('out_of_stock')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                             statusFilter === 'out_of_stock'
-                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
                                 : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
                         }`}
                     >
