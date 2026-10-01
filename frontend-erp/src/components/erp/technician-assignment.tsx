@@ -50,8 +50,9 @@ export default function TechnicianAssignment({ installationId, currentTechnician
             toast.success('Technicians assigned successfully', { id: toastId });
             setIsEditing(false);
             onAssignmentSuccess();
-        } catch (error) {
-            toast.error('Failed to assign technicians', { id: toastId });
+        } catch (error: any) {
+            const msg = error?.response?.data?.message || 'Failed to assign technicians';
+            toast.error(msg, { id: toastId });
         } finally {
             setIsSubmitting(false);
         }

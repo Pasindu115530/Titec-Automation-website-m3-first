@@ -164,6 +164,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/installations/{installation}/status', [\App\Http\Controllers\InstallationController::class, 'updateStatus']);
         Route::post('/installations/{installation}/notes', [\App\Http\Controllers\InstallationController::class, 'addNote']);
     });
+    Route::middleware('permission:installations.review_costs')->group(function () {
+        Route::post('/installations/{installation}/notes/{note}/review', [\App\Http\Controllers\InstallationController::class, 'reviewNote']);
+        Route::get('/installation-notes/pending-review', [\App\Http\Controllers\InstallationController::class, 'pendingReviews']);
+    });
 
     // ── Service Logs & Warranty ──────────────────
     Route::middleware('permission:service_logs.view')->group(function () {
