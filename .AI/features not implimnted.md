@@ -1,0 +1,1 @@
+realtime stock taking handling

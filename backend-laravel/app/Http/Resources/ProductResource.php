@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
             }, $this->images) : [],
             'datasheet' => $this->datasheet_path ? asset('storage/' . $this->datasheet_path) : null,
             'stock_status' => $this->stock_status,
+            'warranty_months' => $this->warranty_months,
             // Only include quantity if this product is part of a request (Pivot table check)
             'quantity_requested' => $this->whenPivotLoaded('quotation_request_items', function () {
                 return $this->pivot->quantity;

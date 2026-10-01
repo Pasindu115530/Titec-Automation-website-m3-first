@@ -10,11 +10,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Calculate Stats
-        $totalRequests = QuotationRequest::count();
-        $pendingRequests = QuotationRequest::where('status', 'pending')->count();
-        $quotedRequests = QuotationRequest::where('status', 'quoted')->count();
-        $reviewedRequests = QuotationRequest::where('status', 'reviewed')->count();
+        // 1. Calculate Stats (single query to minimize WAN latency)
+        $stats = QuotationRequest::selectRaw("
+            COUNT(*) as total,
+            COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) as pending,
+            COALESCE(SUM(CASE WHEN status = 'quoted' THEN 1 ELSE 0 END), 0) as quoted,
+            COALESCE(SUM(CASE WHEN status = 'reviewed' THEN 1 ELSE 0 END), 0) as reviewed
+        ")->first();
+
+        $totalRequests = (int) ($stats->total ?? 0);
+        $pendingRequests = (int) ($stats->pending ?? 0);
+        $quotedRequests = (int) ($stats->quoted ?? 0);
+        $reviewedRequests = (int) ($stats->reviewed ?? 0);
 
         // 2. Recent Activity (Recent Requests)
         // Eager load 'quotation' to get the amount if it exists

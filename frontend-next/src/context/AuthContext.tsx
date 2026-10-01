@@ -49,34 +49,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string, role: UserRole) => {
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://127.0.0.1:8000';
-            const response = await fetch(`${backendUrl}/api/users/login`, {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+            console.log(`[Auth] Sending POST request to ${backendUrl}/api/login...`);
+            
+            const response = await fetch(`${backendUrl}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Login failed');
+                console.error(`[Auth] HTTP Error: ${response.status} ${response.statusText}`);
+                let errorMsg = 'Login failed';
+                try {
+                    const error = await response.json();
+                    console.error(`[Auth] Error details:`, error);
+                    errorMsg = error.message || errorMsg;
+                } catch (e) {
+                    console.error(`[Auth] Failed to parse error response`);
+                }
+                throw new Error(errorMsg);
             }
 
             const data = await response.json();
+            console.log(`[Auth] Login successful for user:`, data.user?.email || 'unknown');
+
+            // Map Spatie roles to old local roles
+            const isSuperAdmin = data.user.roles?.includes('Super Admin');
+            const actualRole = isSuperAdmin ? 'admin' : 'customer';
 
             // Verify the role matches what's expected
-            if (data.user.role !== role) {
+            if (actualRole !== role) {
                 throw new Error(`Invalid credentials for ${role} login`);
             }
+
+            const nameParts = (data.user.name || '').split(' ');
 
             const userData: User = {
                 id: data.user._id || data.user.id,
                 email: data.user.email,
-                firstName: data.user.firstName,
-                lastName: data.user.lastName,
-                role: data.user.role,
-                token: data.token,
+                firstName: nameParts[0] || '',
+                lastName: nameParts.slice(1).join(' ') || '',
+                role: actualRole,
+                token: data.access_token, // ERP format uses access_token
             };
 
             setUser(userData);
