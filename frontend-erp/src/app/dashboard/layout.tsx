@@ -256,7 +256,7 @@ export default function AdminLayout({
                     <div className="h-20 flex items-center justify-between px-6 shrink-0 min-w-[17.5rem]">
                         {/* TiTec ERP Animated Logo Header */}
                         <Link href="/dashboard" className="flex items-center group transition-transform duration-200 active:scale-98">
-                            <TitecErpLogo logoHeight={42} speed={4} badgeVariant="text" />
+                            <TitecErpLogo logoHeight={52} speed={4} badgeVariant="text" />
                         </Link>
                         <Button
                             variant="ghost"

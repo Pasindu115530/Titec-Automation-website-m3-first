@@ -65,7 +65,10 @@ export default function TitecErpLogo({
                     )}
 
                     {badgeVariant === 'text' && (
-                        <span className="text-xl font-bold tracking-tight text-neutral-900 leading-none">
+                        <span className={cn(
+                            "font-bold tracking-tight text-neutral-900 leading-none",
+                            logoHeight >= 50 ? "text-2xl" : "text-xl"
+                        )}>
                             ERP
                         </span>
                     )}
