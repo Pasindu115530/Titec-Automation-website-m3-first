@@ -15,11 +15,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = \Illuminate\Support\Facades\Cache::remember('services_index', now()->addMinutes(15), function () {
-            return ServiceCategory::with('items')
-                ->orderBy('sort_order')
-                ->get();
-        });
+        $services = ServiceCategory::with('items')
+            ->orderBy('sort_order')
+            ->get();
 
         return response()->json([
             'data' => $services,

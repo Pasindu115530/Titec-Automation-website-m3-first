@@ -41,7 +41,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         sku: '',
         on_store: true,
         show_price: true,
-        warranty_months: 0,
     });
 
     useEffect(() => {
@@ -57,7 +56,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 sku: product.sku || '',
                 on_store: product.on_store !== undefined ? product.on_store : true,
                 show_price: product.show_price !== undefined ? product.show_price : true,
-                warranty_months: product.warranty_months || 0,
             });
             // Initialize Gallery
             setExistingImages(product.images || []);
@@ -117,7 +115,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
             data.append('show_price', formData.show_price ? '1' : '0');
-            data.append('warranty_months', String(formData.warranty_months));
             // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
             // Standard workaround is sending POST with _method=PUT
             data.append('_method', 'PUT');
@@ -306,22 +303,6 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         placeholder="Omron, Siemens, etc."
                                         className="pl-9"
                                     />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Warranty Period (months)</label>
-                                <div className="relative">
-                                    <Input
-                                        name="warranty_months"
-                                        type="number"
-                                        min="0"
-                                        max="120"
-                                        className="pl-3"
-                                        value={formData.warranty_months}
-                                        onChange={handleInputChange}
-                                        placeholder="0"
-                                    />
-                                    <p className="text-[10px] text-gray-400 mt-1">Set to 0 for no warranty.</p>
                                 </div>
                             </div>
                             <div className="space-y-2 col-span-2">

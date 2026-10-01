@@ -14,10 +14,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = \Illuminate\Support\Facades\Cache::remember('brands_index', now()->addMinutes(15), function () {
-            return Brand::all();
-        });
-        return $brands;
+        return Brand::all();
     }
 
     /**

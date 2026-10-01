@@ -10,56 +10,39 @@
 backend-laravel/
 ├── app/
 │   ├── Http/
-│   │   ├── Controllers/        ← 18 API controllers
+│   │   ├── Controllers/        ← 10 API controllers
 │   │   │   ├── AuthController.php
-│   │   │   ├── ClientController.php
-│   │   │   ├── DashboardController.php
-│   │   │   ├── EmployeeController.php
-│   │   │   ├── InstallationController.php
-│   │   │   ├── InventoryController.php
-│   │   │   ├── InvoiceController.php
 │   │   │   ├── ProductController.php
 │   │   │   ├── ProjectController.php
+│   │   │   ├── BrandController.php
+│   │   │   ├── ServiceController.php
 │   │   │   ├── QuotationController.php
 │   │   │   ├── QuotationRequestController.php
-│   │   │   ├── ReportController.php
-│   │   │   ├── ServiceController.php
-│   │   │   ├── ServiceLogController.php
-│   │   │   ├── UserController.php
-│   │   │   └── ...
+│   │   │   ├── ContactController.php
+│   │   │   ├── DashboardController.php
+│   │   │   └── Controller.php   ← Base controller
 │   │   ├── Middleware/
 │   │   │   ├── VerifyCsrfToken.php  ← Excludes api/* from CSRF
 │   │   │   └── EncryptCookies.php
 │   │   └── Resources/
 │   │       ├── ProductResource.php
 │   │       └── QuotationRequestResource.php
-│   ├── Models/                  ← 17 Eloquent models
-│   │   ├── Brand.php
-│   │   ├── Client.php
-│   │   ├── ContactMessage.php
-│   │   ├── Employee.php
-│   │   ├── Installation.php
-│   │   ├── InstallationNote.php
-│   │   ├── Invoice.php
-│   │   ├── InvoiceItem.php
+│   ├── Models/                  ← 9 Eloquent models
+│   │   ├── User.php
 │   │   ├── Product.php
+│   │   ├── Brand.php
 │   │   ├── Project.php
-│   │   ├── Quotation.php
-│   │   ├── QuotationRequest.php
 │   │   ├── ServiceCategory.php
 │   │   ├── ServiceItem.php
-│   │   ├── ServiceLog.php
-│   │   ├── StockMovement.php
-│   │   └── User.php
-│   ├── Mail/                    ← 8 Mailable classes
-│   │   ├── AdminQuotationNotification.php
-│   │   ├── ContactFormSubmitted.php
-│   │   ├── EmailProvisioningRequest.php
-│   │   ├── EmployeeWelcomeMail.php
-│   │   ├── InvoiceReceiptMail.php
+│   │   ├── QuotationRequest.php
+│   │   ├── Quotation.php
+│   │   └── ContactMessage.php
+│   ├── Mail/                    ← 5 Mailable classes
 │   │   ├── QuotationMail.php
 │   │   ├── QuotationReplyMail.php
-│   │   └── QuotationRequestNotification.php
+│   │   ├── QuotationRequestNotification.php
+│   │   ├── AdminQuotationNotification.php
+│   │   └── ContactFormSubmitted.php
 │   └── Providers/
 │       └── AppServiceProvider.php
 ├── config/
@@ -125,18 +108,10 @@ hasMany → QuotationRequests
 ```php
 fillable: ['name', 'model_number', 'slug', 'description', 'price', 'stock',
            'unit', 'category', 'brand', 'sku', 'images', 'datasheet_path',
-           'stock_status', 'on_store', 'brand_id', 'warranty_months']
+           'stock_status', 'on_store', 'brand_id']
 casts: images → array, price → decimal:2, on_store → boolean
 belongsTo → Brand
 belongsToMany → QuotationRequest (pivot: quotation_request_items, with: quantity)
-```
-
-### Invoice & InvoiceItem (ERP)
-```php
-Invoice fillable: ['uuid', 'client_id', 'subtotal', 'tax_amount', 'discount_amount',
-                   'grand_total', 'status', 'payment_method', 'notes', 'due_date']
-InvoiceItem fillable: ['invoice_id', 'product_id', 'product_name', 'quantity',
-                       'unit_price', 'line_total', 'warranty_months', 'serial_number']
 ```
 
 ### Brand
@@ -212,9 +187,6 @@ fillable: ['name', 'email', 'phone', 'message']
 | `QuotationMail`                   | Quotation sent to customer           | Customer      |
 | `QuotationReplyMail`              | Admin replies to a request           | Customer      |
 | `ContactFormSubmitted`            | Contact form submitted               | Admin (sales) |
-| `InvoiceReceiptMail`              | Invoice receipt generated            | Customer      |
-| `EmployeeWelcomeMail`             | New employee created                 | Employee      |
-| `EmailProvisioningRequest`        | Email provision request              | IT Admin      |
 
 - **Queue**: Database-backed queue (`QUEUE_CONNECTION=database`)
 - **Sales email**: `MAIL_SALES_ADDRESS` env variable
@@ -238,10 +210,10 @@ fillable: ['name', 'email', 'phone', 'message']
 - **Session/Cache/Queue**: All use `database` driver (no Redis)
 - **Bcrypt rounds**: 12
 
-### Migration Overview (44 migrations)
+### Migration Overview (25 migrations)
 Key tables created:
 - `users` — with `role` column
-- `products` — with `images` JSON, `brand_id`, `on_store`, `warranty_months`
+- `products` — with `images` JSON, `brand_id`, `on_store`
 - `brands` — with `slug`, `logo_path`
 - `projects` — with `technologies` JSON, `project_image_urls` JSON
 - `service_categories` + `service_items` — parent/child with `sort_order`
@@ -249,11 +221,8 @@ Key tables created:
 - `quotation_request_items` — pivot table (product_id, quantity)
 - `quotations` — admin replies with PDF path
 - `contact_messages` — contact form submissions
-- `invoices` & `invoice_items` — ERP POS billing records
-- `clients` & `employees` — ERP CRM and HR
-- `installations` & `installation_notes` — tracking installations
 
-### Seeders (14 seeders)
+### Seeders (9 seeders)
 - `DatabaseSeeder` — orchestrates all seeders
 - Individual: ProductSeeder, ProjectSeeder, QuotationSeeder, ServiceSeeder, etc.
 

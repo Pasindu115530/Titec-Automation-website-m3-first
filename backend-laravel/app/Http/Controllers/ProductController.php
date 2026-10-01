@@ -30,10 +30,7 @@ class ProductController extends Controller
             });
         }
 
-        $cacheKey = 'products_index_' . md5(json_encode($request->all()));
-        $products = \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(5), function () use ($query) {
-            return $query->latest()->get();
-        });
+        $products = $query->latest()->get();
 
         return response()->json([
             'data' => $products,
@@ -53,18 +50,15 @@ class ProductController extends Controller
             'category' => 'required|string|max:100',
             'brand' => 'nullable|string|max:100',
             'brand_id' => 'nullable|exists:brands,id',
-            'stock' => 'nullable|integer',
+            'stock' => 'required|integer',
             'unit' => 'nullable|string:max:20',
             'sku' => 'nullable|string|max:50',
             'on_store' => 'nullable|boolean',
             'show_price' => 'nullable|boolean',
-            'warranty_months' => 'nullable|integer|min:0|max:120',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
         ]);
-
-        $validated['stock'] = $validated['stock'] ?? 0;
 
         // Handle Images
         $imagePaths = [];
@@ -158,12 +152,11 @@ class ProductController extends Controller
             'category' => 'sometimes|required|string|max:100',
             'brand' => 'nullable|string|max:100',
             'brand_id' => 'nullable|exists:brands,id',
-            'stock' => 'nullable|integer',
+            'stock' => 'sometimes|required|integer',
             'unit' => 'nullable|string:max:20',
             'sku' => 'nullable|string|max:50',
             'on_store' => 'nullable|boolean',
             'show_price' => 'nullable|boolean',
-            'warranty_months' => 'nullable|integer|min:0|max:120',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
@@ -250,24 +243,6 @@ class ProductController extends Controller
         return response()->json([
             'data' => $product,
             'message' => 'Product updated successfully'
-        ]);
-    }
-
-    /**
-     * Toggle the visibility of the product on the store or toggle price visibility.
-     */
-    public function toggleVisibility(Request $request, Product $product)
-    {
-        $validated = $request->validate([
-            'on_store' => 'sometimes|boolean',
-            'show_price' => 'sometimes|boolean',
-        ]);
-
-        $product->update($validated);
-
-        return response()->json([
-            'data' => $product->fresh(),
-            'message' => 'Visibility updated successfully',
         ]);
     }
 

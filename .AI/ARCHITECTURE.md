@@ -67,16 +67,16 @@ Titec-Automation-website-m3-first/
 └── backend-laravel/        ← Laravel 12 API backend
     ├── app/
     │   ├── Http/
-    │   │   ├── Controllers/ ← 18 API controllers
+    │   │   ├── Controllers/ ← 10 API controllers
     │   │   ├── Middleware/   ← CSRF + Cookie encryption
     │   │   └── Resources/   ← API Resources (ProductResource, QuotationRequestResource)
-    │   ├── Models/          ← 17 Eloquent models
-    │   ├── Mail/            ← 8 Mailable classes
+    │   ├── Models/          ← 9 Eloquent models
+    │   ├── Mail/            ← 5 Mailable classes
     │   └── Providers/
     ├── config/              ← App, auth, CORS, Sanctum, mail, etc.
     ├── database/
-    │   ├── migrations/      ← 44 migrations
-    │   └── seeders/         ← 14 seeders
+    │   ├── migrations/      ← 25 migrations
+    │   └── seeders/         ← 9 seeders
     ├── routes/
     │   └── api.php          ← All API route definitions
     ├── resources/views/     ← Blade templates (PDF/email)
@@ -87,19 +87,6 @@ Titec-Automation-website-m3-first/
 ---
 
 ## Technology Stack
-
-### Core System Runtime Requirements (All Subprojects)
-
-> [!IMPORTANT]
-> See [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md) for full device diagnosis and automated fix instructions (`bash .AI/scripts/ensure-env.sh`).
-
-| Runtime / Tool | Required Version | Constraints & Details |
-|---|---|---|
-| **Node.js** | **`v20.19.0+`** or **`v22.12.0+`** | Target: **`v20.20.2+` (LTS Iron)**. Node 18 will crash Vite 7 (`crypto.hash`). |
-| **NPM** | **`v10.0.0+`** | Package management. |
-| **PHP** | **`8.2+`** | Target: PHP 8.3+. Required by Laravel 12. |
-| **Composer** | **`2.2+`** | Dependency management & dev task orchestration (`composer run dev`). |
-| **MySQL** | **`8.0+`** | Relational database. |
 
 ### Frontend (`frontend-next`)
 
@@ -160,8 +147,6 @@ Dynamic `src/app/sitemap.ts` generates entries for all static pages + all produc
 |------------------|---------|-----------------------------------|
 | PHP              | 8.2+    | Runtime                           |
 | Laravel          | 12.x    | API framework                     |
-| Vite             | 7.x     | Asset bundler & HMR (`crypto.hash` requires Node 20.19+) |
-| Tailwind CSS     | 4.x     | CSS styling via `@tailwindcss/vite` |
 | Laravel Sanctum  | 4.x     | Bearer token authentication       |
 | DomPDF           | 3.x     | PDF generation for quotations     |
 | MySQL            | -       | Primary database                  |
@@ -193,8 +178,8 @@ Customer browses store → Adds products to cart (localStorage)
 
 ### 2. Admin Content Management
 ```
-Admin logs in via /dashboard/login (Sanctum token)
-→ CRUD operations on: Products, Projects, Brands, Services, Invoices, Clients
+Admin logs in via /admin/login (Sanctum token)
+→ CRUD operations on: Products, Projects, Brands, Services
 → All changes reflect on public website via SSR/API
 ```
 
@@ -223,18 +208,17 @@ erDiagram
 
 ### Models Summary
 
-| Model              | Key Fields                                    | Relationships                          |
-|--------------------|-----------------------------------------------|----------------------------------------|
-| `User`             | name, email, password, role                   | hasMany QuotationRequests              |
-| `Product`          | name, price, images[], brand_id, on_store, warranty_months | belongsTo Brand, belongsToMany QuotationRequest |
-| `Brand`            | name, slug, logo_path                         | hasMany Products                       |
-| `Project`          | title, client, description, thumbnail_path    | —                                      |
-| `ServiceCategory`  | title, slug, image_path, sort_order           | hasMany ServiceItems                   |
-| `ServiceItem`      | title, description, sort_order                | belongsTo ServiceCategory              |
-| `QuotationRequest` | name, email, phone, status, customer_notes    | belongsToMany Products, hasOne Quotation|
-| `Quotation`        | grand_total, pdf_path, valid_until, remarks   | belongsTo QuotationRequest, belongsTo User|
-| `Invoice`          | uuid, client_id, subtotal, grand_total, status| belongsTo Client, hasMany InvoiceItems |
-| `ContactMessage`   | name, email, message                          | —                                      |
+| Model | Fillable Fields | Casts | Relationships |
+|---|---|---|---|
+| `User` | name, email, password, role | email_verified_at→datetime, password→hashed | hasMany QuotationRequests, hasMany Quotations (as admin) |
+| `Product` | name, model_number, slug, description, price, stock, unit, category, brand, sku, images, datasheet_path, stock_status, on_store, brand_id, show_price | images→array, price→decimal:2, on_store→boolean, show_price→boolean | belongsTo Brand, belongsToMany QuotationRequest (pivot: quotation_request_items with quantity) |
+| `Brand` | name, slug, logo_path | — | hasMany Products |
+| `Project` | title, client, location, description, completion_date, status, technologies, thumbnail_path, logo_path, project_image_urls | completion_date→date, technologies→array, project_image_urls→array | — |
+| `ServiceCategory` | title, slug, description, image_path, sort_order | — | hasMany ServiceItems |
+| `ServiceItem` | title, description, sort_order, service_category_id | — | belongsTo ServiceCategory |
+| `QuotationRequest` | name, email, phone, customer_notes, status, file_path | — | belongsTo User, belongsToMany Products (pivot: quotation_request_items with quantity), hasOne Quotation |
+| `Quotation` | quotation_request_id, admin_id, grand_total, pdf_path, valid_until, remarks | valid_until→date | belongsTo QuotationRequest, belongsTo User (as admin) |
+| `ContactMessage` | name, company, email, phone, message | — | — |
 
 ---
 
@@ -260,7 +244,6 @@ SANCTUM_STATEFUL_DOMAINS=             # Allowed SPA domains
 
 ## Deployment Notes
 
-- **Trigger**: Deployed manually via GitHub Actions (`workflow_dispatch`) with target selection (frontend, erp, backend, all).
 - **Hosting**: cPanel shared hosting
 - **Frontend**: Runs via custom `server.js` (Node.js HTTP server wrapping Next.js)
 - **Backend**: Standard Laravel on Apache/PHP-FPM
