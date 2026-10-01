@@ -155,15 +155,13 @@ export default function AdminLoginPage() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="w-full max-w-md relative z-10 flex flex-col items-center"
             >
-                {/* Official TiTec ERP Animated Brand Header */}
+                {/* Official TiTec Animated Brand Header */}
                 <div className="mb-6 flex flex-col items-center">
-                    <TitecErpLogo logoHeight={48} speed={4} badgeVariant="badge" />
+                    <TitecErpLogo logoHeight={48} speed={4} showBadge={false} />
                 </div>
 
                 {/* Glassmorphic Login Card */}
                 <div className="w-full bg-white/80 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.08)] rounded-[2rem] p-8 sm:p-10 relative overflow-hidden">
-                    {/* Top Multi-Tone Accent Line */}
-                    <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-[#192a55] to-[#D7FC45]" />
 
                     {/* Card Header */}
                     <div className="text-center mb-6">
