@@ -3,7 +3,7 @@ import { InventoryItem, InventoryMovement, inventoryService } from '@/services/i
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/loader';
-import { History, ArrowDownToLine, ShoppingCart, SlidersHorizontal, Undo2, Calendar } from 'lucide-react';
+import { History, ArrowDownToLine, ShoppingCart, SlidersHorizontal, Undo2, Calendar, AlertTriangle } from 'lucide-react';
 
 interface StockHistoryDrawerProps {
     isOpen: boolean;
@@ -50,8 +50,10 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
     if (!item) return null;
 
     const renderMovementBadge = (type: string) => {
-        switch (type) {
+        const normalized = (type || '').toLowerCase();
+        switch (normalized) {
             case 'receive':
+            case 'received':
                 return (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 shadow-2xs">
                         <ArrowDownToLine className="w-3.5 h-3.5" />
@@ -59,6 +61,7 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                     </span>
                 );
             case 'sale':
+            case 'sold':
                 return (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-purple-200/60 shadow-2xs">
                         <ShoppingCart className="w-3.5 h-3.5" />
@@ -66,6 +69,7 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                     </span>
                 );
             case 'adjust':
+            case 'adjustment':
                 return (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
@@ -77,6 +81,13 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60 shadow-2xs">
                         <Undo2 className="w-3.5 h-3.5" />
                         Return
+                    </span>
+                );
+            case 'damaged':
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/80 shadow-2xs">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                        Damaged
                     </span>
                 );
             default:
@@ -147,13 +158,13 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                                 >
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            {renderMovementBadge(movement.type)}
+                                            {renderMovementBadge(movement.movement_type || movement.type)}
                                             <span className={`font-mono font-bold text-xs px-2.5 py-1 rounded-xl border ${
-                                                movement.quantity > 0 
+                                                (movement.quantity ?? 0) > 0 
                                                     ? 'bg-[#E6F9F7] text-[#0D9488] border-teal-200/60' 
                                                     : 'bg-rose-50 text-rose-600 border-rose-200/60'
                                             }`}>
-                                                {movement.quantity > 0 ? `+${movement.quantity}` : movement.quantity} units
+                                                {(movement.quantity ?? 0) > 0 ? `+${movement.quantity}` : (movement.quantity ?? 0)} units
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium">
@@ -171,23 +182,28 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
                                     <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium pt-0.5">
                                         <span>Stock Level:</span>
                                         <span className="font-mono text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200/60 font-semibold">
-                                            {movement.previous_stock ?? 0}
+                                            {movement.stock_before ?? 0}
                                         </span>
                                         <span className="text-neutral-400">→</span>
                                         <span className="font-mono font-bold text-neutral-900 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200/60">
-                                            {movement.new_stock ?? 0} units
+                                            {movement.stock_after ?? 0} units
                                         </span>
                                     </div>
 
                                     {movement.notes && (
-                                        <div className="text-xs text-neutral-700 bg-neutral-50/90 p-3 rounded-xl border border-neutral-200/60 font-medium leading-relaxed">
+                                        <div className="text-xs text-neutral-600 bg-neutral-50 p-2.5 rounded-xl border border-neutral-200/60 font-medium">
                                             {movement.notes}
                                         </div>
                                     )}
 
-                                    {movement.reference_type && (
-                                        <div className="text-[11px] text-neutral-400 font-mono">
-                                            Reference: <span className="text-neutral-600 font-semibold">{movement.reference_type} #{movement.reference_id}</span>
+                                    {(movement.reference_type || movement.user) && (
+                                        <div className="flex items-center justify-between text-xs text-neutral-400 font-medium pt-1 border-t border-neutral-100">
+                                            {movement.reference_type ? (
+                                                <span>Ref: {movement.reference_type} #{movement.reference_id}</span>
+                                            ) : <span />}
+                                            {movement.user && (
+                                                <span>by {movement.user.name}</span>
+                                            )}
                                         </div>
                                     )}
                                 </div>

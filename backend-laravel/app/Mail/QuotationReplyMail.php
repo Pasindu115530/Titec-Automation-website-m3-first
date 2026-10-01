@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class QuotationReplyMail extends Mailable
+class QuotationReplyMail extends Mailable implements ShouldQueue
 {
     public $pdfContent;
     public $adminMessage;

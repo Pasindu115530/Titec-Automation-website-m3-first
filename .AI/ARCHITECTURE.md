@@ -67,16 +67,16 @@ Titec-Automation-website-m3-first/
 └── backend-laravel/        ← Laravel 12 API backend
     ├── app/
     │   ├── Http/
-    │   │   ├── Controllers/ ← 10 API controllers
+    │   │   ├── Controllers/ ← 18 API controllers
     │   │   ├── Middleware/   ← CSRF + Cookie encryption
     │   │   └── Resources/   ← API Resources (ProductResource, QuotationRequestResource)
-    │   ├── Models/          ← 9 Eloquent models
-    │   ├── Mail/            ← 5 Mailable classes
+    │   ├── Models/          ← 17 Eloquent models
+    │   ├── Mail/            ← 8 Mailable classes
     │   └── Providers/
     ├── config/              ← App, auth, CORS, Sanctum, mail, etc.
     ├── database/
-    │   ├── migrations/      ← 25 migrations
-    │   └── seeders/         ← 9 seeders
+    │   ├── migrations/      ← 44 migrations
+    │   └── seeders/         ← 14 seeders
     ├── routes/
     │   └── api.php          ← All API route definitions
     ├── resources/views/     ← Blade templates (PDF/email)
@@ -87,6 +87,19 @@ Titec-Automation-website-m3-first/
 ---
 
 ## Technology Stack
+
+### Core System Runtime Requirements (All Subprojects)
+
+> [!IMPORTANT]
+> See [ENVIRONMENT-SETUP.md](./ENVIRONMENT-SETUP.md) for full device diagnosis and automated fix instructions (`bash .AI/scripts/ensure-env.sh`).
+
+| Runtime / Tool | Required Version | Constraints & Details |
+|---|---|---|
+| **Node.js** | **`v20.19.0+`** or **`v22.12.0+`** | Target: **`v20.20.2+` (LTS Iron)**. Node 18 will crash Vite 7 (`crypto.hash`). |
+| **NPM** | **`v10.0.0+`** | Package management. |
+| **PHP** | **`8.2+`** | Target: PHP 8.3+. Required by Laravel 12. |
+| **Composer** | **`2.2+`** | Dependency management & dev task orchestration (`composer run dev`). |
+| **MySQL** | **`8.0+`** | Relational database. |
 
 ### Frontend (`frontend-next`)
 
@@ -110,6 +123,8 @@ Titec-Automation-website-m3-first/
 |------------------|---------|-----------------------------------|
 | PHP              | 8.2+    | Runtime                           |
 | Laravel          | 12.x    | API framework                     |
+| Vite             | 7.x     | Asset bundler & HMR (`crypto.hash` requires Node 20.19+) |
+| Tailwind CSS     | 4.x     | CSS styling via `@tailwindcss/vite` |
 | Laravel Sanctum  | 4.x     | Bearer token authentication       |
 | DomPDF           | 3.x     | PDF generation for quotations     |
 | MySQL            | -       | Primary database                  |
@@ -141,8 +156,8 @@ Customer browses store → Adds products to cart (localStorage)
 
 ### 2. Admin Content Management
 ```
-Admin logs in via /admin/login (Sanctum token)
-→ CRUD operations on: Products, Projects, Brands, Services
+Admin logs in via /dashboard/login (Sanctum token)
+→ CRUD operations on: Products, Projects, Brands, Services, Invoices, Clients
 → All changes reflect on public website via SSR/API
 ```
 
@@ -174,13 +189,14 @@ erDiagram
 | Model              | Key Fields                                    | Relationships                          |
 |--------------------|-----------------------------------------------|----------------------------------------|
 | `User`             | name, email, password, role                   | hasMany QuotationRequests              |
-| `Product`          | name, price, images[], brand_id, on_store     | belongsTo Brand, belongsToMany QuotationRequest |
+| `Product`          | name, price, images[], brand_id, on_store, warranty_months | belongsTo Brand, belongsToMany QuotationRequest |
 | `Brand`            | name, slug, logo_path                         | hasMany Products                       |
 | `Project`          | title, client, description, thumbnail_path    | —                                      |
 | `ServiceCategory`  | title, slug, image_path, sort_order           | hasMany ServiceItems                   |
 | `ServiceItem`      | title, description, sort_order                | belongsTo ServiceCategory              |
 | `QuotationRequest` | name, email, phone, status, customer_notes    | belongsToMany Products, hasOne Quotation|
 | `Quotation`        | grand_total, pdf_path, valid_until, remarks   | belongsTo QuotationRequest, belongsTo User|
+| `Invoice`          | uuid, client_id, subtotal, grand_total, status| belongsTo Client, hasMany InvoiceItems |
 | `ContactMessage`   | name, email, message                          | —                                      |
 
 ---

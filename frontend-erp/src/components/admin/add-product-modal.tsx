@@ -55,6 +55,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
         sku: '',
         on_store: true,
         show_price: true,
+        warranty_months: 0,
     });
 
     const handleInputChange = (
@@ -93,15 +94,17 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
             data.append('description', formData.description);
             data.append('price', formData.price);
             data.append('category', formData.category);
-            data.append('category', formData.category);
             if (formData.brand_id) {
                 data.append('brand_id', formData.brand_id);
             }
-            data.append('stock', formData.stock);
+            if (formData.stock) {
+                data.append('stock', formData.stock);
+            }
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
             data.append('show_price', formData.show_price ? '1' : '0');
+            data.append('warranty_months', String(formData.warranty_months));
 
             if (imageFiles.length > 0) {
                 imageFiles.forEach((image, index) => {
@@ -133,6 +136,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                 sku: '',
                 on_store: true,
                 show_price: true,
+                warranty_months: 0,
             });
             setImageFiles([]);
             setImagePreviews([]);
@@ -248,7 +252,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                                         name="stock"
                                         type="number"
                                         className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
-                                        value={formData.stock}
+                                        value={formData.stock || ''}
                                         onChange={handleInputChange}
                                         placeholder="Qty"
                                     />
@@ -320,6 +324,22 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
                                             </option>
                                         ))}
                                     </select>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Warranty Period (months)</label>
+                                <div className="relative">
+                                    <Input
+                                        name="warranty_months"
+                                        type="number"
+                                        min="0"
+                                        max="120"
+                                        className="pl-3"
+                                        value={formData.warranty_months}
+                                        onChange={handleInputChange}
+                                        placeholder="0"
+                                    />
+                                    <p className="text-[10px] text-gray-400 mt-1">Set to 0 for no warranty.</p>
                                 </div>
                             </div>
                         </div>

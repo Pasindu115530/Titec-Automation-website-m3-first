@@ -94,6 +94,12 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
                   <div className="flex-1">
                     <div className="font-bold text-sm text-neutral-900">{item.product_name}</div>
                     <div className="text-xs text-neutral-500 font-medium">Qty: {item.quantity} × Rs. {Number(item.unit_price).toLocaleString()}</div>
+                    {item.warranty_months > 0 && (
+                      <div className="text-xs text-[#0284C7] font-semibold mt-0.5">
+                        Warranty: {item.warranty_months} Months
+                        {item.warranty_start_date && item.warranty_end_date && ` (${new Date(item.warranty_start_date).toLocaleDateString()} - ${new Date(item.warranty_end_date).toLocaleDateString()})`}
+                      </div>
+                    )}
                   </div>
                   <div className="font-bold text-sm text-neutral-900">Rs. {Number(item.line_total).toLocaleString()}</div>
                 </div>
@@ -147,7 +153,7 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
           <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium shadow-2xs">
             Close
           </Button>
-          {balance > 0 && invoice.status !== 'voided' && (
+          {balance > 0 && (invoice.status === 'confirmed' || invoice.status === 'partially_paid') && (
             <Button type="button" className="bg-emerald-200 border border-emerald-300 text-emerald-800 hover:bg-emerald-300 font-bold rounded-xl shadow-2xs" onClick={() => onPayment(invoice)}>
               <CreditCard className="mr-2 h-4 w-4" /> Record Payment
             </Button>

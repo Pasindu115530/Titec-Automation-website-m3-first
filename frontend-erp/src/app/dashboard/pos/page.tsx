@@ -111,7 +111,17 @@ export default function POSPage() {
 
       const result = await invoiceService.createInvoice(payload);
       
-      toast.success(result.offline ? 'Order saved offline!' : 'Invoice created successfully!');
+      if (!result.offline && result.id) {
+        // Confirm the invoice to deduct stock
+        await invoiceService.confirmInvoice(result.id);
+        
+        // If not credit, record the payment
+        if (details.payment_method !== 'credit' && details.amount_paid > 0) {
+          await invoiceService.recordPayment(result.id, details.amount_paid, details.payment_method);
+        }
+      }
+      
+      toast.success(result.offline ? 'Order saved offline!' : 'Order completed successfully!');
       setIsConfirmModalOpen(false);
       
       // Reset POS

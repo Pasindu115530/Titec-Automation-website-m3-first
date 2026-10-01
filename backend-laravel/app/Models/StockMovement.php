@@ -12,6 +12,14 @@ class StockMovement extends Model
         'reference_id', 'notes',
     ];
 
+    protected $appends = ['movement_type'];
+
+    public function getMovementTypeAttribute()
+    {
+        // Normalize for frontend
+        return $this->type === 'sale' ? 'sold' : $this->type;
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class);

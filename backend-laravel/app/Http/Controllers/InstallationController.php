@@ -128,13 +128,19 @@ class InstallationController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string',
-            'attachments' => 'nullable|array',
+            'image' => 'nullable|image|max:5120',
         ]);
+
+        $attachments = [];
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('notes', 'public');
+            $attachments[] = $path;
+        }
 
         $note = $installation->notes()->create([
             'user_id' => auth()->id() ?? 1,
             'content' => $validated['content'],
-            'attachments' => $validated['attachments'] ?? null,
+            'attachments' => empty($attachments) ? null : $attachments,
         ]);
 
         return response()->json($note, 201);

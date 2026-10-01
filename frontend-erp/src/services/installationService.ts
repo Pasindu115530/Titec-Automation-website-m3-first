@@ -28,7 +28,7 @@ export interface Installation {
     priority: 'low' | 'medium' | 'high' | 'urgent';
     scheduled_date: string | null;
     completed_date: string | null;
-    location_address: string | null;
+    location: string;
     location_coordinates: string | null;
     created_at: string;
     updated_at: string;

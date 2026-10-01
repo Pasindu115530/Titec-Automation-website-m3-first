@@ -41,6 +41,7 @@ export interface Product {
     model_number?: string;
     on_store?: boolean; // Visibility toggle for client store
     show_price?: boolean; // Visibility toggle for product price
+    warranty_months?: number | null;
 }
 
 export interface ServiceItem {

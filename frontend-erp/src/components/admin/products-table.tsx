@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Product } from '@/types';
 import Loader from '@/components/loader';
 import { getImageUrl } from '@/utils/image-utils';
+import { Pagination } from '@/components/ui/pagination';
 
 interface ProductsTableProps {
     products: Product[];
@@ -21,6 +22,18 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
+    // Client-side pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 15;
+    const totalPages = Math.ceil(products.length / pageSize);
+    
+    // Reset to page 1 when products change
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [products]);
+
+    const paginatedProducts = products.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     const openDeleteModal = (product: Product) => {
         setProductToDelete(product);
@@ -89,6 +102,11 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                     </span>
                                 </th>
                                 <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#EDE9FE] text-[#6D28D9] border border-white/80 shadow-2xs">
+                                        Warranty
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
                                     <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#DCFCE7] text-[#15803D] border border-green-200/80 shadow-2xs">
                                         Stock
                                     </span>
@@ -110,18 +128,18 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                         <tbody className="divide-y divide-neutral-100/80">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={8} className="py-20 text-center">
+                                    <td colSpan={9} className="py-20 text-center">
                                         <Loader variant="inline" size={80} text="Loading products..." />
                                     </td>
                                 </tr>
-                            ) : products.length === 0 ? (
+                            ) : paginatedProducts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-16 text-center text-neutral-500 font-medium">
-                                        No products found.
+                                    <td colSpan={9} className="px-6 py-16 text-center text-neutral-500 font-medium">
+                                        No products found on this page.
                                     </td>
                                 </tr>
                             ) : (
-                                products.map((product) => {
+                                paginatedProducts.map((product) => {
                                     const thumbnail = getThumbnail(product);
                                     return (
                                         <tr key={product.id} className="hover:bg-white/50 transition-colors border-b border-neutral-100/70">
@@ -155,6 +173,9 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                             </td>
                                             <td className="px-6 py-4 text-neutral-700 font-medium">
                                                 {product.unit || 'nos'}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
+                                                {product.warranty_months ? `${product.warranty_months} mth` : '-'}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs 
@@ -207,6 +228,18 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                         </tbody>
                     </table>
                 </div>
+                {totalPages > 1 && (
+                    <div className="p-4 border-t bg-white">
+                        <Pagination 
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                        />
+                        <div className="text-center text-xs text-gray-500 mt-2">
+                            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, products.length)} of {products.length} products
+                        </div>
+                    </div>
+                )}
             </div>
 
             <EditProductModal

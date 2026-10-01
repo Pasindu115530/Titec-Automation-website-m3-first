@@ -146,10 +146,10 @@ export default function InstallationKanban({
                                     </div>
 
                                     {/* Location Address */}
-                                    {inst.location_address && (
+                                    {(inst.location || (inst as any).location_address) && (
                                         <div className="flex items-center gap-2 text-xs text-neutral-400 font-medium truncate">
                                             <MapPin className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                                            <span className="truncate">{inst.location_address}</span>
+                                            <span className="truncate">{inst.location || (inst as any).location_address}</span>
                                         </div>
                                     )}
                                     

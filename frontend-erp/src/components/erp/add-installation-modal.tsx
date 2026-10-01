@@ -26,7 +26,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         description: '',
         priority: 'medium',
         scheduled_date: '',
-        location_address: '',
+        location: '',
     });
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
                 description: '',
                 priority: 'medium',
                 scheduled_date: '',
-                location_address: '',
+                location: '',
             });
         }
     }, [isOpen]);
@@ -72,8 +72,12 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
         const toastId = toast.loading('Creating installation job...');
         
         try {
+            const selectedClient = clients.find(c => c.id === Number(formData.client_id));
+            const locationToUse = formData.location || selectedClient?.address || 'Unknown Location';
+
             await installationService.createInstallation({
                 ...formData,
+                location: locationToUse,
                 client_id: Number(formData.client_id)
             });
             toast.success('Installation created successfully!', { id: toastId });
@@ -184,14 +188,14 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
 
                         {/* Location */}
                         <div className="space-y-2">
-                            <Label htmlFor="location_address" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+                            <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-neutral-700">
                                 Location / Site Address
                             </Label>
                             <Input
                                 type="text"
-                                id="location_address"
-                                name="location_address"
-                                value={formData.location_address}
+                                id="location"
+                                name="location"
+                                value={formData.location}
                                 onChange={handleChange}
                                 className="h-12 px-4 text-base bg-neutral-50/80 border-neutral-200 text-neutral-900 rounded-2xl focus:bg-amber-50/40 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all placeholder:text-neutral-400"
                                 placeholder="Site address (leave blank to use client's registered address)"
@@ -214,7 +218,6 @@ export default function AddInstallationModal({ isOpen, onClose, onSuccess }: Add
                             />
                         </div>
                     </div>
-
                     <DialogFooter className="gap-3 sm:gap-3 pt-4 border-t border-neutral-100 flex items-center justify-end">
                         <Button
                             type="button"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { installationService } from '@/services/installationService';
+import { userService, User } from '@/services/userService';
 import { toast } from 'sonner';
 
 interface TechnicianAssignmentProps {
@@ -9,18 +10,27 @@ interface TechnicianAssignmentProps {
 }
 
 export default function TechnicianAssignment({ installationId, currentTechnicians, onAssignmentSuccess }: TechnicianAssignmentProps) {
-    // In a real app, you'd fetch available technicians from user service
-    // where role = 'Technician'
-    // For MVP, we'll mock a few or assume we pass them if they are fetched from an API
-    const [availableTechs, setAvailableTechs] = useState<{id: number; name: string}[]>([
-        { id: 2, name: 'John Doe (Tech)' },
-        { id: 3, name: 'Jane Smith (Tech)' },
-        { id: 4, name: 'Mike Ross (Tech)' }
-    ]);
-    
+    const [availableTechs, setAvailableTechs] = useState<{id: number; name: string}[]>([]);
     const [selectedTechs, setSelectedTechs] = useState<number[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoadingTechs, setIsLoadingTechs] = useState(false);
+
+    useEffect(() => {
+        const fetchTechs = async () => {
+            setIsLoadingTechs(true);
+            try {
+                const users = await userService.getUsers();
+                // Filter to show technicians (optional) or all users for now
+                setAvailableTechs(users.map(u => ({ id: u.id, name: `${u.name} ${u.employee?.designation ? `(${u.employee.designation})` : ''}` })));
+            } catch (error) {
+                toast.error('Failed to load available technicians.');
+            } finally {
+                setIsLoadingTechs(false);
+            }
+        };
+        fetchTechs();
+    }, []);
 
     useEffect(() => {
         setSelectedTechs(currentTechnicians.map(t => t.id));
@@ -81,17 +91,23 @@ export default function TechnicianAssignment({ installationId, currentTechnician
             <h3 className="font-semibold text-gray-900 mb-3">Assign Technicians</h3>
             
             <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                {availableTechs.map(tech => (
-                    <label key={tech.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer border border-transparent hover:border-gray-100">
-                        <input
-                            type="checkbox"
-                            checked={selectedTechs.includes(tech.id)}
-                            onChange={() => handleToggleTech(tech.id)}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-800">{tech.name}</span>
-                    </label>
-                ))}
+                {isLoadingTechs ? (
+                    <div className="text-sm text-gray-500 py-2">Loading technicians...</div>
+                ) : availableTechs.length > 0 ? (
+                    availableTechs.map(tech => (
+                        <label key={tech.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer border border-transparent hover:border-gray-100">
+                            <input
+                                type="checkbox"
+                                checked={selectedTechs.includes(tech.id)}
+                                onChange={() => handleToggleTech(tech.id)}
+                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm text-gray-800">{tech.name}</span>
+                        </label>
+                    ))
+                ) : (
+                    <div className="text-sm text-gray-500 py-2">No technicians available.</div>
+                )}
             </div>
             
             <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">

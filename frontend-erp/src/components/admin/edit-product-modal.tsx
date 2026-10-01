@@ -47,6 +47,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
         sku: '',
         on_store: true,
         show_price: true,
+        warranty_months: 0,
     });
 
     useEffect(() => {
@@ -62,6 +63,7 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                 sku: product.sku || '',
                 on_store: product.on_store !== undefined ? product.on_store : true,
                 show_price: product.show_price !== undefined ? product.show_price : true,
+                warranty_months: product.warranty_months || 0,
             });
             // Initialize Gallery
             setExistingImages(product.images || []);
@@ -116,11 +118,14 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
             data.append('price', formData.price);
             data.append('category', formData.category);
             data.append('brand', formData.brand || '');
-            data.append('stock', formData.stock);
+            if (formData.stock) {
+                data.append('stock', formData.stock);
+            }
             data.append('unit', formData.unit || 'nos');
             data.append('sku', formData.sku);
             data.append('on_store', formData.on_store ? '1' : '0');
             data.append('show_price', formData.show_price ? '1' : '0');
+            data.append('warranty_months', String(formData.warranty_months));
             // Since this is a PUT request, Laravel sometimes struggles with multipart/form-data on PUT.
             // Standard workaround is sending POST with _method=PUT
             data.append('_method', 'PUT');
@@ -317,6 +322,22 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
                                         placeholder="Omron, Siemens, etc."
                                         className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
                                     />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Warranty Period (months)</label>
+                                <div className="relative">
+                                    <Input
+                                        name="warranty_months"
+                                        type="number"
+                                        min="0"
+                                        max="120"
+                                        className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
+                                        value={formData.warranty_months}
+                                        onChange={handleInputChange}
+                                        placeholder="0"
+                                    />
+                                    <p className="text-[10px] text-neutral-400 mt-1 font-medium">Set to 0 for no warranty.</p>
                                 </div>
                             </div>
                         </div>

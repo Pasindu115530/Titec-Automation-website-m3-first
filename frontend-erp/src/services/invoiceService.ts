@@ -14,6 +14,7 @@ export interface CreateInvoiceData {
   tax_amount: number;
   grand_total: number;
   payment_method?: string;
+  amount_paid?: number;
   notes?: string;
   terms?: string;
   due_date?: string;
@@ -82,6 +83,7 @@ export const invoiceService = {
     const response = await api.post(`/api/invoices/${id}/payment`, {
       amount,
       payment_method,
+      payment_date: new Date().toISOString().split('T')[0],
     });
     return response.data;
   }

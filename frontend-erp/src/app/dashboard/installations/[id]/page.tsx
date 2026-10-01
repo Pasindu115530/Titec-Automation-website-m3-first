@@ -129,7 +129,7 @@ export default function InstallationDetailPage() {
                             <div>
                                 <dt className="text-gray-500 font-medium">Location</dt>
                                 <dd className="mt-1 text-gray-900">
-                                    {installation.location_address || installation.client?.address || 'N/A'}
+                                    {installation.location || installation.client?.address || 'N/A'}
                                 </dd>
                             </div>
                             {installation.invoice && (

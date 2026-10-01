@@ -81,7 +81,12 @@
                 <strong>{{ $item->product_name }}</strong>
                 @if($item->product_model)<br><small>Model: {{ $item->product_model }}</small>@endif
                 @if($item->serial_number)<br><small>S/N: {{ $item->serial_number }}</small>@endif
-                @if($item->warranty_months > 0)<br><small>Warranty: {{ $item->warranty_months }} months</small>@endif
+                @if($item->warranty_months > 0)
+                    <br><small>Warranty: {{ $item->warranty_months }} months</small>
+                    @if($item->warranty_start_date && $item->warranty_end_date)
+                        <br><small>Period: {{ $item->warranty_start_date->format('d M Y') }} – {{ $item->warranty_end_date->format('d M Y') }}</small>
+                    @endif
+                @endif
             </td>
             <td class="text-center">{{ $item->quantity }} {{ $item->unit }}</td>
             <td class="text-right">{{ number_format($item->unit_price, 2) }}</td>
