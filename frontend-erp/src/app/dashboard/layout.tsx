@@ -103,12 +103,16 @@ function SidebarGroup({
                                 const targetPath = item.href.replace(/\/$/, '');
                                 const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
                                 return (
-                                    <Link key={item.name} href={item.href} className="block outline-none">
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className={cn("block outline-none transition-all", isActive ? "relative z-10" : "relative z-0 hover:z-5")}
+                                    >
                                         <span
                                             className={cn(
                                                 "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
                                                 isActive
-                                                    ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_8px_24px_rgba(37,99,235,0.38),0_2px_6px_rgba(0,0,0,0.08)] border border-white/25 scale-[1.02]"
+                                                    ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
                                                     : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                             )}
                                         >
@@ -275,12 +279,15 @@ export default function AdminLayout({
                             const currentPath = (pathname || '').replace(/\/$/, '');
                             const isActive = currentPath === '/dashboard';
                             return (
-                                <Link href="/dashboard" className="block mb-3 outline-none">
+                                <Link
+                                    href="/dashboard"
+                                    className={cn("block mb-3 outline-none transition-all", isActive ? "relative z-10" : "relative z-0 hover:z-5")}
+                                >
                                     <span
                                         className={cn(
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
-                                                ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_8px_24px_rgba(37,99,235,0.38),0_2px_6px_rgba(0,0,0,0.08)] border border-white/25 scale-[1.02]"
+                                                ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
