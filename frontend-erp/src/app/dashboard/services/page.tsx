@@ -72,14 +72,8 @@ export default function AdminServicesPage() {
             </div>
 
             <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white/40 backdrop-blur-md p-2.5 sm:p-3 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
-                    <div className="flex items-center gap-2 pl-3">
-                        <span className="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
-                            <Wrench className="w-3.5 h-3.5 mr-1.5 text-[#7C3AED]" />
-                            Service Catalog
-                        </span>
-                    </div>
-                    <div className="relative w-full sm:w-72 flex items-center">
+                <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                    <div className="relative flex-1 w-full flex items-center">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                         <Input
                             placeholder="Search services..."
@@ -87,6 +81,12 @@ export default function AdminServicesPage() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
+                    </div>
+                    <div className="flex items-center gap-2 pr-1 shrink-0">
+                        <span className="inline-flex items-center px-4 h-11 rounded-2xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                            <Wrench className="w-3.5 h-3.5 mr-1.5 text-[#7C3AED]" />
+                            Service Catalog
+                        </span>
                     </div>
                 </div>
 
