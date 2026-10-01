@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Loader from "@/components/loader";
 import Footer from "@/components/footer";
 
 import heroRobotArm from "@/assets/hero_robot_arm_17678560868133.png";
@@ -42,55 +41,38 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
-    const [status, setStatus] = useState("loading");
     const [projects, setProjects] = useState<Project[]>(initialProjects);
     const [isProjectsLoading, setIsProjectsLoading] = useState(false);
     const { setIsOpen } = useCart();
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                // If we didn't receive initial projects (or want to ensure fresh data), fetch them
-                if (projects.length === 0) {
+        // Only fetch client-side if SSR didn't provide projects (e.g., backend was down)
+        if (initialProjects.length === 0) {
+            const fetchProjects = async () => {
+                try {
                     setIsProjectsLoading(true);
                     const data = await projectService.getProjects();
                     if (Array.isArray(data)) {
                         setProjects(data);
                     } else {
-                        console.error("Invalid projects data received:", data);
                         setProjects([]);
                     }
+                } catch (error) {
+                    console.error("Failed to fetch projects client-side:", error);
+                } finally {
+                    setIsProjectsLoading(false);
                 }
-            } catch (error) {
-                console.error("Failed to fetch projects client-side:", error);
-            } finally {
-                setIsProjectsLoading(false);
-            }
-        };
-
-        fetchProjects();
+            };
+            fetchProjects();
+        }
     }, []);
 
     // Refs for Scroll Animations
     const { ref: contentRef, isInView: contentInView } = useInView(0);
     const { ref: imageRef, isInView: imageInView } = useInView(0);
 
-    useEffect(() => {
-        // Simulate loading duration for effect
-        const timer = setTimeout(() => {
-            setStatus("complete");
-        }, 2000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (status === "loading") {
-        return <Loader />;
-    }
-
     return (
         <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
-            {/* Main Content starts after loading */}
-
             <section
                 className="relative min-h-screen flex items-center bg-gray-50 overflow-hidden font-inter text-gray-900"
                 onMouseMove={(e) => {

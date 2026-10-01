@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Save, X, Calendar, User } from 'lucide-react';
+import { Upload, X, Calendar, User, Edit2, MapPin, Cpu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -29,6 +30,7 @@ interface EditProjectModalProps {
 }
 
 export default function EditProjectModal({ isOpen, onClose, project, onSuccess }: EditProjectModalProps) {
+    const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -52,6 +54,9 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
         technologies: '',
     });
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Helper to normalize status for UI
     const normalizeStatus = (status: string) => {
@@ -200,101 +205,118 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                    className="bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
                 >
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <h2 className="text-xl font-semibold">Edit Project</h2>
-                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <div className="flex items-center justify-between p-6 border-b border-neutral-100 sticky top-0 bg-white/95 backdrop-blur-md z-10 rounded-t-[32px]">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-[#E2D6FE] text-neutral-900 flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                <Edit2 className="h-5 w-5 text-neutral-800" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-neutral-900 tracking-tight">Edit Project</h2>
+                                <p className="text-xs text-neutral-500 mt-0.5 font-medium">Update project portfolio details</p>
+                            </div>
+                        </div>
+                        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700 p-2 rounded-xl hover:bg-neutral-100 transition-colors cursor-pointer">
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
-                    <div className="p-6 space-y-6">
+                    <div className="p-6 space-y-5 flex-1 overflow-y-auto">
                         {error && (
-                            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm font-medium">
                                 {error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Project Title</label>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Project Title</label>
                                 <Input
                                     name="title"
                                     value={formData.title}
                                     onChange={handleInputChange}
+                                    className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Client</label>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Client</label>
                                 <div className="relative">
-                                    <User className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                                     <Input
                                         name="client"
-                                        className="pl-9"
+                                        className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
                                         value={formData.client}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Location</label>
-                                <Input
-                                    name="location"
-                                    placeholder="e.g. Colombo"
-                                    value={formData.location}
-                                    onChange={handleInputChange}
-                                />
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Location</label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                                    <Input
+                                        name="location"
+                                        placeholder="e.g. Colombo"
+                                        className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Technologies</label>
-                                <Input
-                                    name="technologies"
-                                    placeholder="e.g. PLC, SCADA (comma separated)"
-                                    value={formData.technologies}
-                                    onChange={handleInputChange}
-                                />
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Technologies</label>
+                                <div className="relative">
+                                    <Cpu className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                                    <Input
+                                        name="technologies"
+                                        placeholder="e.g. PLC, SCADA (comma separated)"
+                                        className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
+                                        value={formData.technologies}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Description</label>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Description</label>
                             <textarea
                                 name="description"
-                                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                className="flex min-h-[100px] w-full rounded-2xl border border-neutral-200 bg-white p-3.5 text-sm text-neutral-900 shadow-2xs placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-200/80 transition-all font-medium"
                                 value={formData.description}
                                 onChange={handleInputChange}
                             />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Completion Date</label>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Completion Date</label>
                                 <div className="relative">
-                                    <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                                    <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                                     <Input
                                         name="completion_date"
                                         type="date"
-                                        className="pl-9"
+                                        className="pl-10 h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/80 focus-visible:ring-offset-0 transition-all font-medium"
                                         value={formData.completion_date}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Status</label>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Status</label>
                                 <select
                                     name="status"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    className="flex h-11 w-full rounded-2xl border border-neutral-200 bg-white px-3.5 py-2 text-sm text-neutral-900 shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-200/80 transition-all font-medium cursor-pointer"
                                     value={formData.status}
                                     onChange={handleInputChange}
                                 >
@@ -302,56 +324,92 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                     <option value="Completed">Completed</option>
                                     <option value="Maintenance">Maintenance</option>
                                 </select>
-                            </div >
-                        </div >
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Thumbnail</label>
-                            <div className="flex gap-4 items-center">
-                                {thumbnailPreview && (
-                                    <img
-                                        src={thumbnailPreview}
-                                        alt="Preview"
-                                        className="h-16 w-16 object-cover rounded-md border"
-                                    />
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-                                    onChange={handleThumbnailChange}
-                                    className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                                />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Logo (Client Brand)</label>
-                            <div className="flex gap-4 items-center">
-                                {logoPreview && (
-                                    <div className="h-16 w-16 bg-gray-100 flex items-center justify-center rounded-md border p-2">
-                                        <img
-                                            src={logoPreview}
-                                            alt="Logo Preview"
-                                            className="max-h-full max-w-full object-contain"
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Thumbnail</label>
+                                <div className="flex items-center gap-3">
+                                    {thumbnailPreview ? (
+                                        <div className="h-16 w-16 rounded-2xl border border-neutral-200 overflow-hidden relative group shrink-0">
+                                            <img
+                                                src={thumbnailPreview}
+                                                alt="Preview"
+                                                className="h-full w-full object-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setThumbnail(null);
+                                                    setThumbnailPreview('');
+                                                }}
+                                                className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : null}
+                                    <label className="flex-1 h-16 rounded-2xl border-2 border-dashed border-neutral-200 hover:border-[#7C3AED] hover:bg-purple-50/20 flex items-center justify-center gap-2 cursor-pointer transition-all px-4 group">
+                                        <Upload className="h-4 w-4 text-neutral-400 group-hover:text-[#7C3AED] transition-colors" />
+                                        <span className="text-xs font-bold text-neutral-600 group-hover:text-[#7C3AED]">
+                                            {thumbnailPreview ? 'Change' : 'Upload Thumbnail'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+                                            onChange={handleThumbnailChange}
+                                            className="hidden"
                                         />
-                                    </div>
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif, image/webp, video/webm, .svg, .xml, .webm"
-                                    onChange={handleLogoChange}
-                                    className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                                />
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Logo (Client Brand)</label>
+                                <div className="flex items-center gap-3">
+                                    {logoPreview ? (
+                                        <div className="h-16 w-16 rounded-2xl border border-neutral-200 bg-neutral-50 flex items-center justify-center p-2 relative group shrink-0">
+                                            <img
+                                                src={logoPreview}
+                                                alt="Logo Preview"
+                                                className="max-h-full max-w-full object-contain"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setLogo(null);
+                                                    setLogoPreview('');
+                                                }}
+                                                className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : null}
+                                    <label className="flex-1 h-16 rounded-2xl border-2 border-dashed border-neutral-200 hover:border-[#7C3AED] hover:bg-purple-50/20 flex items-center justify-center gap-2 cursor-pointer transition-all px-4 group">
+                                        <Upload className="h-4 w-4 text-neutral-400 group-hover:text-[#7C3AED] transition-colors" />
+                                        <span className="text-xs font-bold text-neutral-600 group-hover:text-[#7C3AED]">
+                                            {logoPreview ? 'Change' : 'Upload Logo'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/gif, image/webp, video/webm, .svg, .xml, .webm"
+                                            onChange={handleLogoChange}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
                         {/* Gallery Section */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Gallery Images</label>
-                            <div className="grid grid-cols-4 gap-4 border rounded-lg p-4 bg-gray-50/50">
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Gallery Images</label>
+                            <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 border border-neutral-200/80 rounded-2xl p-3 bg-neutral-50/50">
                                 {/* Existing Images */}
                                 {existingGalleryImages.map((path, index) => (
-                                    <div key={`existing-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                    <div key={`existing-${index}`} className="relative aspect-square rounded-xl overflow-hidden group border border-neutral-200 bg-white shadow-2xs">
                                         <img
                                             src={getImageUrl(path, '')}
                                             alt="Gallery"
@@ -360,7 +418,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
                                         <button
                                             type="button"
                                             onClick={() => removeExistingImage(path)}
-                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-1 right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xs"
                                         >
                                             <X className="h-3 w-3" />
                                         </button>
@@ -369,49 +427,63 @@ export default function EditProjectModal({ isOpen, onClose, project, onSuccess }
 
                                 {/* New Images Previews */}
                                 {newGalleryPreviews.map((preview, index) => (
-                                    <div key={`new-${index}`} className="relative aspect-square rounded-md overflow-hidden group border bg-white">
+                                    <div key={`new-${index}`} className="relative aspect-square rounded-xl overflow-hidden group border border-neutral-200 bg-white shadow-2xs">
                                         <img src={preview} alt="New Gallery" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => removeNewImage(index)}
-                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-1 right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xs"
                                         >
                                             <X className="h-3 w-3" />
                                         </button>
-                                        <div className="absolute bottom-0 inset-x-0 bg-indigo-500/80 text-white text-[10px] text-center p-0.5">
+                                        <div className="absolute bottom-0 inset-x-0 bg-[#7C3AED]/90 text-white text-[10px] font-bold text-center py-0.5">
                                             New
                                         </div>
                                     </div>
                                 ))}
 
                                 {/* Add Button */}
-                                <div
-                                    className="aspect-square border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-center hover:bg-white hover:border-indigo-500 transition-all cursor-pointer"
-                                    onClick={() => document.getElementById('edit-gallery-input')?.click()}
+                                <label
+                                    className="aspect-square border-2 border-dashed border-neutral-300 hover:border-[#7C3AED] rounded-xl flex flex-col items-center justify-center text-center hover:bg-white transition-all cursor-pointer group"
                                 >
-                                    <Upload className="h-5 w-5 text-gray-400 mb-1" />
-                                    <span className="text-xs text-gray-500">Add</span>
-                                </div>
+                                    <Upload className="h-4 w-4 text-neutral-400 group-hover:text-[#7C3AED] mb-1 transition-colors" />
+                                    <span className="text-[10px] font-bold text-neutral-500 group-hover:text-[#7C3AED]">Add</span>
+                                    <input
+                                        type="file"
+                                        accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+                                        multiple
+                                        onChange={handleGalleryChange}
+                                        className="hidden"
+                                    />
+                                </label>
                             </div>
-                            <input
-                                id="edit-gallery-input"
-                                type="file"
-                                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-                                multiple
-                                onChange={handleGalleryChange}
-                                className="hidden"
-                            />
                         </div>
-                    </div >
+                    </div>
 
-                    <div className="p-6 border-t bg-gray-50 flex justify-end gap-2 rounded-b-xl">
-                        <Button variant="outline" onClick={onClose}>Cancel</Button>
-                        <Button onClick={handleSubmit} disabled={isLoading} className="btn-gradient-primary border-0">
-                            {isLoading ? 'Saving...' : 'Save Changes'}
+                    <div className="p-5 border-t border-neutral-100 bg-neutral-50/80 flex flex-wrap sm:flex-nowrap justify-end gap-3 rounded-b-[32px] sticky bottom-0 z-10 backdrop-blur-md">
+                        <Button
+                            variant="outline"
+                            onClick={onClose}
+                            className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200/80 font-semibold shadow-xs w-full sm:w-auto cursor-pointer"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={isLoading}
+                            className="h-11 px-6 rounded-2xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_8px_20px_rgba(215,252,69,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99] w-full sm:w-auto gap-2 cursor-pointer"
+                        >
+                            {isLoading ? 'Saving...' : (
+                                <>
+                                    <Edit2 className="h-4 w-4 stroke-[2.5]" />
+                                    Save Changes
+                                </>
+                            )}
                         </Button>
                     </div>
-                </motion.div >
-            </div >
-        </AnimatePresence >
+                </motion.div>
+            </div>
+        </AnimatePresence>,
+        document.body
     );
 }

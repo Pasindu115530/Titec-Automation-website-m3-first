@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { reportService } from '@/services/reportService';
 import Loader from '@/components/loader';
 import ReportChart from '@/components/erp/report-chart';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown, Check } from 'lucide-react';
 
 export default function ReportsPage() {
     const [activeTab, setActiveTab] = useState<'sales' | 'inventory' | 'warranty'>('sales');
@@ -12,10 +19,23 @@ export default function ReportsPage() {
 
     // Sales Report State
     const [dateRange, setDateRange] = useState('month'); // week, month, year
+    const [warrantyPeriod, setWarrantyPeriod] = useState('30'); // 30, 60, 90
+
+    const dateRangeLabels: Record<string, string> = {
+        week: 'This Week',
+        month: 'This Month',
+        year: 'This Year',
+    };
+
+    const periodLabels: Record<string, string> = {
+        '30': 'Next 30 days',
+        '60': 'Next 60 days',
+        '90': 'Next 90 days',
+    };
 
     useEffect(() => {
         loadReportData();
-    }, [activeTab, dateRange]);
+    }, [activeTab, dateRange, warrantyPeriod]);
 
     const loadReportData = async () => {
         setLoading(true);
@@ -28,7 +48,7 @@ export default function ReportsPage() {
                 const res = await reportService.getInventoryValuation();
                 setData(res.data || res);
             } else if (activeTab === 'warranty') {
-                const res = await reportService.getWarrantyExpiry({ period: '30' });
+                const res = await reportService.getWarrantyExpiry({ period: warrantyPeriod });
                 setData(res.data || res);
             }
         } catch (error) {
@@ -40,7 +60,7 @@ export default function ReportsPage() {
 
     const renderSalesSummary = () => {
         if (!data) return null;
-        
+
         // Transform daily/monthly data for chart (mock format from backend)
         const chartData = data.chart_data || [
             { label: 'Week 1', value: 150000 },
@@ -53,17 +73,32 @@ export default function ReportsPage() {
             <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-gray-900">Sales Summary</h2>
-                    <select 
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value)}
-                        className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white"
-                    >
-                        <option value="week">This Week</option>
-                        <option value="month">This Month</option>
-                        <option value="year">This Year</option>
-                    </select>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="h-10 px-4 bg-white/80 hover:bg-white text-neutral-800 border border-white/80 backdrop-blur-md rounded-2xl font-semibold text-sm shadow-xs transition-all flex items-center gap-2.5 cursor-pointer hover:scale-[1.01] active:scale-[0.99] outline-none">
+                                <span>{dateRangeLabels[dateRange] || 'This Month'}</span>
+                                <ChevronDown className="h-4 w-4 text-neutral-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.08)] text-neutral-800 p-1.5 min-w-[140px] z-50">
+                            {Object.entries(dateRangeLabels).map(([key, label]) => (
+                                <DropdownMenuItem
+                                    key={key}
+                                    onClick={() => setDateRange(key)}
+                                    className={`rounded-xl px-3.5 py-2 text-xs font-semibold cursor-pointer flex items-center justify-between transition-all ${
+                                        dateRange === key
+                                            ? 'bg-white text-neutral-950 font-bold shadow-xs border border-white/80'
+                                            : 'text-neutral-700 hover:bg-white/60 hover:text-neutral-950'
+                                    }`}
+                                >
+                                    <span>{label}</span>
+                                    {dateRange === key && <Check className="h-3.5 w-3.5 text-neutral-900 stroke-[2.5]" />}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-white/85 backdrop-blur-md p-5 rounded-2xl border border-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.05),0_2px_6px_rgba(0,0,0,0.03)]">
                         <p className="text-sm text-neutral-500 font-medium">Total Sales</p>
@@ -87,7 +122,7 @@ export default function ReportsPage() {
                     <h3 className="text-sm font-semibold text-neutral-800 mb-6">Revenue Trend</h3>
                     <ReportChart data={chartData} color="bg-blue-500" />
                 </div>
-                
+
                 {data.top_products && (
                     <div className="bg-white/85 backdrop-blur-md p-6 rounded-2xl border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
                         <h3 className="text-sm font-semibold text-gray-700 mb-4">Top Selling Products</h3>
@@ -113,9 +148,9 @@ export default function ReportsPage() {
 
     const renderStockValuation = () => {
         if (!data) return null;
-        
+
         const items = data.items || [];
-        
+
         return (
             <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex justify-between items-center mb-4">
@@ -124,7 +159,7 @@ export default function ReportsPage() {
                         Export CSV
                     </button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                         <p className="text-sm text-gray-500 font-medium">Total SKUs</p>
@@ -178,23 +213,42 @@ export default function ReportsPage() {
 
     const renderWarrantyExpiry = () => {
         if (!data) return null;
-        
+
         const warranties = data.expiring_warranties || [];
-        
+
         return (
             <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-gray-900">Warranty Expiry Alerts</h2>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-500">Period:</span>
-                        <select className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white">
-                            <option value="30">Next 30 days</option>
-                            <option value="60">Next 60 days</option>
-                            <option value="90">Next 90 days</option>
-                        </select>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="h-10 px-4 bg-white/80 hover:bg-white text-neutral-800 border border-white/80 backdrop-blur-md rounded-2xl font-semibold text-sm shadow-xs transition-all flex items-center gap-2.5 cursor-pointer hover:scale-[1.01] active:scale-[0.99] outline-none">
+                                    <span>{periodLabels[warrantyPeriod] || 'Next 30 days'}</span>
+                                    <ChevronDown className="h-4 w-4 text-neutral-500" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.08)] text-neutral-800 p-1.5 min-w-[150px] z-50">
+                                {Object.entries(periodLabels).map(([key, label]) => (
+                                    <DropdownMenuItem
+                                        key={key}
+                                        onClick={() => setWarrantyPeriod(key)}
+                                        className={`rounded-xl px-3.5 py-2 text-xs font-semibold cursor-pointer flex items-center justify-between transition-all ${
+                                            warrantyPeriod === key
+                                                ? 'bg-white text-neutral-950 font-bold shadow-xs border border-white/80'
+                                                : 'text-neutral-700 hover:bg-white/60 hover:text-neutral-950'
+                                        }`}
+                                    >
+                                        <span>{label}</span>
+                                        {warrantyPeriod === key && <Check className="h-3.5 w-3.5 text-neutral-900 stroke-[2.5]" />}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
-                
+
                 <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-3">
                     <svg className="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     <div>
@@ -251,8 +305,11 @@ export default function ReportsPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
                     <p className="text-gray-500 mt-1">Key metrics and insights for your business.</p>
                 </div>
-                <button className="px-5 py-2.5 bg-neutral-900 text-white rounded-full hover:bg-black font-medium transition-colors shadow-sm flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                <button
+                    onClick={() => window.print()}
+                    className="px-5 py-2.5 bg-sky-200 hover:bg-sky-300 text-sky-950 border border-sky-400/80 rounded-full font-bold transition-all shadow-[0_4px_14px_rgba(56,189,248,0.25)] flex items-center gap-2 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+                >
+                    <svg className="w-5 h-5 text-sky-950" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                     Print Report
                 </button>
             </div>
@@ -261,31 +318,28 @@ export default function ReportsPage() {
             <div className="flex space-x-2 bg-white/60 backdrop-blur-md p-1.5 rounded-full border border-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.04)] w-fit">
                 <button
                     onClick={() => setActiveTab('sales')}
-                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
-                        activeTab === 'sales'
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'sales'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
-                    }`}
+                        }`}
                 >
                     Sales Summary
                 </button>
                 <button
                     onClick={() => setActiveTab('inventory')}
-                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
-                        activeTab === 'inventory'
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'inventory'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
-                    }`}
+                        }`}
                 >
                     Stock Valuation
                 </button>
                 <button
                     onClick={() => setActiveTab('warranty')}
-                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${
-                        activeTab === 'warranty'
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${activeTab === 'warranty'
                             ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)]'
                             : 'text-neutral-700 hover:text-neutral-950 hover:bg-white/60'
-                    }`}
+                        }`}
                 >
                     Warranty Expiry
                 </button>
@@ -295,7 +349,7 @@ export default function ReportsPage() {
             <div className="min-h-[400px]">
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
-                        <Loader size={48} />
+                        <Loader variant="inline" size={90} text="Loading reports..." />
                     </div>
                 ) : (
                     <>

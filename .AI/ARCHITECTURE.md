@@ -3,7 +3,7 @@
 > **Project**: TiTEC Automation — Industrial automation company website + admin panel  
 > **Domain**: `titecautomation.lk`  
 > **Stack**: Next.js 16 (Frontend) ↔ Laravel 12 (Backend API)  
-> **Last Updated**: March 2026
+> **Last Updated**: August 2026
 
 ---
 
@@ -116,6 +116,43 @@ Titec-Automation-website-m3-first/
 | date-fns            | 4.x     | Date formatting                      |
 | clsx + tailwind-merge |       | Conditional className merging (`cn`)|
 | Google Maps         | -       | `@vis.gl/react-google-maps`          |
+
+### SEO, AI Crawlability & Performance (Frontend)
+
+#### Server-Side Rendering Strategy
+- **SSR + ISR**: Product pages use `generateStaticParams()` for build-time pre-rendering with ISR (`revalidate = 60s`). Store listing revalidates every 5 minutes.
+- **Server-Rendered HTML for Crawlers**: Product detail and store listing pages include server-rendered HTML content (product names, descriptions, prices, specs) directly in the page component. This ensures AI crawlers (GPTBot, ClaudeBot, PerplexityBot) that don't execute JavaScript can still read all product data.
+- **Dual-Render Pattern**: Interactive UI is handled by `"use client"` components, while crawlable content is rendered in the server component above them. Product detail pages use an `sr-only` article; the store listing includes a visible "Complete Product Catalog" section.
+
+#### Dynamic Metadata
+- `generateMetadata()` populates page-specific `<title>`, `<meta description>`, Open Graph, and Twitter card tags from live product/project data.
+- Canonical URLs set via `alternates.canonical` to prevent duplicate content issues.
+
+#### JSON-LD Structured Data
+| Page | Schema Types | Purpose |
+|------|-------------|----------|
+| Layout (global) | `Organization`, `LocalBusiness` | Company identity, contact, geo |
+| `/store` | `ItemList`, `BreadcrumbList` | Product carousel in search results |
+| `/store/[slug]` | `Product` (with `Offer`, `Brand`, `shippingDetails`), `BreadcrumbList` | Rich product snippets |
+| `/projects` | `CreativeWork`, `ItemList` | Project portfolio visibility |
+| `/faq` | `FAQPage` | FAQ rich snippets |
+
+#### AI Chatbot Discovery
+- **`/llms.txt`** — Static file describing the site, key pages, and links to the product feed. Follows the emerging `llms.txt` convention.
+- **`/llms-full.txt`** — Dynamic route generating a full plain-text product catalog (revalidates hourly). AI crawlers ingest this for complete product knowledge.
+
+#### robots.txt
+Configured in `src/app/robots.ts` with explicit `allow` rules for 9 AI crawler user agents: `GPTBot`, `ChatGPT-User`, `Google-Extended`, `ClaudeBot`, `PerplexityBot`, `meta-externalagent`, `Applebot-Extended`, `CCBot`, `cohere-ai`. Admin, API, and customer-dashboard paths are disallowed for all.
+
+#### Sitemap
+Dynamic `src/app/sitemap.ts` generates entries for all static pages + all product pages + all project pages with appropriate `changeFrequency` and `priority` values.
+
+#### Cache Headers (`next.config.js`)
+| Path Pattern | Cache-Control | Rationale |
+|---|---|---|
+| `/store/*`, `/projects/*`, `/services/*`, etc. | `public, max-age=60, s-maxage=300, stale-while-revalidate=600` | Crawler-friendly caching |
+| `/llms*` | `public, max-age=3600, s-maxage=86400` | Long cache for AI feeds |
+| `/admin/*`, `/api/*`, `/customer-dashboard/*` | `no-store, must-revalidate` | Private routes |
 
 ### Backend (`backend-laravel`)
 
@@ -230,4 +267,52 @@ SANCTUM_STATEFUL_DOMAINS=             # Allowed SPA domains
 - **Images**: Stored in `storage/app/public`, linked via `php artisan storage:link`
 - **Build**: `next build --webpack` (webpack mode, not turbopack)
 - **Image optimization**: Disabled (`unoptimized: true`) due to missing Sharp on cPanel
-- **Cache headers**: `no-store, must-revalidate` on all frontend pages
+- **Cache headers**: Per-route caching — public pages use `public, max-age=60, s-maxage=300` for crawler-friendliness; admin/API routes use `no-store, must-revalidate`
+
+---
+
+## CI/CD Pipeline (GitHub Actions)
+
+A fully automated "Zip & Ship" deployment pipeline is configured via `.github/workflows/deploy.yml`. It triggers automatically on pushes to the `main` branch.
+
+### Pipeline Flow
+
+```mermaid
+flowchart LR
+    A["Push to main"] --> B["Build Backend\n(PHP 8.2, Composer)"]
+    A --> C["Build Frontend\n(Node 20, npm)"]
+    B --> D["Package\n(tar.gz)"]
+    C --> D
+    D --> E["SCP Upload\n(to cPanel)"]
+    E --> F["SSH Deploy\n& Restart"]
+```
+
+### Pipeline Stages
+
+| Stage | Action | Tools/Commands |
+|-------|--------|----------------|
+| **1. Checkout** | Clone repository | `actions/checkout@v4` |
+| **2. Build Backend** | Install PHP deps (production only) | `shivammathur/setup-php@v2` (PHP 8.2), `composer install --no-dev --optimize-autoloader --prefer-dist --ignore-platform-reqs` |
+| **3. Build Frontend** | Install npm deps, build Next.js, remove `node_modules` | `actions/setup-node@v4` (Node 20), `npm install && npm run build && rm -rf node_modules` |
+| **4. Package** | Create compressed archive excluding `.git`, `.env`, logs | `tar -czf deploy_package.tar.gz` |
+| **5. Upload** | SCP archive to cPanel server | `appleboy/scp-action@master` |
+| **6. Deploy & Restart** | Extract, migrate, cache, restart | `appleboy/ssh-action@master` — see below |
+
+### Deploy & Restart Steps (Stage 6)
+1. `pkill -u <user> node` — Force kill old Node processes (ghost process cleanup)
+2. `rm -rf frontend-next/.next` — Remove stale build artifacts
+3. `tar -xzf deploy_package.tar.gz` — Extract and overwrite
+4. `php artisan migrate --force` — Run database migrations
+5. `php artisan config:clear && cache:clear && config:cache` — Reset Laravel caches
+6. `npm install --production` — Install frontend production dependencies
+7. `touch tmp/restart.txt` — Trigger Phusion Passenger restart
+
+### Required GitHub Secrets
+
+| Secret | Purpose |
+|--------|----------|
+| `NEXT_PUBLIC_BACKEND_URL` | Backend API URL injected during frontend build |
+| `HOST_IP` | cPanel server IP address |
+| `CPANEL_USER` | cPanel SSH username |
+| `SSH_PRIVATE_KEY` | SSH private key for server access |
+| `REMOTE_PORT` | SSH port number |

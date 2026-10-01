@@ -28,7 +28,7 @@ export default function Header() {
           {/* Logo */}
           <div className="shrink-0">
             <Link href="/">
-              <Image src={logo} alt="TiTEC Automation" width={200} height={80} className="object-contain h-20 w-auto" priority />
+              <Image src={logo} alt="TiTEC Automation" width={200} height={80} className="object-contain h-20 w-auto" style={{ width: 'auto', height: 'auto' }} priority />
             </Link>
           </div>
 

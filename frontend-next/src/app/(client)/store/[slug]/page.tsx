@@ -288,6 +288,39 @@ export default async function ProductPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
             />
 
+            {/*
+              Server-rendered product content for AI chatbot crawlability.
+              This content is hidden visually (sr-only) but fully accessible
+              to crawlers that don't execute JavaScript (GPTBot, ClaudeBot, etc.).
+            */}
+            <article className="sr-only" aria-hidden="true" data-nosnippet>
+                <h1>{product.name}</h1>
+                {product.brand && <p>Brand: {product.brand}</p>}
+                {product.category && <p>Category: {product.category}</p>}
+                {product.model_number && <p>Model Number: {product.model_number}</p>}
+                {product.sku && <p>SKU: {product.sku}</p>}
+                {product.show_price !== false && product.price && (
+                    <p>Price: LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}</p>
+                )}
+                <p>Availability: {(product.stock || 0) > 0 ? 'In Stock' : 'Out of Stock'}</p>
+                {product.unit && <p>Unit: {product.unit}</p>}
+                <div>
+                    <h2>Description</h2>
+                    <div dangerouslySetInnerHTML={{ __html: product.description || '' }} />
+                </div>
+                {allImageUrls.length > 0 && (
+                    <div>
+                        <h2>Product Images</h2>
+                        {allImageUrls.map((url: string, idx: number) => (
+                            <img key={idx} src={url} alt={`${product.name} - Image ${idx + 1}`} />
+                        ))}
+                    </div>
+                )}
+                <nav>
+                    <a href={`${baseUrl}/store`}>Back to Store</a>
+                </nav>
+            </article>
+
             <ProductDetailPage
                 product={product}
                 similarProducts={similarProducts}
