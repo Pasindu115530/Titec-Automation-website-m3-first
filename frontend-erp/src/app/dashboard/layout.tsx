@@ -28,19 +28,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Settings } from 'lucide-react';
-
-// 8-point geometric star icon matching the Starline design
-function StarlineLogoIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className={cn("w-6 h-6 text-neutral-900", className)}
-        >
-            <path d="M12 0L14.59 7.41L22 4.59L19.18 12L24 14.59L16.59 17.41L19.41 24L12 19.18L7.41 24L4.59 16.59L0 19.41L4.82 12L0 9.41L7.41 6.59L4.59 0L12 4.82L12 0Z" />
-        </svg>
-    );
-}
+import TitecErpLogo from '@/components/titec-erp-logo';
 
 // 4-dot rounded square icon matching the exact user uploaded image
 function DashboardGridIcon({ className }: { className?: string }) {
@@ -257,14 +245,9 @@ export default function AdminLayout({
                     )}
                 >
                     <div className="h-20 flex items-center justify-between px-6 shrink-0 min-w-[17.5rem]">
-                        {/* Starline Logo Header */}
-                        <Link href="/dashboard" className="flex items-center gap-3 group">
-                            <div className="p-1 transition-transform group-hover:rotate-45 duration-300">
-                                <StarlineLogoIcon className="w-7 h-7 text-neutral-900" />
-                            </div>
-                            <span className="font-semibold text-xl tracking-tight text-neutral-900">
-                                Titec ERP
-                            </span>
+                        {/* TiTec ERP Animated Logo Header */}
+                        <Link href="/dashboard" className="flex items-center group transition-transform duration-200 active:scale-98">
+                            <TitecErpLogo logoHeight={42} speed={4} badgeVariant="text" />
                         </Link>
                         <Button
                             variant="ghost"
