@@ -1,21 +1,52 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, MoreVertical, Shield, ShieldAlert, Check, X, Mail } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Search,
+    Plus,
+    RefreshCw,
+    Users,
+    Mail,
+    Send,
+    Edit2,
+    Trash2,
+    X,
+    Shield,
+    Briefcase,
+    Building2,
+    CheckCircle2,
+    Clock,
+    AlertCircle
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { userService, User, Role } from '@/services/userService';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import Loader from '@/components/loader';
+import DeleteConfirmationModal from '@/components/admin/delete-confirmation-modal';
 
 export default function UsersTable() {
+    const [mounted, setMounted] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Form state
+    // Filters
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'pending'>('all');
+
+    // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
+
+    // Delete state
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,6 +59,7 @@ export default function UsersTable() {
     const [isEmailPrefixManuallyEdited, setIsEmailPrefixManuallyEdited] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         loadData();
     }, []);
 
@@ -45,8 +77,8 @@ export default function UsersTable() {
                 userService.getUsers(),
                 userService.getRoles()
             ]);
-            setUsers((usersRes as any).data || usersRes);
-            setRoles((rolesRes as any).data || rolesRes);
+            setUsers((usersRes as any).data || usersRes || []);
+            setRoles((rolesRes as any).data || rolesRes || []);
         } catch (error) {
             toast.error('Failed to load users and roles.');
         } finally {
@@ -62,7 +94,7 @@ export default function UsersTable() {
             setFormData({
                 firstName: user.employee?.first_name || splitName[0] || '',
                 lastName: user.employee?.last_name || splitName.slice(1).join(' ') || '',
-                companyEmailPrefix: user.email.split('@')[0],
+                companyEmailPrefix: user.email ? user.email.split('@')[0] : '',
                 personalEmail: user.employee?.personal_email || '',
                 department: user.employee?.department || '',
                 designation: user.employee?.designation || '',
@@ -112,7 +144,7 @@ export default function UsersTable() {
 
         setIsSubmitting(true);
         const toastId = toast.loading(editingUser ? 'Updating user...' : 'Creating user...');
-        
+
         try {
             if (editingUser) {
                 await userService.updateUser(editingUser.id, payload);
@@ -131,280 +163,552 @@ export default function UsersTable() {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
+    const openDeleteModal = (user: User) => {
+        setUserToDelete(user);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!userToDelete) return;
+        setIsDeleting(true);
         const toastId = toast.loading('Deleting user...');
         try {
-            await userService.deleteUser(id);
+            await userService.deleteUser(userToDelete.id);
             toast.success('User deleted successfully', { id: toastId });
+            setDeleteModalOpen(false);
             loadData();
-        } catch (error) {
-            toast.error('Failed to delete user', { id: toastId });
+        } catch (error: any) {
+            const msg = error.response?.data?.message || 'Failed to delete user';
+            toast.error(msg, { id: toastId });
+        } finally {
+            setIsDeleting(false);
+            setUserToDelete(null);
         }
     };
 
     const handleResendWelcome = async (id: number) => {
-        if (!confirm('Are you sure you want to reset their password and send the welcome email?')) return;
         const toastId = toast.loading('Sending welcome email...');
         try {
             await userService.resendWelcome(id);
             toast.success('Welcome email sent successfully', { id: toastId });
-            loadData(); // Reload to update provisioning status
+            loadData();
         } catch (error: any) {
             const msg = error.response?.data?.message || 'Failed to send email';
             toast.error(msg, { id: toastId });
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center py-12">
-                <Loader variant="inline" size={80} text="Loading users..." />
-            </div>
-        );
-    }
+    // Client-side filtering
+    const filteredUsers = users.filter((u) => {
+        const term = search.toLowerCase().trim();
+        const matchesSearch =
+            !term ||
+            u.name?.toLowerCase().includes(term) ||
+            u.email?.toLowerCase().includes(term) ||
+            u.employee?.department?.toLowerCase().includes(term) ||
+            u.employee?.designation?.toLowerCase().includes(term) ||
+            u.roles?.some(r => r.name.toLowerCase().includes(term));
+
+        if (!matchesSearch) return false;
+
+        if (statusFilter === 'active') {
+            return u.employee?.employment_status === 'active';
+        }
+        if (statusFilter === 'pending') {
+            return (
+                u.employee?.email_provisioning_status === 'pending_email' ||
+                u.employee?.email_provisioning_status === 'provisioned'
+            );
+        }
+        return true;
+    });
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            {/* Top Header - Matching Quotation Page */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-lg font-bold text-gray-900">User Management</h2>
-                    <p className="text-sm text-gray-500">Manage access and roles for your team members.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight">
+                        Employees & Team
+                    </h1>
+                    <p className="text-neutral-500 mt-1 text-sm font-medium">
+                        Manage system users, employee profiles, and access roles
+                    </p>
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                    Add User
-                </button>
+                <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <Button
+                        onClick={() => loadData()}
+                        variant="outline"
+                        className="h-11 px-5 rounded-2xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 text-neutral-700 ${loading ? 'animate-spin' : ''}`} />
+                        Refresh
+                    </Button>
+                    <Button
+                        onClick={() => handleOpenModal()}
+                        className="bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold rounded-2xl shadow-[0_8px_20px_rgba(215,252,69,0.35)] border border-[#E9FF7A] px-5 h-11 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 cursor-pointer text-sm"
+                    >
+                        <Plus className="mr-1 h-4 w-4 stroke-[2.5]" />
+                        Add New Employee
+                    </Button>
+                </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Name</th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Email</th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Roles</th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {users.map(user => (
-                                <tr key={user.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-900 flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
-                                            {user.name.charAt(0).toUpperCase()}
+            {/* Filter Tabs & Search Bar - Matching Quotation Page */}
+            <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                <div className="relative flex-1 w-full flex items-center">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <Input
+                        placeholder="Search employees by name, email, department, or role..."
+                        className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-white border-white focus:border-white text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/60 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
+
+                {/* Status Filter Tabs */}
+                <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 w-full md:w-auto">
+                    <button
+                        onClick={() => setStatusFilter('all')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                            statusFilter === 'all'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        All Employees
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('active')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                            statusFilter === 'active'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        Active
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('pending')}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                            statusFilter === 'pending'
+                                ? 'bg-[#D7FC45] text-neutral-950 shadow-[0_4px_14px_rgba(215,252,69,0.35)] border border-[#E9FF7A]'
+                                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                        }`}
+                    >
+                        Pending Setup
+                    </button>
+                </div>
+            </div>
+
+            {/* Table Content */}
+            {loading ? (
+                <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
+                    <Loader variant="inline" size={80} text="Loading employees..." />
+                </div>
+            ) : (
+                <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                    <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40 flex justify-between items-center">
+                        <h3 className="font-bold text-neutral-800 text-sm">Team Directory</h3>
+                        <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider bg-white/60 px-3 py-1 rounded-xl border border-white/80">
+                            {filteredUsers.length} Members
+                        </span>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm border-collapse">
+                            <thead className="border-b border-neutral-200/70 bg-white/30">
+                                <tr className="hover:bg-transparent">
+                                    <th className="px-6 py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                            Employee
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                            Email
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
+                                            Roles
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#EDE9FE] text-[#6D28D9] border border-white/80 shadow-2xs">
+                                            Department
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F6FFD3] text-[#4D6300] border border-[#E9FF7A]/80 shadow-2xs">
+                                            Status
+                                        </span>
+                                    </th>
+                                    <th className="px-6 py-3 text-right">
+                                        <div className="flex justify-end">
+                                            <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                                Actions
+                                            </span>
                                         </div>
-                                        {user.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-wrap gap-1">
-                                            {user.roles && user.roles.length > 0 ? (
-                                                user.roles.map(role => (
-                                                    <span key={role.id} className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                                                        {role.name}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <span className="text-xs text-gray-400 italic">No roles</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {user.employee ? (
-                                            <div className="flex flex-col gap-1">
-                                                <span className={cn(
-                                                    "inline-flex px-2 py-0.5 rounded text-xs font-medium w-fit",
-                                                    user.employee.employment_status === 'active' ? "bg-green-100 text-green-800" :
-                                                    user.employee.employment_status === 'terminated' ? "bg-red-100 text-red-800" :
-                                                    "bg-gray-100 text-gray-800"
-                                                )}>
-                                                    {user.employee.employment_status}
-                                                </span>
-                                                {user.employee.email_provisioning_status && user.employee.email_provisioning_status !== 'active' && (
-                                                    <span className={cn(
-                                                        "inline-flex px-2 py-0.5 rounded text-xs font-medium w-fit",
-                                                        user.employee.email_provisioning_status === 'pending_email' ? "bg-yellow-100 text-yellow-800 border border-yellow-300" :
-                                                        user.employee.email_provisioning_status === 'provisioned' ? "bg-blue-100 text-blue-800 border border-blue-300 animate-pulse" :
-                                                        ""
-                                                    )}>
-                                                        {user.employee.email_provisioning_status === 'pending_email' ? '⏳ Awaiting Email Setup' : '📧 Email Ready — Send Welcome'}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <span className="text-xs text-gray-400">-</span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        {user.employee?.email_provisioning_status === 'provisioned' ? (
-                                            <button 
-                                                onClick={() => handleResendWelcome(user.id)}
-                                                className="text-sm font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg mr-4 transition-colors shadow-sm"
-                                                title="Email is ready! Send welcome credentials to employee"
-                                            >
-                                                ✉️ Send Welcome Email
-                                            </button>
-                                        ) : user.employee?.email_provisioning_status === 'pending_email' ? (
-                                            <span className="text-xs text-yellow-600 italic mr-4">Waiting for email...</span>
-                                        ) : (
-                                            <button 
-                                                onClick={() => handleResendWelcome(user.id)}
-                                                className="text-sm font-medium text-green-600 hover:text-green-800 mr-4"
-                                                title="Resend welcome email with new password"
-                                            >
-                                                Resend Email
-                                            </button>
-                                        )}
-                                        <button 
-                                            onClick={() => handleOpenModal(user)}
-                                            className="text-sm font-medium text-blue-600 hover:text-blue-800 mr-4"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(user.id)}
-                                            className="text-sm font-medium text-red-600 hover:text-red-800"
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            </thead>
+                            <tbody className="divide-y divide-neutral-100/80">
+                                {filteredUsers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={6} className="p-12 text-center text-neutral-500 font-medium text-sm">
+                                            No employees found matching the filter criteria.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredUsers.map((user) => (
+                                        <tr key={user.id} className="hover:bg-white/50 transition-colors">
+                                            {/* Employee Name & Avatar */}
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-2xl bg-[#E2D6FE] text-[#7C3AED] border border-white/80 font-bold text-sm shadow-2xs flex items-center justify-center shrink-0">
+                                                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-neutral-900 text-sm">{user.name}</div>
+                                                        {user.employee?.designation && (
+                                                            <div className="text-xs text-neutral-500 font-medium">{user.employee.designation}</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </td>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-                    <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={() => setIsModalOpen(false)} />
-                    <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                            <h3 className="text-lg font-semibold text-gray-900">
-                                {editingUser ? 'Edit User' : 'New User'}
-                            </h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                        </div>
-                        
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.firstName}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.lastName}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    value={formData.personalEmail}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, personalEmail: e.target.value }))}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="Used to send login credentials"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Company Email</label>
-                                <div className="flex rounded-md shadow-sm">
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.companyEmailPrefix}
-                                        onChange={(e) => {
-                                            setIsEmailPrefixManuallyEdited(true);
-                                            setFormData(prev => ({ ...prev, companyEmailPrefix: e.target.value }));
-                                        }}
-                                        className="flex-1 min-w-0 block w-full px-4 py-2 rounded-none rounded-l-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                                    />
-                                    <span className="inline-flex items-center px-3 rounded-r-lg border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                                        @titecautomation.lk
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                                    <input
-                                        type="text"
-                                        value={formData.department}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                                    <input
-                                        type="text"
-                                        value={formData.designation}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    />
-                                </div>
-                            </div>
+                                            {/* Emails */}
+                                            <td className="px-6 py-4">
+                                                <div className="text-xs font-mono font-medium text-neutral-800">{user.email}</div>
+                                                {user.employee?.personal_email && (
+                                                    <div className="text-[11px] text-neutral-400 mt-0.5">{user.employee.personal_email}</div>
+                                                )}
+                                            </td>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Assign Roles</label>
-                                <div className="space-y-2 max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-3">
-                                    {roles.map(role => (
-                                        <label key={role.id} className="flex items-center gap-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.roles.includes(role.id)}
-                                                onChange={() => handleRoleChange(role.id)}
-                                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                            />
-                                            <span className="text-sm text-gray-800">{role.name}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
+                                            {/* Roles */}
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {user.roles && user.roles.length > 0 ? (
+                                                        user.roles.map((role) => (
+                                                            <span
+                                                                key={role.id}
+                                                                className="inline-flex px-2.5 py-1 rounded-xl text-xs font-semibold bg-white/90 text-neutral-800 border border-neutral-200/80 shadow-2xs"
+                                                            >
+                                                                {role.name}
+                                                            </span>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-xs text-neutral-400 italic">No roles</span>
+                                                    )}
+                                                </div>
+                                            </td>
 
-                            <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                                >
-                                    {isSubmitting ? 'Saving...' : 'Save User'}
-                                </button>
-                            </div>
-                        </form>
+                                            {/* Department */}
+                                            <td className="px-6 py-4 text-neutral-700 font-medium text-xs">
+                                                {user.employee?.department || '-'}
+                                            </td>
+
+                                            {/* Status */}
+                                            <td className="px-6 py-4">
+                                                {user.employee ? (
+                                                    <div className="flex flex-col gap-1">
+                                                        <span
+                                                            className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs border w-fit ${
+                                                                user.employee.employment_status === 'active'
+                                                                    ? 'bg-[#DCFCE7] text-[#15803D] border-green-200/80'
+                                                                    : user.employee.employment_status === 'terminated'
+                                                                    ? 'bg-[#FEE2E2] text-[#B91C1C] border-rose-200/80'
+                                                                    : 'bg-neutral-100 text-neutral-700 border-neutral-200/80'
+                                                            }`}
+                                                        >
+                                                            {user.employee.employment_status === 'active' && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                                                            {user.employee.employment_status}
+                                                        </span>
+
+                                                        {user.employee.email_provisioning_status && user.employee.email_provisioning_status !== 'active' && (
+                                                            <span
+                                                                className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-bold shadow-2xs border w-fit ${
+                                                                    user.employee.email_provisioning_status === 'pending_email'
+                                                                        ? 'bg-[#FEF3C7] text-[#D97706] border-amber-200/80'
+                                                                        : 'bg-[#E0F2FE] text-[#0284C7] border-sky-200/80 animate-pulse'
+                                                                }`}
+                                                            >
+                                                                {user.employee.email_provisioning_status === 'pending_email' ? (
+                                                                    <>
+                                                                        <Clock className="w-3 h-3 mr-1 text-amber-600" />
+                                                                        Awaiting Email Setup
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Mail className="w-3 h-3 mr-1 text-sky-600" />
+                                                                        Email Ready
+                                                                    </>
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-neutral-400">-</span>
+                                                )}
+                                            </td>
+
+                                            {/* Actions */}
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {user.employee?.email_provisioning_status === 'provisioned' ? (
+                                                        <Button
+                                                            size="sm"
+                                                            onClick={() => handleResendWelcome(user.id)}
+                                                            className="h-8 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-2xs gap-1.5 transition-all cursor-pointer hover:scale-[1.02]"
+                                                            title="Send welcome credentials to employee"
+                                                        >
+                                                            <Send className="w-3 h-3" />
+                                                            Send Welcome
+                                                        </Button>
+                                                    ) : user.employee?.email_provisioning_status === 'pending_email' ? (
+                                                        <span className="text-[11px] text-amber-600 font-semibold italic mr-1">
+                                                            Pending Email...
+                                                        </span>
+                                                    ) : (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleResendWelcome(user.id)}
+                                                            className="h-8 px-2.5 rounded-xl bg-white/80 hover:bg-[#F1EBFF] text-[#7C3AED] hover:text-[#6D28D9] border border-neutral-200/70 text-xs font-bold shadow-2xs transition-all cursor-pointer hover:scale-[1.02]"
+                                                            title="Resend welcome email with temporary password"
+                                                        >
+                                                            Resend
+                                                        </Button>
+                                                    )}
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleOpenModal(user)}
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    >
+                                                        <Edit2 className="h-3.5 w-3.5" />
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => openDeleteModal(user)}
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}
+
+            {/* Add / Edit Modal with Portal & Glassmorphism */}
+            {mounted && isModalOpen && createPortal(
+                <AnimatePresence>
+                    <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden"
+                        >
+                            {/* Sticky Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-neutral-100 sticky top-0 bg-white/95 backdrop-blur-md z-10 rounded-t-[32px]">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-2xl bg-[#F1EBFF] text-[#7C3AED] flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                        <Users className="h-5 w-5 text-[#7C3AED]" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-neutral-900 tracking-tight">
+                                            {editingUser ? 'Edit Employee' : 'Add New Employee'}
+                                        </h2>
+                                        <p className="text-xs text-neutral-500 mt-0.5 font-medium">
+                                            {editingUser ? 'Update employee profile and roles' : 'Create new employee profile and credentials'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="text-neutral-400 hover:text-neutral-700 p-2 rounded-xl hover:bg-neutral-100 transition-colors cursor-pointer"
+                                >
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </div>
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                                <div className="p-6 space-y-4 flex-1 overflow-y-auto">
+                                    {/* Name Fields */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                                First Name *
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                required
+                                                value={formData.firstName}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                                                placeholder="e.g. John"
+                                                className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs font-medium focus-visible:ring-2 focus-visible:ring-neutral-200/80"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                                Last Name *
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                required
+                                                value={formData.lastName}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                                                placeholder="e.g. Silva"
+                                                className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs font-medium focus-visible:ring-2 focus-visible:ring-neutral-200/80"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Personal Email */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                            Personal Email *
+                                        </label>
+                                        <Input
+                                            type="email"
+                                            required
+                                            value={formData.personalEmail}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, personalEmail: e.target.value }))}
+                                            placeholder="Used to receive login credentials"
+                                            className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs font-medium focus-visible:ring-2 focus-visible:ring-neutral-200/80"
+                                        />
+                                    </div>
+
+                                    {/* Company Email */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                            Company Email Prefix *
+                                        </label>
+                                        <div className="flex rounded-2xl shadow-2xs border border-neutral-200 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-neutral-200/80">
+                                            <input
+                                                type="text"
+                                                required
+                                                value={formData.companyEmailPrefix}
+                                                onChange={(e) => {
+                                                    setIsEmailPrefixManuallyEdited(true);
+                                                    setFormData(prev => ({ ...prev, companyEmailPrefix: e.target.value }));
+                                                }}
+                                                className="flex-1 px-4 h-11 text-neutral-900 text-sm font-medium outline-none bg-transparent"
+                                                placeholder="johnsilva"
+                                            />
+                                            <span className="inline-flex items-center px-4 bg-neutral-100/90 text-neutral-600 text-xs font-mono font-bold border-l border-neutral-200">
+                                                @titecautomation.lk
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Department & Designation */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                                Department
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                value={formData.department}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                                                placeholder="e.g. Engineering"
+                                                className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs font-medium"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
+                                                Job Title
+                                            </label>
+                                            <Input
+                                                type="text"
+                                                value={formData.designation}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, designation: e.target.value }))}
+                                                placeholder="e.g. Automation Engineer"
+                                                className="h-11 rounded-2xl bg-white border border-neutral-200 text-neutral-900 text-sm shadow-2xs font-medium"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Roles */}
+                                    <div className="space-y-2 pt-1">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider block">
+                                            Assign System Roles
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-2 bg-white/70 p-3 rounded-2xl border border-neutral-200/80 shadow-2xs max-h-36 overflow-y-auto">
+                                            {roles.map(role => {
+                                                const isChecked = formData.roles.includes(role.id);
+                                                return (
+                                                    <label
+                                                        key={role.id}
+                                                        className={`flex items-center gap-2.5 p-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer select-none ${
+                                                            isChecked
+                                                                ? 'bg-[#F1EBFF] text-[#7C3AED] border-[#d8c7fd] shadow-2xs'
+                                                                : 'bg-white text-neutral-700 border-neutral-200/70 hover:bg-neutral-50'
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isChecked}
+                                                            onChange={() => handleRoleChange(role.id)}
+                                                            className="w-4 h-4 rounded text-[#7C3AED] accent-[#7C3AED] border-neutral-300 focus:ring-[#7C3AED] cursor-pointer"
+                                                        />
+                                                        <span>{role.name}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Sticky Footer */}
+                                <div className="p-5 border-t border-neutral-100 bg-neutral-50/80 flex justify-end gap-3 rounded-b-[32px] sticky bottom-0 z-10 backdrop-blur-md">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200/80 font-semibold shadow-xs cursor-pointer"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="h-11 px-6 rounded-2xl bg-[#D7FC45] hover:bg-[#c9ef38] text-neutral-950 font-bold border border-[#E9FF7A] shadow-[0_8px_20px_rgba(215,252,69,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 cursor-pointer"
+                                    >
+                                        {isSubmitting ? 'Saving...' : editingUser ? 'Update Employee' : 'Create Employee'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                </AnimatePresence>,
+                document.body
+            )}
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                itemName={userToDelete?.name || ''}
+                itemIdentifier={userToDelete?.email}
+                itemType="Employee"
+                isDeleting={isDeleting}
+            />
         </div>
     );
 }
