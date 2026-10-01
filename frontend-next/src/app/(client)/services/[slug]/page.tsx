@@ -1,59 +1,85 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import { serviceService } from "@/services/serviceService";
-import { ServiceCategory } from "@/types";
+import { notFound } from "next/navigation";
 import Footer from "@/components/footer";
-import Loader from "@/components/loader";
+import { Metadata } from "next";
 
-export default function ServiceDetailPage() {
-    const params = useParams();
-    const slug = params.slug as string;
+export const revalidate = 300; // Revalidate every 5 minutes
 
-    const [service, setService] = useState<ServiceCategory | null>(null);
-    const [loading, setLoading] = useState(true);
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
-    useEffect(() => {
-        const fetchService = async () => {
-            setLoading(true);
-            try {
-                const data = await serviceService.getServiceBySlug(slug);
-                setService(data);
-            } catch (error) {
-                console.error("Failed to fetch service:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+interface PageProps {
+    params: Promise<{ slug: string }>;
+}
 
-        if (slug) {
-            fetchService();
-        }
-    }, [slug]);
-
-    if (loading) {
-        return <Loader />;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const service = await serviceService.getServiceBySlug(slug);
+    if (!service) {
+        return { title: "Service Not Found | TiTEC Automation" };
     }
+    return {
+        title: `${service.title} | TiTEC Automation`,
+        description: service.description,
+        alternates: { canonical: `${baseUrl}/services/${slug}` },
+        openGraph: {
+            title: `${service.title} | TiTEC Automation`,
+            description: service.description,
+            url: `${baseUrl}/services/${slug}`,
+            siteName: "TiTEC Automation",
+            type: "website",
+        },
+    };
+}
+
+export default async function ServiceDetailPage({ params }: PageProps) {
+    const { slug } = await params;
+    const service = await serviceService.getServiceBySlug(slug);
 
     if (!service) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Service Not Found</h1>
-                    <p className="text-gray-600">The service you are looking for does not exist.</p>
-                    <a href="/" className="mt-4 inline-block text-blue-600 hover:underline">Go back home</a>
-                </div>
-            </div>
-        );
+        notFound();
     }
 
     const imageUrl = service.image_path
         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${service.image_path}`
         : null;
 
+    // JSON-LD: Service schema for rich results
+    const serviceJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": service.title,
+        "description": service.description,
+        "provider": {
+            "@type": "Organization",
+            "name": "TiTEC Automation",
+            "url": baseUrl,
+        },
+        "url": `${baseUrl}/services/${slug}`,
+        "areaServed": "Sri Lanka",
+    };
+
+    // JSON-LD: BreadcrumbList
+    const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl },
+            { "@type": "ListItem", "position": 2, "name": "Services", "item": `${baseUrl}/services` },
+            { "@type": "ListItem", "position": 3, "name": service.title, "item": `${baseUrl}/services/${slug}` },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+            />
+
             {/* Hero Section */}
             <section className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center">
                 {imageUrl ? (
@@ -77,7 +103,7 @@ export default function ServiceDetailPage() {
                 </div>
             </section>
 
-            {/* Breadcrumb / Navigation (Simple) */}
+            {/* Breadcrumb / Navigation */}
             <div className="bg-white border-b border-gray-200">
                 <div className="container mx-auto px-6 py-4">
                     <a href="/" className="text-blue-600 font-medium hover:underline flex items-center gap-2">

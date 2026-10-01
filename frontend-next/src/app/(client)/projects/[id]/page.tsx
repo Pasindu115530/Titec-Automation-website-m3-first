@@ -2,6 +2,7 @@ import React from 'react';
 import { projectService } from '@/services/projectService';
 import { Project } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
+import { createSlug, extractIdFromSlug } from '@/utils/slug-utils';
 import type { Metadata, ResolvingMetadata } from 'next';
 import Footer from '@/components/footer';
 import ProjectClient from './ProjectClient';
@@ -44,11 +45,12 @@ export async function generateMetadata(
     _parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
+    const projectId = extractIdFromSlug(id);
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
     let project: Project | null = null;
     try {
-        project = await projectService.getProjectById(id);
+        project = await projectService.getProjectById(projectId);
     } catch {
         // Project not found — return minimal metadata
     }
@@ -64,14 +66,21 @@ export async function generateMetadata(
         ? getImageUrl(project.thumbnail_path)
         : `${baseUrl}/og-image.jpg`;
 
-    const description = buildDescription(
+    const rawDesc = buildDescription(
         project.description || '',
-        `Industrial automation project by TiTEC Automation Sri Lanka — ${project.title}.`
+        `Industrial automation project — ${project.title}.`
     );
+    
+    // Force local SEO keywords into the description
+    const description = rawDesc.includes('Sri Lanka') 
+        ? rawDesc 
+        : `${rawDesc} Engineered by TiTEC Automation Sri Lanka.`;
 
-    const canonicalUrl = `${baseUrl}/projects/${id}`;
-    const titleSuffix = project.client ? ` | ${project.client}` : '';
-    const title = `${project.title}${titleSuffix} | TiTEC Automation`;
+    const canonicalUrl = `${baseUrl}/projects/${createSlug(project.title, project.id)}`;
+    const titleSuffix = project.client ? ` for ${project.client}` : '';
+    
+    // Explicitly add Sri Lanka to the title tag to capture searches like "[Project] Sri Lanka"
+    const title = `${project.title}${titleSuffix} in Sri Lanka | TiTEC Automation`;
 
     // Build keyword list from technologies + location
     const keywords: string[] = [
@@ -121,11 +130,12 @@ export async function generateMetadata(
 
 export default async function ProjectDetailsPage({ params }: Props) {
     const { id } = await params;
+    const projectId = extractIdFromSlug(id);
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
     let project: Project | null = null;
     try {
-        project = await projectService.getProjectById(id);
+        project = await projectService.getProjectById(projectId);
     } catch {
         // Will render not-found state in client component or handled below
     }
@@ -147,7 +157,7 @@ export default async function ProjectDetailsPage({ params }: Props) {
         : null;
 
     const cleanDesc = stripHtml(project.description || '').replace(/\s+/g, ' ').trim();
-    const canonicalUrl = `${baseUrl}/projects/${id}`;
+    const canonicalUrl = `${baseUrl}/projects/${createSlug(project.title, project.id)}`;
 
     const projectJsonLd = {
         '@context': 'https://schema.org',
