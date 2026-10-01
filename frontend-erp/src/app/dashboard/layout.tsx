@@ -108,14 +108,14 @@ function SidebarGroup({
                                             className={cn(
                                                 "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
                                                 isActive
-                                                    ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-300 scale-[1.02]"
+                                                    ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_8px_24px_rgba(37,99,235,0.38),0_2px_6px_rgba(0,0,0,0.08)] border border-white/25 scale-[1.02]"
                                                     : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                             )}
                                         >
                                             <item.icon
                                                 className={cn(
                                                     "h-4 w-4 shrink-0",
-                                                    isActive ? "text-neutral-950" : "text-neutral-600"
+                                                    isActive ? "text-white" : "text-neutral-600"
                                                 )}
                                             />
                                             <span className="truncate">{item.name}</span>
@@ -280,14 +280,14 @@ export default function AdminLayout({
                                         className={cn(
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
-                                                ? "bg-sky-300 text-neutral-950 font-bold shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-300 scale-[1.02]"
+                                                ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_8px_24px_rgba(37,99,235,0.38),0_2px_6px_rgba(0,0,0,0.08)] border border-white/25 scale-[1.02]"
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
                                         <DashboardGridIcon
                                             className={cn(
                                                 "h-5 w-5 shrink-0",
-                                                isActive ? "text-neutral-950" : "text-neutral-600"
+                                                isActive ? "text-white" : "text-neutral-600"
                                             )}
                                         />
                                         <span className="truncate">Dashboard</span>
