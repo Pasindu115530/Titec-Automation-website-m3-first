@@ -109,6 +109,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // NEW ERP CORE MODULES
     // ═══════════════════════════════════════════════
 
+    // ── Activity Logs ───────────────────────────
+    Route::middleware('permission:activity_logs.view')
+        ->get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index']);
+
+
     // ── Clients ──────────────────────────────────
     Route::middleware('permission:clients.view')->group(function () {
         Route::get('/clients', [\App\Http\Controllers\ClientController::class, 'index']);

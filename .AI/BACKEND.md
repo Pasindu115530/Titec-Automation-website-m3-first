@@ -25,6 +25,7 @@ backend-laravel/
 │   │   │   ├── ReportController.php
 │   │   │   ├── ServiceController.php
 │   │   │   ├── ServiceLogController.php
+│   │   │   ├── ActivityLogController.php
 │   │   │   ├── UserController.php
 │   │   │   └── ...
 │   │   ├── Middleware/
@@ -252,6 +253,7 @@ Key tables created:
 - `invoices` & `invoice_items` — ERP POS billing records
 - `clients` & `employees` — ERP CRM and HR
 - `installations` & `installation_notes` — tracking installations
+- `activity_log` — Spatie Activity Log for audit trails
 
 ### Seeders (14 seeders)
 - `DatabaseSeeder` — orchestrates all seeders
