@@ -195,6 +195,18 @@ class InvoiceController extends Controller
 
             $invoice->update(['status' => 'confirmed']);
         });
+        $itemsData = $invoice->items->map(function ($item) {
+            $productName = $item->product ? $item->product->name : $item->description;
+            return "{$productName} (x{$item->quantity})";
+        })->toArray();
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($invoice)
+            ->useLog('pos')
+            ->withProperties(['items_bought' => $itemsData])
+            ->log("Invoice #{$invoice->invoice_number} confirmed");
+
 
         return response()->json([
             'message' => 'Invoice confirmed. Stock has been deducted.',
@@ -253,6 +265,12 @@ class InvoiceController extends Controller
             'status' => $status,
         ]);
 
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($invoice)
+            ->useLog('pos')
+            ->log("Payment of LKR " . number_format($validated['amount'], 2) . " recorded for Invoice #{$invoice->invoice_number}");
+
         if ($invoice->client?->email) {
             \Illuminate\Support\Facades\Mail::to($invoice->client->email)
                 ->send(new \App\Mail\InvoiceReceiptMail($invoice, $validated['amount']));
@@ -276,6 +294,12 @@ class InvoiceController extends Controller
             }
             $invoice->update(['status' => 'void']);
         });
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($invoice)
+            ->useLog('pos')
+            ->log("Invoice #{$invoice->invoice_number} voided");
 
         return response()->json(['message' => 'Invoice voided. Stock has been restored.']);
     }

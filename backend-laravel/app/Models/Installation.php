@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Installation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use LogsActivity, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'reference_number', 'client_id', 'invoice_id', 'title',
@@ -76,5 +79,15 @@ class Installation extends Model
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['scheduled', 'in_progress']);
+    }
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('installations')
+            ->setDescriptionForEvent(fn(string $eventName) => "Installation {$eventName}");
     }
 }

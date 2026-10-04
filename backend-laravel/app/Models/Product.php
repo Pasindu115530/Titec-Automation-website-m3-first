@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
+    use LogsActivity, HasFactory;
 
     protected $fillable = [
         'name',
@@ -106,5 +109,17 @@ class Product extends Model
         } else {
             $this->stock_status = 'in_stock';
         }
+    }
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('products')
+            ->setDescriptionForEvent(function(string $eventName) {
+                return "Product '{$this->name}' {$eventName}";
+            });
     }
 }

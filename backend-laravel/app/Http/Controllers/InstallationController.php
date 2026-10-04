@@ -123,6 +123,13 @@ class InstallationController extends Controller
         }
 
         $installation->update($updates);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($installation)
+            ->useLog('installations')
+            ->log("Installation #{$installation->reference_number} status → {$validated['status']}");
+
         return response()->json($installation);
     }
 
@@ -273,6 +280,13 @@ class InstallationController extends Controller
         }
 
         $installation->technicians()->sync($syncData);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($installation)
+            ->useLog('installations')
+            ->log("Technicians assigned to Installation #{$installation->reference_number}");
+
         return response()->json($installation->load('technicians'));
     }
 
