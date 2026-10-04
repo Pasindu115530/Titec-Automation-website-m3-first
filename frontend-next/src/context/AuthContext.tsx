@@ -79,8 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const isSuperAdmin = data.user.roles?.includes('Super Admin');
             const actualRole = isSuperAdmin ? 'admin' : 'customer';
 
-            // Verify the role mat
-            // ches what's expected
+            // Verify the role matches what's expected
             if (actualRole !== role) {
                 throw new Error(`Invalid credentials for ${role} login`);
             }
