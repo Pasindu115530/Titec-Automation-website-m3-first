@@ -68,35 +68,73 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow border overflow-hidden">
-                <div className="p-4 border-b bg-gray-50">
-                    <h3 className="font-semibold text-gray-700">Existing Products</h3>
+            <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
+                    <h3 className="font-bold text-neutral-800 text-sm">Existing Products</h3>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="px-6 py-3 font-medium text-gray-500">Product</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Category</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Brand</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Price</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Unit</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Warranty</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Stock</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Spec</th>
-                                <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
+                    <table className="w-full text-left text-sm border-collapse">
+                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                            <tr className="hover:bg-transparent">
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                        Product
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                        Category
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
+                                        Brand
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F6FFD3] text-[#4D6300] border border-[#E9FF7A]/80 shadow-2xs">
+                                        Price
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                        Unit
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#EDE9FE] text-[#6D28D9] border border-white/80 shadow-2xs">
+                                        Warranty
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#DCFCE7] text-[#15803D] border border-green-200/80 shadow-2xs">
+                                        Stock
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                        Spec
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3 text-right">
+                                    <div className="flex justify-end">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                            Actions
+                                        </span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y">
+                        <tbody className="divide-y divide-neutral-100/80">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={8} className="h-64 bg-gray-50/50">
-                                        <Loader variant="inline" size={80} />
+                                    <td colSpan={9} className="py-20 text-center">
+                                        <Loader variant="inline" size={80} text="Loading products..." />
                                     </td>
                                 </tr>
                             ) : paginatedProducts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={9} className="px-6 py-16 text-center text-neutral-500 font-medium">
                                         No products found on this page.
                                     </td>
                                 </tr>
@@ -104,10 +142,10 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                 paginatedProducts.map((product) => {
                                     const thumbnail = getThumbnail(product);
                                     return (
-                                        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                        <tr key={product.id} className="hover:bg-white/50 transition-colors border-b border-neutral-100/70">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-lg bg-gray-100 overflow-hidden shrink-0 border flex items-center justify-center">
+                                                    <div className="h-11 w-11 rounded-xl bg-white border border-white/80 shadow-2xs overflow-hidden shrink-0 flex items-center justify-center">
                                                         {thumbnail ? (
                                                             <img
                                                                 src={getImageUrl(thumbnail, '')}
@@ -115,33 +153,33 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         ) : (
-                                                            <Package className="h-5 w-5 text-gray-400" />
+                                                            <Package className="h-5 w-5 text-neutral-400" />
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium text-gray-900">{product.name}</div>
-                                                        {product.sku && <div className="text-xs text-gray-500">SKU: {product.sku}</div>}
+                                                        <div className="font-bold text-neutral-900 text-sm">{product.name}</div>
+                                                        {product.sku && <div className="text-xs text-neutral-500 font-medium">SKU: {product.sku}</div>}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-gray-600 capitalize">
+                                            <td className="px-6 py-4 text-neutral-700 font-medium capitalize">
                                                 {product.category}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-600 capitalize">
+                                            <td className="px-6 py-4 text-neutral-700 font-medium capitalize">
                                                 {product.brand || '-'}
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-gray-900">
-                                                LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                                            <td className="px-6 py-4 font-extrabold text-neutral-900 text-sm font-mono">
+                                                Rs.{typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-600">
+                                            <td className="px-6 py-4 text-neutral-700 font-medium">
                                                 {product.unit || 'nos'}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 whitespace-nowrap">
                                                 {product.warranty_months ? `${product.warranty_months} mth` : '-'}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                ${(product.stock || 0) > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs 
+                                                ${(product.stock || 0) > 0 ? 'bg-[#DCFCE7] text-[#15803D] border border-green-200/80' : 'bg-[#FEE2E2] text-[#B91C1C] border border-red-200/80'}`}>
                                                     {product.stock} in stock
                                                 </span>
                                             </td>
@@ -151,9 +189,9 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                                         href={getImageUrl(product.datasheet_path, '')}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center gap-1 text-xs text-blue-600 hover:underline border border-blue-200 rounded px-2 py-1 bg-blue-50 w-fit"
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/80 hover:bg-white border border-neutral-200/80 text-neutral-800 shadow-2xs transition-all hover:scale-[1.02] active:scale-[0.98] w-fit"
                                                     >
-                                                        <FileText className="w-3 h-3" />
+                                                        <FileText className="w-3.5 h-3.5 text-neutral-600" />
                                                         Download
                                                     </a>
                                                 )}
@@ -163,28 +201,28 @@ export default function ProductsTable({ products, onRefresh, isLoading }: Produc
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                         onClick={() => setEditingProduct(product)}
                                                     >
-                                                        <Edit2 className="h-4 w-4" />
+                                                        <Edit2 className="h-3.5 w-3.5" />
                                                     </Button>
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                        className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                         onClick={() => openDeleteModal(product)}
                                                         disabled={deletingId === product.id}
                                                     >
                                                         {deletingId === product.id ? (
-                                                            <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                            <div className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
                                                         ) : (
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <Trash2 className="h-3.5 w-3.5" />
                                                         )}
                                                     </Button>
                                                 </div>
                                             </td>
                                         </tr>
-                                    )
+                                    );
                                 })
                             )}
                         </tbody>

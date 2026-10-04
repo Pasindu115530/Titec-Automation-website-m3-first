@@ -211,7 +211,7 @@
 	}
 
 	.starline-pill-active {
-		@apply bg-[#D7FC45] text-neutral-900 font-semibold shadow-xs;
+		@apply bg-sky-300 text-neutral-900 font-semibold shadow-xs;
 	}
 
 	.starline-pill-inactive {

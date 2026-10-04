@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash, Send, FileText, Eye, Edit2, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,11 @@ interface QuotationModalProps {
 }
 
 export default function QuotationModal({ isOpen, onClose, mode, request, onSend }: QuotationModalProps) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     // Unique key for local storage persistence based on mode and request ID
     const storageKeyInfo = mode === 'reply' ? `reply_${request?.id}` : 'direct_new';
     const expirationMinutes = Number(process.env.NEXT_PUBLIC_LOCAL_STORAGE_EXPIRATION_MINUTES) || 30;
@@ -202,28 +208,32 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
     const vatAmount = subTotal * (vat / 100);
     const grandTotal = subTotal + vatAmount;
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
     if (isPreviewMode) {
-        return (
+        return createPortal(
             <AnimatePresence>
-                <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+                <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-start justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col my-8"
+                        className="bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] w-full max-w-4xl max-h-[90vh] flex flex-col my-8 overflow-hidden"
                     >
-                        <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10 rounded-t-xl">
-                            <h2 className="text-xl font-semibold flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-indigo-600" />
-                                Quotation Preview
-                            </h2>
-                            <button onClick={() => setIsPreviewMode(false)} className="text-gray-400 hover:text-gray-600">
+                        <div className="flex items-center justify-between p-5 border-b border-neutral-100 sticky top-0 bg-white/95 backdrop-blur-md z-10 rounded-t-[32px]">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-2xl bg-[#E2D6FE] text-neutral-900 flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                    <FileText className="h-5 w-5 text-neutral-800" />
+                                </div>
+                                <h2 className="text-xl font-bold text-neutral-900 tracking-tight">
+                                    Quotation Preview
+                                </h2>
+                            </div>
+                            <button onClick={() => setIsPreviewMode(false)} className="text-neutral-400 hover:text-neutral-700 p-2 rounded-xl hover:bg-neutral-100 transition-colors">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
-                        <div className="flex-1 bg-gray-100 p-8 overflow-y-auto">
+                        <div className="flex-1 bg-neutral-100/60 p-6 md:p-8 overflow-y-auto">
                             <QuotationPreview
                                 customer={{
                                     name: customerName || 'Guest',
@@ -236,15 +246,15 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 quotationId={request?.id || 'NEW'}
                             />
                         </div>
-                        <div className="p-4 border-t bg-gray-50 flex justify-between items-center rounded-b-xl sticky bottom-0 z-10">
-                            <Button variant="outline" onClick={() => setIsPreviewMode(false)} className="gap-2">
+                        <div className="p-5 border-t border-neutral-100 bg-neutral-50/80 flex justify-between items-center rounded-b-[32px] sticky bottom-0 z-10">
+                            <Button variant="outline" onClick={() => setIsPreviewMode(false)} className="gap-2 h-11 px-5 rounded-2xl bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-200/80 font-semibold shadow-xs">
                                 <ArrowLeft className="h-4 w-4" /> Back to Edit
                             </Button>
                             <div className="flex gap-2">
-                                <Button onClick={handleSubmit} disabled={isSending} className="gap-2 btn-gradient-primary border-0">
+                                <Button onClick={handleSubmit} disabled={isSending} className="gap-2 h-11 px-6 rounded-2xl bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-[0_8px_20px_rgba(125,211,252,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
                                     {isSending ? 'Sending...' : (
                                         <>
-                                            <Send className="h-4 w-4" />
+                                            <Send className="h-4 w-4 stroke-[2.5]" />
                                             Confirm & Send
                                         </>
                                     )}
@@ -253,43 +263,48 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         </div>
                     </motion.div>
                 </div>
-            </AnimatePresence>
+            </AnimatePresence>,
+            document.body
         );
     }
 
-    return (
+    return createPortal(
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[9999] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col"
+                    className="bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col"
                 >
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <div>
-                            <h2 className="text-xl font-semibold flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-indigo-600" />
-                                {mode === 'reply' ? 'Reply to Quotation' : 'Create Direct Quotation'}
-                            </h2>
-                            <p className="text-sm text-gray-500">
-                                {mode === 'reply' ? `Replying to Request #${request?.id}` : 'Send a quotation directly to a customer'}
-                            </p>
+                    <div className="flex items-center justify-between p-6 border-b border-neutral-100">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-[#E2D6FE] text-neutral-900 flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                                <FileText className="h-5 w-5 text-neutral-800" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-neutral-900 tracking-tight">
+                                    {mode === 'reply' ? 'Reply to Quotation' : 'Create Direct Quotation'}
+                                </h2>
+                                <p className="text-xs text-neutral-500 mt-0.5 font-medium">
+                                    {mode === 'reply' ? `Replying to Request #${request?.id}` : 'Send a quotation directly to a customer'}
+                                </p>
+                            </div>
                         </div>
-                        <button onClick={onClose} className="text-gray-400 hover:text-gray-600 shrink-0 p-2">
+                        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700 p-2 rounded-xl hover:bg-neutral-100 transition-colors">
                             <X className="h-5 w-5" />
                         </button>
                     </div>
 
                     <div className="px-6 pt-4">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                            <div className="flex flex-wrap gap-2 w-full sm:w-auto bg-gray-100 p-1 rounded-lg">
+                            <div className="flex flex-wrap gap-1.5 w-full sm:w-auto bg-neutral-100/80 p-1.5 rounded-2xl border border-neutral-200/60">
                                 <button
                                     onClick={() => setActiveTab('create')}
                                     disabled={!includePdf}
-                                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'create'
-                                        ? 'bg-white text-gray-900 shadow'
-                                        : 'text-gray-500 hover:text-gray-900'
+                                    className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === 'create'
+                                        ? 'bg-white text-neutral-950 shadow-xs'
+                                        : 'text-neutral-600 hover:text-neutral-950'
                                         } ${!includePdf ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     Generate PDF
@@ -297,9 +312,9 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 <button
                                     onClick={() => setActiveTab('upload')}
                                     disabled={!includePdf}
-                                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'upload'
-                                        ? 'bg-white text-gray-900 shadow'
-                                        : 'text-gray-500 hover:text-gray-900'
+                                    className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === 'upload'
+                                        ? 'bg-white text-neutral-950 shadow-xs'
+                                        : 'text-neutral-600 hover:text-neutral-950'
                                         } ${!includePdf ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     Upload PDF
@@ -307,8 +322,8 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                             </div>
 
                             {/* Include PDF Toggle */}
-                            <label className="flex items-center justify-between sm:justify-end gap-3 cursor-pointer w-full sm:w-auto bg-gray-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-gray-200">
-                                <span className="text-sm font-medium text-gray-700">Include PDF</span>
+                            <label className="flex items-center justify-between sm:justify-end gap-3 cursor-pointer w-full sm:w-auto bg-white/60 sm:bg-transparent p-3 sm:p-0 rounded-2xl sm:rounded-none border sm:border-0 border-neutral-200/70">
+                                <span className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Include PDF</span>
                                 <div className="relative inline-block w-11 h-6">
                                     <input
                                         type="checkbox"
@@ -316,7 +331,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                         onChange={(e) => setIncludePdf(e.target.checked)}
                                         className="sr-only peer"
                                     />
-                                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 peer-focus:ring-4 peer-focus:ring-indigo-300 transition-colors"></div>
+                                    <div className="w-11 h-6 bg-neutral-200 rounded-full peer peer-checked:bg-neutral-900 transition-colors"></div>
                                     <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5"></div>
                                 </div>
                             </label>
@@ -325,48 +340,48 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
 
                     <div className="px-6 flex-1 overflow-y-auto space-y-6">
                         {/* Customer Info Section */}
-                        <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-4">
+                        <div className="bg-white/80 p-5 rounded-2xl border border-neutral-200/70 shadow-2xs text-sm space-y-4">
                             {mode === 'reply' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <p><span className="font-medium">Customer:</span> {customerName}</p>
-                                        <p><span className="font-medium">Email:</span> {customerEmail}</p>
-                                        <p><span className="font-medium">Phone:</span> {customerPhone || '-'}</p>
+                                    <div className="space-y-1.5">
+                                        <p><span className="font-bold text-neutral-700">Customer:</span> <span className="font-semibold text-neutral-900">{customerName}</span></p>
+                                        <p><span className="font-bold text-neutral-700">Email:</span> <span className="text-neutral-600">{customerEmail}</span></p>
+                                        <p><span className="font-bold text-neutral-700">Phone:</span> <span className="text-neutral-600">{customerPhone || '-'}</span></p>
                                     </div>
                                     <div>
-                                        <p><span className="font-medium">Original Request:</span></p>
-                                        <div className="text-gray-600 mt-1 max-h-32 overflow-y-auto bg-white p-2 rounded border border-gray-200 text-sm whitespace-pre-wrap">
+                                        <p className="font-bold text-neutral-700 mb-1">Original Request:</p>
+                                        <div className="text-neutral-600 max-h-32 overflow-y-auto bg-white p-3 rounded-xl border border-neutral-200 text-sm whitespace-pre-wrap">
                                             {request?.customer_notes || 'No message provided.'}
                                         </div>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="font-medium text-gray-700">Customer Name <span className="text-red-500">*</span></label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Customer Name <span className="text-rose-500">*</span></label>
                                         <Input
                                             value={customerName}
                                             onChange={(e) => setCustomerName(e.target.value)}
                                             placeholder="John Doe"
-                                            className="bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Email <span className="text-rose-500">*</span></label>
                                         <Input
                                             value={customerEmail}
                                             onChange={(e) => setCustomerEmail(e.target.value)}
                                             placeholder="john@example.com"
-                                            className="bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="font-medium text-gray-700">Phone</label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Phone</label>
                                         <Input
                                             value={customerPhone}
                                             onChange={(e) => setCustomerPhone(e.target.value)}
                                             placeholder="+94 77..."
-                                            className="bg-white"
+                                            className="h-10 rounded-xl bg-white border-neutral-200 text-neutral-900 text-sm shadow-2xs focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                         />
                                     </div>
                                 </div>
@@ -378,30 +393,30 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 {activeTab === 'create' ? (
                                     /* Create Mode Content */
                                     <div>
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h3 className="font-medium">Items</h3>
-                                            <Button variant="outline" size="sm" onClick={addItem} className="gap-1 shadow-sm">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <h3 className="font-bold text-neutral-900 text-base tracking-tight">Items</h3>
+                                            <Button size="sm" onClick={addItem} className="h-9 px-4 rounded-xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 shadow-xs font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
                                                 <Plus className="h-4 w-4" /> Add Item
                                             </Button>
                                         </div>
-                                        <div className="border rounded-lg overflow-x-auto shadow-sm">
+                                        <div className="border border-neutral-200/80 rounded-2xl overflow-x-auto shadow-2xs bg-white">
                                             <table className="w-full text-sm min-w-[700px]">
-                                                <thead className="bg-gray-50 border-b">
+                                                <thead className="bg-neutral-50/90 border-b border-neutral-200/70 text-neutral-600 font-bold text-xs uppercase tracking-wider">
                                                     <tr>
-                                                        <th className="px-4 py-2 text-left">Item Name</th>
-                                                        <th className="px-4 py-2 w-24">Qty</th>
-                                                        <th className="px-4 py-2 w-20">Unit</th>
-                                                        <th className="px-4 py-2 w-32">Price (LKR)</th>
-                                                        <th className="px-4 py-2 w-32 text-right">Total</th>
-                                                        <th className="px-4 py-2 w-10"></th>
+                                                        <th className="px-4 py-3 text-left">Item Name</th>
+                                                        <th className="px-4 py-3 w-24">Qty</th>
+                                                        <th className="px-4 py-3 w-24">Unit</th>
+                                                        <th className="px-4 py-3 w-32">Price (Rs.)</th>
+                                                        <th className="px-4 py-3 w-36 text-right">Total</th>
+                                                        <th className="px-4 py-3 w-12 text-center"></th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y">
+                                                <tbody className="divide-y divide-neutral-100">
                                                     {items.map((item, index) => (
-                                                        <tr key={index}>
-                                                            <td className="p-2">
+                                                        <tr key={index} className="hover:bg-neutral-50/50">
+                                                            <td className="p-2.5">
                                                                 {item.isOriginal ? (
-                                                                    <div className="px-3 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-700 font-medium">
+                                                                    <div className="px-3 py-2 bg-neutral-50 rounded-xl border border-neutral-200 text-neutral-800 font-medium">
                                                                         {item.name}
                                                                     </div>
                                                                 ) : (
@@ -415,46 +430,47 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                                                 name: product.name,
                                                                                 unit: product.unit || 'nos',
                                                                                 price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
-                                                                                isUnitEditable: false // Lock unit for selected products
+                                                                                isUnitEditable: false
                                                                             };
                                                                             setItems(newItems);
                                                                         }}
                                                                         placeholder="Search product..."
-                                                                        className="h-8"
+                                                                        className="w-full"
+                                                                        inputClassName="h-9 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                     />
                                                                 )}
                                                             </td>
-                                                            <td className="p-2">
+                                                            <td className="p-2.5">
                                                                 <Input
                                                                     type="number"
                                                                     value={item.quantity || ""}
                                                                     onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
-                                                                    className="h-8"
+                                                                    className="h-9 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                 />
                                                             </td>
-                                                            <td className="p-2">
+                                                            <td className="p-2.5">
                                                                 <Input
                                                                     type="text"
                                                                     value={item.unit || ''}
                                                                     onChange={(e) => handleItemChange(index, 'unit', e.target.value)}
-                                                                    className={`h-8 w-20 ${!item.isUnitEditable ? 'bg-gray-100 text-gray-500' : ''}`}
+                                                                    className={`h-9 w-20 rounded-xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors ${!item.isUnitEditable ? '!bg-neutral-100 text-neutral-500' : ''}`}
                                                                     placeholder="nos"
                                                                     readOnly={!item.isUnitEditable}
                                                                 />
                                                             </td>
-                                                            <td className="p-2">
+                                                            <td className="p-2.5">
                                                                 <Input
                                                                     type="number"
                                                                     value={item.price}
                                                                     onChange={(e) => handleItemChange(index, 'price', Number(e.target.value))}
-                                                                    className="h-8"
+                                                                    className="h-9 rounded-xl border-neutral-200 bg-white text-right focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                                                 />
                                                             </td>
-                                                            <td className="p-2 text-right font-medium">
-                                                                {((item.quantity || 0) * (item.price || 0)).toFixed(2)} LKR
+                                                            <td className="p-2.5 text-right font-bold text-neutral-900">
+                                                                Rs. {((item.quantity || 0) * (item.price || 0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                             </td>
-                                                            <td className="p-2 text-center">
-                                                                <button onClick={() => removeItem(index)} className="text-red-400 hover:text-red-600">
+                                                            <td className="p-2.5 text-center">
+                                                                <button onClick={() => removeItem(index)} className="text-rose-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer">
                                                                     <Trash className="h-4 w-4" />
                                                                 </button>
                                                             </td>
@@ -462,63 +478,74 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                                     ))}
                                                     {items.length === 0 && (
                                                         <tr>
-                                                            <td colSpan={6} className="p-8 text-center text-gray-400">
-                                                                No items added. Click "Add Item" to start.
+                                                            <td colSpan={6} className="p-8 text-center text-neutral-400 font-medium">
+                                                                No items added. Click &ldquo;Add Item&rdquo; to start.
                                                             </td>
                                                         </tr>
                                                     )}
                                                 </tbody>
-                                                <tfoot className="bg-gray-50 font-semibold">
+                                                <tfoot className="bg-neutral-50/80 font-semibold border-t border-neutral-200/70">
                                                     <tr>
-                                                        <td colSpan={3} className="px-4 py-2 text-right">Sub Total:</td>
-                                                        <td className="px-4 py-2 text-right">{subTotal.toFixed(2)} LKR</td>
+                                                        <td colSpan={3} className="px-4 py-2.5 text-right text-neutral-600 text-xs">Sub Total:</td>
+                                                        <td colSpan={2} className="px-4 py-2.5 text-right text-neutral-900 font-bold">Rs. {subTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                         <td></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colSpan={3} className="px-4 py-2 text-right flex items-center justify-end gap-2">
-                                                            VAT (%):
-                                                            <Input
-                                                                type="number"
-                                                                value={vat}
-                                                                onChange={(e) => setVat(Number(e.target.value))}
-                                                                className="w-20 h-8"
-                                                                min={0}
-                                                            />
+                                                        <td colSpan={3} className="px-4 py-2.5 text-right text-neutral-600 text-xs">
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <span>VAT Rate:</span>
+                                                                <Input
+                                                                    type="number"
+                                                                    value={vat}
+                                                                    onChange={(e) => setVat(Number(e.target.value))}
+                                                                    className="w-16 h-8 text-right rounded-lg border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
+                                                                    min={0}
+                                                                />
+                                                                <span>%</span>
+                                                            </div>
                                                         </td>
-                                                        <td className="px-4 py-2 text-right">{vatAmount.toFixed(2)} LKR</td>
-                                                        <td></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colSpan={3} className="px-4 py-2 text-right text-lg">Grand Total:</td>
-                                                        <td className="px-4 py-2 text-right text-lg">{grandTotal.toFixed(2)} LKR</td>
+                                                        <td colSpan={2} className="px-4 py-2.5 text-right text-neutral-900 font-bold">+ Rs. {vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                                         <td></td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
                                         </div>
+
+                                        {/* Grand Total Box (Matching POS summary styling) */}
+                                        <div className="bg-sky-200/90 text-neutral-900 rounded-2xl p-4 border border-white/80 shadow-xs flex justify-between items-center mt-3">
+                                            <div>
+                                                <span className="text-[11px] font-bold text-neutral-600 uppercase tracking-wider block">Grand Total</span>
+                                                <span className="text-xs text-neutral-500 font-medium">Including {vat}% VAT</span>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-2xl font-extrabold text-neutral-900 tracking-tight leading-none">
+                                                    Rs. {grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 ) : (
                                     /* Upload Mode Content */
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:bg-gray-50 transition-colors">
+                                    <div className="border-2 border-dashed border-neutral-300 rounded-2xl p-10 text-center hover:bg-neutral-50/60 transition-colors">
                                         <div className="space-y-4">
-                                            <div className="mx-auto h-12 w-12 text-gray-400">
+                                            <div className="mx-auto h-12 w-12 text-neutral-400">
                                                 <FileText className="h-12 w-12" />
                                             </div>
-                                            <div className="text-sm text-gray-600">
-                                                <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                                            <div className="text-sm text-neutral-600">
+                                                <label htmlFor="file-upload" className="relative cursor-pointer rounded-xl bg-white px-3 py-1 font-bold text-neutral-900 border border-neutral-200 shadow-2xs hover:bg-neutral-50 transition-colors">
                                                     <span>Upload a PDF file</span>
                                                     <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="application/pdf" onChange={handleFileChange} />
                                                 </label>
-                                                <p className="pl-1">or drag and drop</p>
+                                                <p className="pt-2 text-xs text-neutral-400">or drag and drop here</p>
                                             </div>
-                                            <p className="text-xs text-gray-500">PDF up to 10MB</p>
+                                            <p className="text-xs text-neutral-400">PDF documents up to 10MB</p>
 
                                             {pdfFile && (
-                                                <div className="mt-4 p-2 bg-indigo-50 rounded text-indigo-700 text-sm font-medium flex items-center justify-center gap-2">
+                                                <div className="mt-4 p-2.5 bg-[#E2D6FE] border border-white/80 rounded-xl text-neutral-900 text-sm font-semibold flex items-center justify-center gap-2 max-w-md mx-auto shadow-2xs">
                                                     <FileText className="h-4 w-4" />
                                                     {pdfFile.name}
-                                                    <button onClick={() => setPdfFile(null)} className="ml-2 text-indigo-400 hover:text-indigo-600">
-                                                        <X className="h-3 w-3" />
+                                                    <button onClick={() => setPdfFile(null)} className="ml-2 text-neutral-600 hover:text-neutral-900">
+                                                        <X className="h-3.5 w-3.5" />
                                                     </button>
                                                 </div>
                                             )}
@@ -531,12 +558,12 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                         {/* Terms Section */}
                         <div className="mt-6 mb-6">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-medium text-sm text-gray-700">Terms & Conditions</h3>
+                                <h3 className="font-bold text-neutral-900 text-sm">Terms & Conditions</h3>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={toggleEditTerms}
-                                    className="h-8 gap-1 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50"
+                                    className="h-8 gap-1 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl font-medium text-xs cursor-pointer"
                                 >
                                     {isEditingTerms ? <><Check className="h-3 w-3" /> Done</> : <><Edit2 className="h-3 w-3" /> Edit Terms</>}
                                 </Button>
@@ -546,11 +573,11 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                                 <Textarea
                                     value={termsInput}
                                     onChange={(e) => setTermsInput(e.target.value)}
-                                    className="min-h-[150px] font-mono text-xs"
+                                    className="min-h-[140px] font-mono text-xs rounded-2xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                                     placeholder="Enter terms, one per line..."
                                 />
                             ) : (
-                                <div className="bg-gray-50 border rounded-lg p-4 text-xs text-gray-500 space-y-1">
+                                <div className="bg-white/80 border border-neutral-200/70 rounded-2xl p-4 text-xs text-neutral-600 space-y-1 shadow-2xs">
                                     <ul className="list-disc pl-4 space-y-1">
                                         {terms.map((term, i) => (
                                             <li key={i}>{term}</li>
@@ -562,32 +589,32 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
 
                         {/* Message Section */}
                         <div className="space-y-2 pb-6">
-                            <label className="text-sm font-medium">Message to Customer</label>
+                            <label className="text-xs font-bold text-neutral-700 uppercase tracking-wider">Message to Customer</label>
                             <Textarea
-                                className="min-h-[100px]"
-                                placeholder="Add a personal note..."
+                                className="min-h-[100px] rounded-2xl border-neutral-200 bg-white focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
+                                placeholder="Add a personal note or message..."
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
                             />
                         </div>
                     </div>
 
-                    <div className="p-4 sm:p-6 border-t bg-gray-50 flex flex-wrap sm:flex-nowrap justify-end gap-3 rounded-b-xl">
-                        <Button variant="outline" onClick={onClose} className="w-full sm:w-auto order-last sm:order-first">Cancel</Button>
+                    <div className="p-5 border-t border-neutral-100 bg-neutral-50/80 flex flex-wrap sm:flex-nowrap justify-end gap-3 rounded-b-[32px]">
+                        <Button variant="outline" onClick={onClose} className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200/80 font-semibold shadow-xs w-full sm:w-auto order-last sm:order-first cursor-pointer">Cancel</Button>
                         {includePdf && activeTab === 'create' && (
                             <Button
-                                variant="secondary"
+                                variant="outline"
                                 onClick={handlePreview}
                                 disabled={items.length === 0}
-                                className="w-full sm:w-auto gap-2"
+                                className="h-11 px-5 rounded-2xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 shadow-xs font-semibold w-full sm:w-auto gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                             >
                                 <Eye className="h-4 w-4" /> Preview
                             </Button>
                         )}
-                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="w-full sm:w-auto gap-2 btn-gradient-primary border-0">
+                        <Button onClick={handleSubmit} disabled={isSending || (activeTab === 'create' && items.length === 0) || (activeTab === 'upload' && !pdfFile)} className="h-11 px-6 rounded-2xl bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-[0_8px_20px_rgba(125,211,252,0.35)] transition-all hover:scale-[1.01] active:scale-[0.99] w-full sm:w-auto gap-2 cursor-pointer">
                             {isSending ? 'Sending...' : (
                                 <>
-                                    <Send className="h-4 w-4" />
+                                    <Send className="h-4 w-4 stroke-[2.5]" />
                                     Send Quotation
                                 </>
                             )}
@@ -595,6 +622,7 @@ export default function QuotationModal({ isOpen, onClose, mode, request, onSend 
                     </div>
                 </motion.div>
             </div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }

@@ -28,19 +28,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Settings } from 'lucide-react';
-
-// 8-point geometric star icon matching the Starline design
-function StarlineLogoIcon({ className }: { className?: string }) {
-    return (
-        <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className={cn("w-6 h-6 text-neutral-900", className)}
-        >
-            <path d="M12 0L14.59 7.41L22 4.59L19.18 12L24 14.59L16.59 17.41L19.41 24L12 19.18L7.41 24L4.59 16.59L0 19.41L4.82 12L0 9.41L7.41 6.59L4.59 0L12 4.82L12 0Z" />
-        </svg>
-    );
-}
+import TitecErpLogo from '@/components/titec-erp-logo';
 
 // 4-dot rounded square icon matching the exact user uploaded image
 function DashboardGridIcon({ className }: { className?: string }) {
@@ -100,10 +88,14 @@ function SidebarGroup({
                 {isExpanded && (
                     <motion.div
                         initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        animate={{
+                            height: 'auto',
+                            opacity: 1,
+                            transitionEnd: { overflow: 'visible' },
+                        }}
+                        exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
+                        className="-mx-2.5 px-2.5 py-1 -my-1 overflow-hidden"
                     >
                         <div className="space-y-1.5 pb-1">
                             {group.items.map((item) => {
@@ -111,19 +103,23 @@ function SidebarGroup({
                                 const targetPath = item.href.replace(/\/$/, '');
                                 const isActive = currentPath === targetPath || (targetPath !== '/dashboard' && currentPath.startsWith(targetPath));
                                 return (
-                                    <Link key={item.name} href={item.href} className="block">
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        className={cn("block outline-none transition-all", isActive ? "relative z-10" : "relative z-0 hover:z-5")}
+                                    >
                                         <span
                                             className={cn(
                                                 "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
                                                 isActive
-                                                    ? "bg-[#D7FC45] text-neutral-950 font-bold shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
+                                                    ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
                                                     : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                             )}
                                         >
                                             <item.icon
                                                 className={cn(
                                                     "h-4 w-4 shrink-0",
-                                                    isActive ? "text-neutral-950" : "text-neutral-600"
+                                                    isActive ? "text-white" : "text-neutral-600"
                                                 )}
                                             />
                                             <span className="truncate">{item.name}</span>
@@ -221,6 +217,11 @@ export default function AdminLayout({
     // Get primary role display name
     const userRoleDisplay = user?.roles?.[0] || 'User';
 
+    // Do not render dashboard shell on the login page
+    if (pathname?.startsWith('/dashboard/login')) {
+        return <>{children}</>;
+    }
+
     return (
         <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased relative overflow-hidden">
             {/* Ambient Background Depth Layer (Down Level) */}
@@ -257,14 +258,9 @@ export default function AdminLayout({
                     )}
                 >
                     <div className="h-20 flex items-center justify-between px-6 shrink-0 min-w-[17.5rem]">
-                        {/* Starline Logo Header */}
-                        <Link href="/dashboard" className="flex items-center gap-3 group">
-                            <div className="p-1 transition-transform group-hover:rotate-45 duration-300">
-                                <StarlineLogoIcon className="w-7 h-7 text-neutral-900" />
-                            </div>
-                            <span className="font-semibold text-xl tracking-tight text-neutral-900">
-                                Titec ERP
-                            </span>
+                        {/* TiTec ERP Animated Logo Header */}
+                        <Link href="/dashboard" className="flex items-center group transition-transform duration-200 active:scale-98">
+                            <TitecErpLogo logoHeight={52} speed={4} badgeVariant="text" />
                         </Link>
                         <Button
                             variant="ghost"
@@ -283,19 +279,22 @@ export default function AdminLayout({
                             const currentPath = (pathname || '').replace(/\/$/, '');
                             const isActive = currentPath === '/dashboard';
                             return (
-                                <Link href="/dashboard" className="block mb-3">
+                                <Link
+                                    href="/dashboard"
+                                    className={cn("block mb-3 outline-none transition-all", isActive ? "relative z-10" : "relative z-0 hover:z-5")}
+                                >
                                     <span
                                         className={cn(
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
-                                                ? "bg-[#D7FC45] text-neutral-950 font-bold shadow-[0_8px_24px_rgba(215,252,69,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-[#E9FF7A] scale-[1.02]"
+                                                ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
                                                 : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
                                         )}
                                     >
                                         <DashboardGridIcon
                                             className={cn(
                                                 "h-5 w-5 shrink-0",
-                                                isActive ? "text-neutral-950" : "text-neutral-600"
+                                                isActive ? "text-white" : "text-neutral-600"
                                             )}
                                         />
                                         <span className="truncate">Dashboard</span>
@@ -358,8 +357,7 @@ export default function AdminLayout({
                             {/* Welcome Greeting Title */}
                             <div>
                                 <h1 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
-                                    Welcome, {user?.firstName || 'Josiah'}
-                                    <span className="text-xl inline-block animate-bounce">🎉</span>
+                                    Welcome, {user?.firstName || 'Hashan'}
                                 </h1>
                                 <p className="text-xs md:text-sm text-neutral-600 mt-0.5 font-normal">
                                     Here`s what happening in your store.

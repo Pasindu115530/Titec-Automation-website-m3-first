@@ -56,37 +56,37 @@ export function RecordPaymentModal({ isOpen, onClose, invoice, onPaymentRecorded
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px] bg-[#111827] text-white border-white/10">
+      <DialogContent className="sm:max-w-[440px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-6 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Record Payment</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">Record Payment</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="bg-[#1f2937] p-3 rounded text-center border border-white/5">
-              <div className="text-sm text-gray-400">Balance Due</div>
-              <div className="text-2xl font-bold text-amber-400">Rs. {balance.toLocaleString()}</div>
+            <div className="bg-[#E2D6FE] text-black rounded-2xl p-4 border border-white/80 shadow-xs text-center">
+              <div className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">Balance Due</div>
+              <div className="text-3xl font-extrabold text-black tracking-tight mt-0.5">Rs. {balance.toLocaleString()}</div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Payment Amount (Rs.)</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-neutral-700">Payment Amount (Rs.)</Label>
               <Input 
                 type="number" 
                 value={amount} 
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="bg-[#1f2937] border-white/10"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
                 min="1"
                 max={balance}
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Payment Method</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-neutral-700">Payment Method</Label>
               <Select value={method} onValueChange={setMethod}>
-                <SelectTrigger className="bg-[#1f2937] border-white/10">
+                <SelectTrigger className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus:ring-2 focus:ring-amber-200 focus:ring-offset-0 focus:outline-none transition-colors">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1f2937] text-white border-white/10">
+                <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="card">Card / POS</SelectItem>
                   <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -95,11 +95,15 @@ export function RecordPaymentModal({ isOpen, onClose, invoice, onPaymentRecorded
               </Select>
             </div>
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="border-white/10 hover:bg-white/5">
+          <DialogFooter className="gap-2 sm:gap-0 pt-2">
+            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium shadow-2xs">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-green-600 hover:bg-green-700 text-white">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold rounded-xl shadow-[0_8px_20px_rgba(125,211,252,0.35)] border border-sky-200 px-5 transition-all"
+            >
               {isSubmitting ? 'Recording...' : 'Record Payment'}
             </Button>
           </DialogFooter>

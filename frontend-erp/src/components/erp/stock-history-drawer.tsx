@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { InventoryItem, InventoryMovement, inventoryService } from '@/services/inventoryService';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import Loader from '@/components/loader';
+import { History, ArrowDownToLine, ShoppingCart, SlidersHorizontal, Undo2, Calendar, AlertTriangle } from 'lucide-react';
 
 interface StockHistoryDrawerProps {
     isOpen: boolean;
@@ -44,130 +47,199 @@ export default function StockHistoryDrawer({ isOpen, onClose, item }: StockHisto
         }
     };
 
-    if (!isOpen || !item) return null;
+    if (!item) return null;
 
-    const getMovementIcon = (type: string) => {
-        switch (type) {
+    const renderMovementBadge = (type: string) => {
+        const normalized = (type || '').toLowerCase();
+        switch (normalized) {
             case 'receive':
             case 'received':
-                return <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 shadow-2xs">
+                        <ArrowDownToLine className="w-3.5 h-3.5" />
+                        Received
+                    </span>
+                );
             case 'sale':
             case 'sold':
-                return <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-purple-200/60 shadow-2xs">
+                        <ShoppingCart className="w-3.5 h-3.5" />
+                        Sale
+                    </span>
+                );
             case 'adjust':
             case 'adjustment':
-                return <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
+                        Adjusted
+                    </span>
+                );
             case 'return':
-                return <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60 shadow-2xs">
+                        <Undo2 className="w-3.5 h-3.5" />
+                        Return
+                    </span>
+                );
             case 'damaged':
-                return <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200/80 shadow-2xs">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                        Damaged
+                    </span>
+                );
             default:
-                return <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>;
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200 shadow-2xs">
+                        {type}
+                    </span>
+                );
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
-            <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} />
-            <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-                
-                {/* Header */}
-                <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-start">
-                    <div>
-                        <h2 className="text-lg font-bold text-gray-900">Stock History</h2>
-                        <p className="text-sm text-gray-500 mt-1">{item.name}</p>
-                        <p className="text-xs text-gray-400 mt-1">Current Stock: <span className="font-semibold text-gray-700">{item.stock_quantity}</span></p>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[720px] md:max-w-[760px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+                <DialogHeader>
+                    <div className="flex items-center gap-3.5">
+                        <div className="h-12 w-12 rounded-2xl bg-[#E2D6FE] text-neutral-900 flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
+                            <History className="h-6 w-6 text-neutral-800" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-2xl font-bold text-neutral-900 tracking-tight">Stock History & Audit Log</DialogTitle>
+                            <p className="text-sm text-neutral-500 font-medium mt-0.5">
+                                Complete timeline of inventory movements for {item.name}
+                            </p>
+                        </div>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200 text-gray-400 transition-colors">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+                </DialogHeader>
+
+                {/* Product Summary Header Card */}
+                <div className="bg-white/70 backdrop-blur-md border border-neutral-200/70 rounded-2xl p-4.5 shadow-2xs mt-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-1">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Product</span>
+                            <h4 className="font-bold text-neutral-900 text-base tracking-tight leading-snug">{item.name}</h4>
+                            {item.product_code && (
+                                <span className="inline-block font-mono text-xs font-semibold text-neutral-600 bg-neutral-100 px-2.5 py-0.5 rounded-lg border border-neutral-200/80">
+                                    SKU: {item.product_code}
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-0 bg-neutral-50 sm:bg-transparent rounded-xl border sm:border-0 border-neutral-200/60 shrink-0">
+                            <span className="text-xs font-semibold text-neutral-500">Current In-Stock</span>
+                            <span className="font-mono font-extrabold text-neutral-900 text-xl tracking-tight">
+                                {(item.stock_quantity ?? 0).toLocaleString()} <span className="text-xs text-neutral-400 font-normal">units</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Timeline */}
-                <div className="flex-1 overflow-y-auto p-6 bg-white">
+                {/* Movements List Container */}
+                <div className="mt-4 max-h-[50vh] overflow-y-auto pr-1 space-y-3.5">
                     {loading ? (
-                        <div className="flex justify-center py-10">
-                            <Loader size={40} />
+                        <div className="py-12 text-center">
+                            <Loader variant="inline" size={70} text="Loading movement history..." />
                         </div>
                     ) : movements.length === 0 ? (
-                        <div className="text-center py-10 text-gray-500 border border-dashed border-gray-300 rounded-lg">
-                            No stock history available.
+                        <div className="text-center py-16 px-4 bg-neutral-50/50 border-2 border-dashed border-neutral-200/80 rounded-2xl">
+                            <History className="h-10 w-10 text-neutral-300 mx-auto mb-2.5" />
+                            <p className="text-neutral-700 font-bold text-sm">No stock movements recorded yet</p>
+                            <p className="text-neutral-400 text-xs mt-1">Adjustments, receipts, and sales for this item will appear here.</p>
                         </div>
                     ) : (
-                        <div className="relative border-l border-gray-200 ml-4 space-y-8 pb-8">
+                        <div className="space-y-3">
                             {movements.map((movement) => (
-                                <div key={movement.id} className="relative pl-6">
-                                    <div className="absolute -left-4 top-0 bg-white p-1">
-                                        {getMovementIcon(movement.movement_type || movement.type)}
-                                    </div>
-                                    <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium capitalize
-                                                ${(movement.movement_type || movement.type) === 'receive' || (movement.movement_type || movement.type) === 'received' ? 'bg-green-100 text-green-700' : 
-                                                  (movement.movement_type || movement.type) === 'sale' || (movement.movement_type || movement.type) === 'sold' ? 'bg-blue-100 text-blue-700' : 
-                                                  (movement.movement_type || movement.type) === 'return' ? 'bg-purple-100 text-purple-700' :
-                                                  (movement.movement_type || movement.type) === 'damaged' ? 'bg-red-100 text-red-700' :
-                                                  'bg-yellow-100 text-yellow-700'}`}
-                                            >
-                                                {movement.movement_type || movement.type}
-                                            </span>
-                                            <span className="text-xs text-gray-500">
-                                                {new Date(movement.created_at).toLocaleString('en-US', {
-                                                    month: 'short', day: 'numeric', year: 'numeric',
-                                                    hour: '2-digit', minute: '2-digit'
-                                                })}
+                                <div 
+                                    key={movement.id}
+                                    className="p-4 rounded-2xl bg-white/80 border border-neutral-200/70 shadow-2xs hover:border-neutral-300/80 transition-all space-y-2.5"
+                                >
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2">
+                                            {renderMovementBadge(movement.movement_type || movement.type)}
+                                            <span className={`font-mono font-bold text-xs px-2.5 py-1 rounded-xl border ${
+                                                (movement.quantity ?? 0) > 0 
+                                                    ? 'bg-[#E6F9F7] text-[#0D9488] border-teal-200/60' 
+                                                    : 'bg-rose-50 text-rose-600 border-rose-200/60'
+                                            }`}>
+                                                {(movement.quantity ?? 0) > 0 ? `+${movement.quantity}` : (movement.quantity ?? 0)} units
                                             </span>
                                         </div>
-                                        
-                                        <div className="mt-2 text-sm text-gray-800">
-                                            Quantity change: <strong className={movement.quantity > 0 ? 'text-green-600' : 'text-red-600'}>
-                                                {movement.quantity > 0 ? '+' : ''}{movement.quantity}
-                                            </strong>
+                                        <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium">
+                                            <Calendar className="w-3.5 h-3.5 text-neutral-400" />
+                                            {new Date(movement.created_at).toLocaleString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Stock changed from {movement.stock_before} to {movement.stock_after}
-                                        </div>
-                                        
-                                        {movement.notes && (
-                                            <div className="mt-3 text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
-                                                {movement.notes}
-                                            </div>
-                                        )}
-                                        
-                                        {movement.reference_type && (
-                                            <div className="mt-2 text-xs text-gray-400 flex items-center gap-1">
-                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                                                Ref: {movement.reference_type} #{movement.reference_id}
-                                            </div>
-                                        )}
-                                        
-                                        {movement.user && (
-                                            <div className="mt-2 text-xs text-gray-400 text-right">
-                                                by {movement.user.name}
-                                            </div>
-                                        )}
                                     </div>
+
+                                    <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium pt-0.5">
+                                        <span>Stock Level:</span>
+                                        <span className="font-mono text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200/60 font-semibold">
+                                            {movement.stock_before ?? 0}
+                                        </span>
+                                        <span className="text-neutral-400">→</span>
+                                        <span className="font-mono font-bold text-neutral-900 bg-neutral-100 px-2 py-0.5 rounded-lg border border-neutral-200/60">
+                                            {movement.stock_after ?? 0} units
+                                        </span>
+                                    </div>
+
+                                    {movement.notes && (
+                                        <div className="text-xs text-neutral-600 bg-neutral-50 p-2.5 rounded-xl border border-neutral-200/60 font-medium">
+                                            {movement.notes}
+                                        </div>
+                                    )}
+
+                                    {(movement.reference_type || movement.user) && (
+                                        <div className="flex items-center justify-between text-xs text-neutral-400 font-medium pt-1 border-t border-neutral-100">
+                                            {movement.reference_type ? (
+                                                <span>Ref: {movement.reference_type} #{movement.reference_id}</span>
+                                            ) : <span />}
+                                            {movement.user && (
+                                                <span>by {movement.user.name}</span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
-                            
+
                             {hasMore && (
-                                <div className="pl-6 pt-4">
-                                    <button 
+                                <div className="pt-2 text-center">
+                                    <Button 
+                                        variant="outline"
+                                        size="sm"
                                         onClick={() => {
                                             const nextPage = page + 1;
                                             setPage(nextPage);
                                             loadMovements(nextPage, false);
                                         }}
-                                        className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                        className="h-10 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-200/80 font-bold text-xs shadow-2xs transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                                     >
                                         Load older movements...
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+
+                <DialogFooter className="pt-4 mt-2 border-t border-neutral-100 flex items-center justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onClose}
+                        className="h-11 px-6 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200/80 font-bold text-sm shadow-2xs transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                    >
+                        Close
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

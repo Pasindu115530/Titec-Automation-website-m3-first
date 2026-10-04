@@ -12,6 +12,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Loader from '@/components/loader';
 import { dashboardService, DashboardStats } from '@/services/dashboardService';
 import {
     ResponsiveContainer,
@@ -61,10 +62,10 @@ export default function AdminDashboard() {
         }
     };
 
-    if (isAuthLoading) {
+    if (isAuthLoading || (isDataLoading && !dashboardData)) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900"></div>
+            <div className="flex h-[80vh] items-center justify-center">
+                <Loader variant="inline" size={100} text="Loading dashboard..." />
             </div>
         );
     }
@@ -308,7 +309,7 @@ export default function AdminDashboard() {
                         <div className="h-64 w-full relative">
                             {/* Peak indicator badge matching design */}
                             <div className="absolute top-16 left-[58%] -translate-x-1/2 z-10 hidden sm:flex flex-col items-center pointer-events-none">
-                                <div className="bg-[#D7FC45] text-neutral-950 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs">
+                                <div className="bg-sky-300 text-neutral-950 px-2.5 py-0.5 rounded-full text-xs font-bold shadow-xs">
                                     21,345
                                 </div>
                                 <div className="w-px h-16 bg-neutral-200 border-l border-dashed border-neutral-400/80" />

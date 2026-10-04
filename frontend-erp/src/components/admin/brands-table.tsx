@@ -7,6 +7,7 @@ import { Brand } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
 import { brandService } from '@/services/brandService';
 import { toast } from 'sonner';
+import Loader from '@/components/loader';
 
 interface BrandsTableProps {
     brands: Brand[];
@@ -44,63 +45,86 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow border overflow-hidden">
+            <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
+                    <h3 className="font-bold text-neutral-800 text-sm">Existing Brands</h3>
+                </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="px-6 py-3 font-medium text-gray-500 w-[100px]">Logo</th>
-                                <th className="px-6 py-3 font-medium text-gray-500">Name</th>
-                                <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
+                    <table className="w-full text-left text-sm border-collapse">
+                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                            <tr className="hover:bg-transparent">
+                                <th className="px-6 py-3 w-[120px]">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                        Logo
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                        Brand Name
+                                    </span>
+                                </th>
+                                <th className="px-6 py-3 text-right">
+                                    <div className="flex justify-end">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-100 text-neutral-700 border border-neutral-200/80 shadow-2xs">
+                                            Actions
+                                        </span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y">
+                        <tbody className="divide-y divide-neutral-100/80">
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan={3} className="p-8 text-center text-gray-500">Loading brands...</td>
+                                    <td colSpan={3} className="py-20 text-center">
+                                        <Loader variant="inline" size={80} text="Loading brands..." />
+                                    </td>
                                 </tr>
                             ) : brands.length === 0 ? (
                                 <tr>
-                                    <td colSpan={3} className="p-12 text-center text-gray-500">No brands found.</td>
+                                    <td colSpan={3} className="p-12 text-center text-neutral-500 font-medium text-sm">
+                                        No brands found.
+                                    </td>
                                 </tr>
                             ) : (
                                 brands.map((brand) => (
-                                    <tr key={brand.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={brand.id} className="hover:bg-white/50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="h-10 w-16 relative flex items-center justify-center bg-gray-50 rounded border">
+                                            <div className="h-12 w-20 relative flex items-center justify-center bg-white/80 rounded-2xl border border-neutral-200/80 p-1.5 shadow-2xs overflow-hidden">
                                                 {brand.logo_path ? (
                                                     <img
                                                         src={getImageUrl(brand.logo_path)}
                                                         alt={brand.name}
-                                                        className="max-h-8 max-w-full object-contain"
+                                                        className="max-h-9 max-w-full object-contain"
                                                     />
                                                 ) : (
-                                                    <ImageIcon className="h-4 w-4 text-gray-300" />
+                                                    <ImageIcon className="h-5 w-5 text-neutral-300" />
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">{brand.name}</td>
+                                        <td className="px-6 py-4">
+                                            <span className="font-bold text-neutral-900 text-sm">{brand.name}</span>
+                                        </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
+                                            <div className="flex items-center justify-end gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => onEdit(brand)}
-                                                    className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                 >
-                                                    <Edit2 className="h-4 w-4" />
+                                                    <Edit2 className="h-3.5 w-3.5" />
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => openDeleteModal(brand)}
-                                                    className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                     disabled={isDeleting && brandToDelete?.id === brand.id}
                                                 >
                                                     {isDeleting && brandToDelete?.id === brand.id ? (
-                                                        <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        <div className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
                                                     ) : (
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <Trash2 className="h-3.5 w-3.5" />
                                                     )}
                                                 </Button>
                                             </div>
@@ -111,7 +135,7 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                         </tbody>
                     </table>
                 </div>
-            </div >
+            </div>
 
             <DeleteConfirmationModal
                 isOpen={deleteModalOpen}
