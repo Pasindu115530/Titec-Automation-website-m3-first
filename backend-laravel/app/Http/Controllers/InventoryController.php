@@ -44,13 +44,6 @@ class InventoryController extends Controller
             ]);
         });
 
-        $sign = $validated['quantity'] > 0 ? '+' : '';
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($product)
-            ->useLog('inventory')
-            ->log("Stock adjusted: {$product->name} → {$sign}{$validated['quantity']} units");
-
         return response()->json(['message' => 'Stock adjusted.', 'data' => $product->fresh()]);
     }
 
@@ -61,30 +54,11 @@ class InventoryController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        $receiving = null;
-
-        DB::transaction(function () use ($product, $validated, &$receiving) {
+        DB::transaction(function () use ($product, $validated) {
             $stockBefore = $product->stock;
             $product->stock += $validated['quantity'];
             $product->save();
 
-            // Create batch parent
-            $receiving = StockReceiving::create([
-                'user_id' => auth()->id() ?? 1,
-                'type' => 'received',
-                'notes' => $validated['notes'] ?? null,
-            ]);
-
-            // Create batch item
-            StockReceivingItem::create([
-                'stock_receiving_id' => $receiving->id,
-                'product_id' => $product->id,
-                'quantity' => $validated['quantity'],
-                'stock_before' => $stockBefore,
-                'stock_after' => $product->stock,
-            ]);
-
-            // Create stock movement linked to batch
             StockMovement::create([
                 'product_id' => $product->id,
                 'user_id' => auth()->id() ?? 1,
@@ -93,7 +67,6 @@ class InventoryController extends Controller
                 'stock_before' => $stockBefore,
                 'stock_after' => $product->stock,
                 'reference_type' => 'received',
-                'stock_receiving_id' => $receiving->id,
                 'notes' => $validated['notes'] ?? null,
             ]);
         });
@@ -115,30 +88,18 @@ class InventoryController extends Controller
         // Determine the actual quantity delta based on movement type
         $quantity = $validated['quantity'];
         if ($validated['movement_type'] === 'damaged') {
+            // Damaged should always reduce stock, so ensure negative
             $quantity = -abs($quantity);
         } elseif (in_array($validated['movement_type'], ['received', 'return'])) {
+            // Received and return should always increase stock
             $quantity = abs($quantity);
         }
+        // 'adjustment' can be either positive or negative
 
         DB::transaction(function () use ($product, $quantity, $validated) {
             $stockBefore = $product->stock;
             $product->stock += $quantity;
             $product->save();
-
-            // Create batch parent for single-product movements too
-            $receiving = StockReceiving::create([
-                'user_id' => auth()->id() ?? 1,
-                'type' => $validated['movement_type'],
-                'notes' => $validated['notes'] ?? null,
-            ]);
-
-            StockReceivingItem::create([
-                'stock_receiving_id' => $receiving->id,
-                'product_id' => $product->id,
-                'quantity' => $quantity,
-                'stock_before' => $stockBefore,
-                'stock_after' => $product->stock,
-            ]);
 
             StockMovement::create([
                 'product_id' => $product->id,
@@ -148,7 +109,6 @@ class InventoryController extends Controller
                 'stock_before' => $stockBefore,
                 'stock_after' => $product->stock,
                 'reference_type' => 'manual',
-                'stock_receiving_id' => $receiving->id,
                 'notes' => $validated['notes'] ?? null,
             ]);
         });
@@ -172,13 +132,6 @@ class InventoryController extends Controller
         $userId = auth()->id() ?? 1;
 
         DB::transaction(function () use ($validated, $products, $movementType, $notes, $userId) {
-            // Create ONE batch parent for the entire operation
-            $receiving = StockReceiving::create([
-                'user_id' => $userId,
-                'type' => $movementType,
-                'notes' => $notes,
-            ]);
-
             foreach ($validated['items'] as $item) {
                 $product = $products->get($item['product_id']);
                 if (!$product) continue;
@@ -194,16 +147,6 @@ class InventoryController extends Controller
                 $product->stock += $quantity;
                 $product->save();
 
-                // Create batch item
-                StockReceivingItem::create([
-                    'stock_receiving_id' => $receiving->id,
-                    'product_id' => $product->id,
-                    'quantity' => $quantity,
-                    'stock_before' => $stockBefore,
-                    'stock_after' => $product->stock,
-                ]);
-
-                // Create stock movement linked to batch
                 StockMovement::create([
                     'product_id' => $product->id,
                     'user_id' => $userId,
@@ -212,7 +155,6 @@ class InventoryController extends Controller
                     'stock_before' => $stockBefore,
                     'stock_after' => $product->stock,
                     'reference_type' => 'manual',
-                    'stock_receiving_id' => $receiving->id,
                     'notes' => $notes,
                 ]);
             }

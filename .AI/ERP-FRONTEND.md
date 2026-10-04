@@ -127,7 +127,6 @@ frontend-erp/
     │       ├── inventory/            ← /dashboard/inventory
     │       ├── installations/        ← /dashboard/installations + /dashboard/installations/[id]
     │       ├── service-logs/         ← /dashboard/service-logs
-    │       ├── activity-logs/        ← /dashboard/activity-logs (Audit Trail)
     │       ├── warranty/             ← /dashboard/warranty
     │       ├── reports/              ← /dashboard/reports
     │       │

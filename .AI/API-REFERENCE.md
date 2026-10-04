@@ -177,17 +177,6 @@ Fields: message, mode="upload", file (PDF), include_pdf
 
 ---
 
-## Activity Logs
-
-| Method | Endpoint           | Auth     | Description              |
-|--------|--------------------|----------|--------------------------|
-| GET    | `/activity-logs`   | Bearer   | List audit trail logs    |
-
-**Query Params:** `log_name`, `event`, `causer_id`, `search`, `from`, `to`, `page`
-
-
----
-
 ## Error Responses
 
 **422 — Validation Error:**

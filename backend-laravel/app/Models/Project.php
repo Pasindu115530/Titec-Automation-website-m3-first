@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    use LogsActivity, HasFactory;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -40,14 +37,4 @@ class Project extends Model
         'technologies' => 'array',
         'project_image_urls' => 'array',
     ];
-
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty()
-            ->useLogName('projects')
-            ->setDescriptionForEvent(fn(string $eventName) => "Project {$eventName}");
-    }
 }

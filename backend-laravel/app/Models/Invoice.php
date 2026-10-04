@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Invoice extends Model
 {
-    use LogsActivity, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'uuid', 'invoice_number', 'client_id', 'created_by',
@@ -128,15 +125,5 @@ class Invoice extends Model
     public function scopeDateRange($query, $from, $to)
     {
         return $query->whereBetween('created_at', [$from, $to]);
-    }
-
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty()
-            ->useLogName('pos')
-            ->setDescriptionForEvent(fn(string $eventName) => "Invoice {$eventName}");
     }
 }
