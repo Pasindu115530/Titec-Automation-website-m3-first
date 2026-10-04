@@ -9,7 +9,18 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::with(['causer', 'subject']);
+        $query = Activity::with([
+            'causer',
+            'subject' => function ($morphTo) {
+                $morphTo->morphWith([
+                    \App\Models\Invoice::class => ['items.product', 'client'],
+                    \App\Models\StockReceiving::class => ['items.product'],
+                    \App\Models\StockMovement::class => ['product'],
+                    \App\Models\Installation::class => ['technicians'],
+                    \App\Models\Product::class => ['brand'],
+                ]);
+            }
+        ]);
 
         if ($request->filled('log_name')) {
             $query->inLog($request->log_name);
@@ -32,29 +43,6 @@ class ActivityLogController extends Controller
         }
 
         $logs = $query->latest()->paginate(15);
-
-        $logs->getCollection()->transform(function ($activity) {
-            if ($activity->subject) {
-                switch ($activity->subject_type) {
-                    case 'App\Models\Invoice':
-                        $activity->subject->load(['items.product', 'client']);
-                        break;
-                    case 'App\Models\StockReceiving':
-                        $activity->subject->load('items.product');
-                        break;
-                    case 'App\Models\StockMovement':
-                        $activity->subject->load('product');
-                        break;
-                    case 'App\Models\Installation':
-                        $activity->subject->load('technicians');
-                        break;
-                    case 'App\Models\Product':
-                        $activity->subject->load('brand');
-                        break;
-                }
-            }
-            return $activity;
-        });
 
         return response()->json($logs);
     }
