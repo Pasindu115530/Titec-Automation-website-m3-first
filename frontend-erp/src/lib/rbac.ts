@@ -81,6 +81,8 @@ export const PERMISSIONS = {
     EMPLOYEES_VIEW: 'employees.view',
     // Settings
     SETTINGS_MANAGE: 'settings.manage',
+    // Activity Logs
+    ACTIVITY_LOGS_VIEW: 'activity_logs.view',
 } as const;
 
 // ═══════════════════════════════════════════════
@@ -153,6 +155,12 @@ export const NAV_GROUPS: NavGroup[] = [
                 icon: ClipboardList,
                 href: '/dashboard/service-logs',
                 requiredPermissions: [PERMISSIONS.SERVICE_LOGS_VIEW],
+            },
+            {
+                name: 'Activity Logs',
+                icon: ClipboardList,
+                href: '/dashboard/activity-logs',
+                requiredPermissions: [PERMISSIONS.ACTIVITY_LOGS_VIEW],
             },
             {
                 name: 'Warranty Check',

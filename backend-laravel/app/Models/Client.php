@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
 {
-    use HasFactory, SoftDeletes;
+    use LogsActivity, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id', 'company_name', 'contact_person', 'email', 'phone',
@@ -55,5 +58,15 @@ class Client extends Model
               ->orWhere('phone', 'like', "%{$term}%")
               ->orWhere('email', 'like', "%{$term}%");
         });
+    }
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('clients')
+            ->setDescriptionForEvent(fn(string $eventName) => "Client {$eventName}");
     }
 }

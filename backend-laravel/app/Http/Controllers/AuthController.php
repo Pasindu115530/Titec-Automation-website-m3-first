@@ -47,6 +47,11 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        activity()
+            ->causedBy($user)
+            ->useLog('users')
+            ->log("User logged in");
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',

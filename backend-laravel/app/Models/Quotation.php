@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Quotation extends Model
 {
-    use HasFactory;
+    use LogsActivity, HasFactory;
 
     protected $fillable = [
         'quotation_request_id',
@@ -32,5 +35,15 @@ class Quotation extends Model
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('quotations')
+            ->setDescriptionForEvent(fn(string $eventName) => "Quotation {$eventName}");
     }
 }
