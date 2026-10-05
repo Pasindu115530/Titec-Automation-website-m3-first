@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { installationService } from '@/services/installationService';
-import { userService, User } from '@/services/userService';
+import { userService } from '@/services/userService';
 import { toast } from 'sonner';
+import { Users } from 'lucide-react';
 
 interface TechnicianAssignmentProps {
     installationId: number;
@@ -21,7 +22,6 @@ export default function TechnicianAssignment({ installationId, currentTechnician
             setIsLoadingTechs(true);
             try {
                 const users = await userService.getUsers();
-                // Filter to show technicians (optional) or all users for now
                 setAvailableTechs(users.map(u => ({ id: u.id, name: `${u.name} ${u.employee?.designation ? `(${u.employee.designation})` : ''}` })));
             } catch (error) {
                 toast.error('Failed to load available technicians.');
@@ -60,12 +60,14 @@ export default function TechnicianAssignment({ installationId, currentTechnician
 
     if (!isEditing) {
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-                <div className="flex justify-between items-center mb-3">
-                    <h3 className="font-semibold text-gray-900">Assigned Technicians</h3>
+            <div className="bg-white/40 backdrop-blur-md rounded-3xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.04)] space-y-4">
+                <div className="flex justify-between items-center border-b border-neutral-200/60 pb-3">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                        <Users className="w-3.5 h-3.5 mr-1" /> Assigned Technicians
+                    </span>
                     <button 
                         onClick={() => setIsEditing(true)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
+                        className="text-xs font-bold px-3 py-1.5 rounded-xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-purple-200/60 shadow-2xs transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
                         Edit
                     </button>
@@ -74,13 +76,17 @@ export default function TechnicianAssignment({ installationId, currentTechnician
                 <div className="flex flex-wrap gap-2">
                     {currentTechnicians.length > 0 ? (
                         currentTechnicians.map(tech => (
-                            <span key={tech.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                {tech.name}
+                            <span key={tech.id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#E2D6FE]/70 text-purple-950 border border-purple-200/80 shadow-2xs">
+                                <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">
+                                    {tech.name.charAt(0).toUpperCase()}
+                                </span>
+                                <span>{tech.name}</span>
                             </span>
                         ))
                     ) : (
-                        <span className="text-sm text-gray-500 italic">No technicians assigned yet.</span>
+                        <div className="w-full text-center py-4 text-xs font-semibold text-neutral-400 bg-white/40 rounded-2xl border border-dashed border-neutral-200">
+                            No technicians assigned yet.
+                        </div>
                     )}
                 </div>
             </div>
@@ -88,43 +94,47 @@ export default function TechnicianAssignment({ installationId, currentTechnician
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-blue-100 p-4 relative">
-            <h3 className="font-semibold text-gray-900 mb-3">Assign Technicians</h3>
+        <div className="bg-white/40 backdrop-blur-md rounded-3xl p-6 border border-white/80 shadow-[0_12px_36px_rgba(0,0,0,0.04)] space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-200/60 pb-3">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                    <Users className="w-3.5 h-3.5 mr-1" /> Assign Technicians
+                </span>
+            </div>
             
-            <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+            <div className="space-y-2 mb-4 max-h-48 overflow-y-auto no-scrollbar pr-1">
                 {isLoadingTechs ? (
-                    <div className="text-sm text-gray-500 py-2">Loading technicians...</div>
+                    <div className="text-xs font-semibold text-neutral-400 py-3 text-center">Loading technicians...</div>
                 ) : availableTechs.length > 0 ? (
                     availableTechs.map(tech => (
-                        <label key={tech.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer border border-transparent hover:border-gray-100">
+                        <label key={tech.id} className="flex items-center gap-3 p-2.5 bg-white/70 hover:bg-white rounded-2xl cursor-pointer border border-white/80 shadow-2xs transition-all">
                             <input
                                 type="checkbox"
                                 checked={selectedTechs.includes(tech.id)}
                                 onChange={() => handleToggleTech(tech.id)}
-                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                className="w-4 h-4 rounded text-sky-500 border-neutral-300 focus:ring-sky-300 accent-sky-400 cursor-pointer"
                             />
-                            <span className="text-sm text-gray-800">{tech.name}</span>
+                            <span className="text-xs font-bold text-neutral-800">{tech.name}</span>
                         </label>
                     ))
                 ) : (
-                    <div className="text-sm text-gray-500 py-2">No technicians available.</div>
+                    <div className="text-xs font-semibold text-neutral-400 py-3 text-center">No technicians available.</div>
                 )}
             </div>
             
-            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+            <div className="flex justify-end gap-2 pt-3 border-t border-neutral-200/60">
                 <button
                     onClick={() => {
                         setSelectedTechs(currentTechnicians.map(t => t.id));
                         setIsEditing(false);
                     }}
-                    className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded"
+                    className="px-3.5 py-2 text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-white/70 hover:bg-white rounded-xl border border-white/80 shadow-2xs transition-all cursor-pointer"
                 >
                     Cancel
                 </button>
                 <button
                     onClick={handleSave}
                     disabled={isSubmitting}
-                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 text-xs font-bold bg-sky-300 hover:bg-sky-400 text-neutral-950 rounded-xl shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                     {isSubmitting ? 'Saving...' : 'Save Assignments'}
                 </button>

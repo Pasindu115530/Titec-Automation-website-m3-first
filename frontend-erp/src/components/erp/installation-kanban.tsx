@@ -1,7 +1,23 @@
 import React from 'react';
 import { Installation } from '@/services/installationService';
 import Loader from '@/components/loader';
-import { Calendar, Clock, AlertCircle, CheckCircle2, Building2, MapPin } from 'lucide-react';
+import { 
+    Calendar, 
+    Clock, 
+    AlertCircle, 
+    CheckCircle2, 
+    Building2, 
+    MapPin, 
+    ChevronDown, 
+    Check 
+} from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface InstallationKanbanProps {
     installations: Installation[];
@@ -10,6 +26,43 @@ interface InstallationKanbanProps {
     onViewDetail: (id: number) => void;
     activeFilter?: string;
 }
+
+const STATUS_OPTIONS = [
+    { 
+        id: 'scheduled', 
+        title: 'Scheduled',
+        label: 'Scheduled', 
+        badgeClass: 'bg-[#E2D6FE] text-neutral-900 border border-purple-200/80 hover:bg-[#d8c7fd]',
+        dotClass: 'bg-purple-600',
+        icon: Calendar
+    },
+    { 
+        id: 'in_progress', 
+        title: 'In Progress',
+        label: 'In Progress', 
+        badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100',
+        dotClass: 'bg-amber-500',
+        icon: Clock
+    },
+    { 
+        id: 'on_hold', 
+        title: 'On Hold',
+        label: 'On Hold', 
+        badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200/80 hover:bg-rose-100',
+        dotClass: 'bg-rose-500',
+        icon: AlertCircle
+    },
+    { 
+        id: 'completed', 
+        title: 'Completed',
+        label: 'Completed', 
+        badgeClass: 'bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 hover:bg-teal-100',
+        dotClass: 'bg-[#0D9488]',
+        icon: CheckCircle2
+    },
+] as const;
+
+const STATUS_MAP = Object.fromEntries(STATUS_OPTIONS.map(opt => [opt.id, opt]));
 
 export default function InstallationKanban({
     installations,
@@ -26,36 +79,7 @@ export default function InstallationKanban({
         );
     }
 
-    const allColumns = [
-        { 
-            id: 'scheduled', 
-            title: 'Scheduled', 
-            badgeClass: 'bg-[#E2D6FE] text-neutral-900 border border-purple-200/80',
-            dotClass: 'bg-purple-600',
-            icon: Calendar
-        },
-        { 
-            id: 'in_progress', 
-            title: 'In Progress', 
-            badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200/80',
-            dotClass: 'bg-amber-500',
-            icon: Clock
-        },
-        { 
-            id: 'on_hold', 
-            title: 'On Hold', 
-            badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200/80',
-            dotClass: 'bg-rose-500',
-            icon: AlertCircle
-        },
-        { 
-            id: 'completed', 
-            title: 'Completed', 
-            badgeClass: 'bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60',
-            dotClass: 'bg-[#0D9488]',
-            icon: CheckCircle2
-        },
-    ];
+    const allColumns = STATUS_OPTIONS;
 
     const columns = activeFilter 
         ? allColumns.filter(c => c.id === activeFilter) 
@@ -90,7 +114,7 @@ export default function InstallationKanban({
                         </div>
                         
                         {/* Column Cards */}
-                        <div className="flex-1 space-y-3.5 overflow-y-auto max-h-[70vh] pr-1">
+                        <div className="flex-1 space-y-3.5">
                             {columnItems.map(inst => (
                                 <div 
                                     key={inst.id} 
@@ -172,20 +196,60 @@ export default function InstallationKanban({
                                             )}
                                         </div>
                                         
-                                        <select
-                                            className="text-xs font-bold rounded-xl border border-neutral-200/80 bg-neutral-50 hover:bg-white text-neutral-700 py-1 px-2.5 shadow-2xs focus:bg-amber-50/40 focus:border-amber-200 focus:outline-none transition-all cursor-pointer opacity-75 group-hover:opacity-100"
-                                            value={inst.status}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onChange={(e) => {
-                                                e.stopPropagation();
-                                                onStatusChange(inst.id, e.target.value);
-                                            }}
+                                        <div 
+                                            onClick={(e) => e.stopPropagation()} 
+                                            onPointerDown={(e) => e.stopPropagation()}
+                                            className="relative"
                                         >
-                                            <option value="scheduled">Scheduled</option>
-                                            <option value="in_progress">In Progress</option>
-                                            <option value="on_hold">On Hold</option>
-                                            <option value="completed">Completed</option>
-                                        </select>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button
+                                                        type="button"
+                                                        className={cn(
+                                                            "inline-flex items-center gap-1.5 text-xs font-bold rounded-xl border py-1 px-2.5 shadow-2xs transition-all cursor-pointer select-none",
+                                                            STATUS_MAP[inst.status]?.badgeClass || "bg-neutral-50 text-neutral-700 border-neutral-200/80 hover:bg-white"
+                                                        )}
+                                                    >
+                                                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", STATUS_MAP[inst.status]?.dotClass || "bg-neutral-400")} />
+                                                        <span>{STATUS_MAP[inst.status]?.label || inst.status}</span>
+                                                        <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5" />
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent
+                                                    align="end"
+                                                    sideOffset={6}
+                                                    className="w-44 p-1.5 bg-white/95 backdrop-blur-xl border border-neutral-200/80 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12)] space-y-0.5 z-50"
+                                                >
+                                                    {STATUS_OPTIONS.map((opt) => {
+                                                        const isSelected = inst.status === opt.id;
+                                                        return (
+                                                            <DropdownMenuItem
+                                                                key={opt.id}
+                                                                onSelect={() => {
+                                                                    if (inst.status !== opt.id) {
+                                                                        onStatusChange(inst.id, opt.id);
+                                                                    }
+                                                                }}
+                                                                className={cn(
+                                                                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all",
+                                                                    isSelected
+                                                                        ? "bg-neutral-100 text-neutral-900 font-extrabold"
+                                                                        : "text-neutral-700 hover:bg-neutral-50 hover:text-neutral-950"
+                                                                )}
+                                                            >
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className={cn("w-2 h-2 rounded-full shrink-0", opt.dotClass)} />
+                                                                    <span>{opt.label}</span>
+                                                                </span>
+                                                                {isSelected && (
+                                                                    <Check className="w-3.5 h-3.5 text-neutral-900 stroke-[2.5]" />
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                        );
+                                                    })}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

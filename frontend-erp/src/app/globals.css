@@ -192,12 +192,14 @@
 		overflow: hidden;
 	}
 
-	.similar-products-scroll {
+	.similar-products-scroll,
+	.no-scrollbar {
 		scrollbar-width: none;
 		-ms-overflow-style: none;
 	}
 
-	.similar-products-scroll::-webkit-scrollbar {
+	.similar-products-scroll::-webkit-scrollbar,
+	.no-scrollbar::-webkit-scrollbar {
 		display: none;
 	}
 
