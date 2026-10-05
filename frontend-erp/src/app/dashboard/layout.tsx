@@ -139,18 +139,6 @@ function SidebarGroup({
 
 const EXPANDED_GROUPS_KEY = 'erp_sidebar_expanded_groups';
 
-function getInitialExpandedGroups(groups: NavGroup[]): Record<string, boolean> {
-    if (typeof window === 'undefined') {
-        return Object.fromEntries(groups.map(g => [g.label, true]));
-    }
-    try {
-        const saved = localStorage.getItem(EXPANDED_GROUPS_KEY);
-        if (saved) return JSON.parse(saved);
-    } catch { /* ignore */ }
-    // Default: all groups expanded
-    return Object.fromEntries(groups.map(g => [g.label, true]));
-}
-
 function saveExpandedGroups(state: Record<string, boolean>) {
     try {
         localStorage.setItem(EXPANDED_GROUPS_KEY, JSON.stringify(state));
@@ -175,10 +163,21 @@ export default function AdminLayout({
     // Get RBAC-filtered navigation groups
     const navGroups = getFilteredNavigation(user);
 
-    // Expanded/collapsed state per group
+    // Expanded/collapsed state per group — uniform default avoids SSR hydration mismatch
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() =>
-        getInitialExpandedGroups(navGroups)
+        Object.fromEntries(navGroups.map(g => [g.label, true]))
     );
+
+    // Restore saved group state from localStorage only after mount on the client
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(EXPANDED_GROUPS_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                setExpandedGroups(prev => ({ ...prev, ...parsed }));
+            }
+        } catch { /* ignore */ }
+    }, []);
 
     // Re-initialize expanded state when navGroups change (e.g. user role change)
     useEffect(() => {

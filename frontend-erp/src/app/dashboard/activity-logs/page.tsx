@@ -4,36 +4,67 @@ import React, { useState, useEffect } from 'react';
 import { activityLogService, ActivityLog } from '@/services/activityLogService';
 import Loader from '@/components/loader';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import {
     Search, Package, ShoppingBag, Wrench, Box, Users, UserCog, Activity,
-    ArrowRight, Clock, User, Eye, ArrowUpDown, TrendingUp, TrendingDown,
-    FileText, CalendarDays, Hash
+    ArrowRight, Clock, User, Eye, TrendingUp, TrendingDown,
+    FileText, CalendarDays, Hash, RefreshCw
 } from 'lucide-react';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 // ── Helpers ──────────────────────────────────────────
 
 const MODULE_CONFIG: Record<string, { color: string; bg: string; icon: any; label: string }> = {
-    pos:            { color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: ShoppingBag, label: 'POS / Sales' },
-    installations:  { color: 'text-blue-700',    bg: 'bg-blue-50 border-blue-200',      icon: Wrench,      label: 'Installations' },
-    inventory:      { color: 'text-orange-700',   bg: 'bg-orange-50 border-orange-200',   icon: Package,     label: 'Inventory' },
-    products:       { color: 'text-purple-700',   bg: 'bg-purple-50 border-purple-200',   icon: Box,         label: 'Products' },
-    clients:        { color: 'text-cyan-700',     bg: 'bg-cyan-50 border-cyan-200',       icon: Users,       label: 'Clients' },
-    users:          { color: 'text-gray-700',     bg: 'bg-gray-100 border-gray-300',      icon: UserCog,     label: 'Users' },
+    pos:            { color: 'text-[#0D9488]',   bg: 'bg-[#E6F9F7] border-white/80', icon: ShoppingBag, label: 'POS / Sales' },
+    installations:  { color: 'text-sky-800',     bg: 'bg-sky-100 border-white/80',   icon: Wrench,      label: 'Installations' },
+    inventory:      { color: 'text-[#E0781E]',   bg: 'bg-[#FFF4E8] border-white/80', icon: Package,     label: 'Inventory' },
+    products:       { color: 'text-[#7C3AED]',   bg: 'bg-[#F1EBFF] border-white/80', icon: Box,         label: 'Products' },
+    clients:        { color: 'text-teal-800',    bg: 'bg-teal-50 border-white/80',   icon: Users,       label: 'Clients' },
+    users:          { color: 'text-neutral-800', bg: 'bg-white/80 border-white/80', icon: UserCog,     label: 'Users' },
 };
 
 function getModuleConfig(logName: string) {
-    return MODULE_CONFIG[logName] || { color: 'text-gray-700', bg: 'bg-gray-100 border-gray-200', icon: Activity, label: logName || 'System' };
+    return MODULE_CONFIG[logName] || { color: 'text-neutral-700', bg: 'bg-white/80 border-white/80', icon: Activity, label: logName || 'System' };
 }
 
 function getEventStyle(event: string) {
     switch (event) {
-        case 'created': return { bg: 'bg-green-100 text-green-800', label: 'Created' };
-        case 'updated': return { bg: 'bg-amber-100 text-amber-800', label: 'Updated' };
-        case 'deleted': return { bg: 'bg-red-100 text-red-800', label: 'Deleted' };
-        default:        return { bg: 'bg-gray-100 text-gray-800', label: event || 'Action' };
+        case 'created':
+            return {
+                badge: 'text-emerald-700 bg-emerald-50/80 border-emerald-200/80',
+                dot: 'bg-emerald-500',
+                label: 'Created',
+            };
+        case 'updated':
+            return {
+                badge: 'text-amber-700 bg-amber-50/80 border-amber-200/80',
+                dot: 'bg-amber-500',
+                label: 'Updated',
+            };
+        case 'deleted':
+            return {
+                badge: 'text-rose-700 bg-rose-50/80 border-rose-200/80',
+                dot: 'bg-rose-500',
+                label: 'Deleted',
+            };
+        default:
+            return {
+                badge: 'text-neutral-700 bg-neutral-100 border-neutral-200/80',
+                dot: 'bg-neutral-400',
+                label: event || 'Action',
+            };
     }
 }
 
@@ -73,20 +104,20 @@ function InvoiceDetail({ log }: { log: ActivityLog }) {
             </div>
 
             {/* Financials */}
-            <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-4">
-                <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-3">Financials</h4>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                        <div className="text-lg font-bold text-gray-900">LKR {Number(invoice.grand_total || 0).toLocaleString()}</div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium">Grand Total</div>
+            <div className="bg-[#E6F9F7]/70 border border-[#0D9488]/20 rounded-2xl p-4 shadow-2xs">
+                <h4 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider mb-3">Financials</h4>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="bg-white/80 p-3 rounded-xl border border-white/80 shadow-2xs">
+                        <div className="text-base font-bold text-neutral-900">LKR {Number(invoice.grand_total || 0).toLocaleString()}</div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-bold mt-0.5">Grand Total</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-green-700">LKR {Number(invoice.amount_paid || 0).toLocaleString()}</div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium">Amount Paid</div>
+                    <div className="bg-white/80 p-3 rounded-xl border border-white/80 shadow-2xs">
+                        <div className="text-base font-bold text-emerald-700">LKR {Number(invoice.amount_paid || 0).toLocaleString()}</div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-bold mt-0.5">Amount Paid</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-red-600">LKR {Number((invoice.grand_total || 0) - (invoice.amount_paid || 0)).toLocaleString()}</div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium">Balance Due</div>
+                    <div className="bg-white/80 p-3 rounded-xl border border-white/80 shadow-2xs">
+                        <div className="text-base font-bold text-rose-600">LKR {Number((invoice.grand_total || 0) - (invoice.amount_paid || 0)).toLocaleString()}</div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-bold mt-0.5">Balance Due</div>
                     </div>
                 </div>
             </div>
@@ -94,24 +125,24 @@ function InvoiceDetail({ log }: { log: ActivityLog }) {
             {/* Items Table */}
             {invoice.items && invoice.items.length > 0 && (
                 <div>
-                    <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Products in this Invoice</h4>
-                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                    <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Products in this Invoice</h4>
+                    <div className="border border-neutral-200/70 rounded-2xl overflow-hidden shadow-2xs bg-white/60">
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-neutral-100/70 border-b border-neutral-200/60">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Product</th>
-                                    <th className="px-4 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">Qty</th>
-                                    <th className="px-4 py-2 text-right text-[10px] font-bold text-gray-500 uppercase">Unit Price</th>
-                                    <th className="px-4 py-2 text-right text-[10px] font-bold text-gray-500 uppercase">Total</th>
+                                    <th className="px-4 py-2.5 text-left text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Product</th>
+                                    <th className="px-4 py-2.5 text-center text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Qty</th>
+                                    <th className="px-4 py-2.5 text-right text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Unit Price</th>
+                                    <th className="px-4 py-2.5 text-right text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Total</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-neutral-200/40">
                                 {invoice.items.map((item: any, idx: number) => (
-                                    <tr key={idx} className="hover:bg-gray-50/50">
-                                        <td className="px-4 py-2.5 font-medium text-gray-900">{item.product?.name || item.description || '—'}</td>
-                                        <td className="px-4 py-2.5 text-center text-gray-600">{item.quantity}</td>
-                                        <td className="px-4 py-2.5 text-right text-gray-600">LKR {Number(item.unit_price || 0).toLocaleString()}</td>
-                                        <td className="px-4 py-2.5 text-right font-semibold text-gray-900">LKR {Number(item.line_total || 0).toLocaleString()}</td>
+                                    <tr key={idx} className="hover:bg-white/80 transition-colors">
+                                        <td className="px-4 py-3 font-semibold text-neutral-900">{item.product?.name || item.description || '—'}</td>
+                                        <td className="px-4 py-3 text-center text-neutral-600 font-medium">{item.quantity}</td>
+                                        <td className="px-4 py-3 text-right text-neutral-600 font-medium">LKR {Number(item.unit_price || 0).toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-right font-bold text-neutral-900">LKR {Number(item.line_total || 0).toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -135,14 +166,17 @@ function StockMovementDetail({ log }: { log: ActivityLog }) {
     return (
         <div className="space-y-5">
             {/* Movement Summary */}
-            <div className={`rounded-lg p-5 border ${isPositive ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'}`}>
-                <div className="flex items-center gap-3 mb-3">
-                    {isPositive ? <TrendingUp className="w-6 h-6 text-green-600" /> : <TrendingDown className="w-6 h-6 text-red-600" />}
-                    <span className={`text-lg font-bold capitalize ${isPositive ? 'text-green-800' : 'text-red-800'}`}>
+            <div className={cn(
+                "rounded-2xl p-5 border shadow-2xs backdrop-blur-xs",
+                isPositive ? "bg-[#E6F9F7]/70 border-[#0D9488]/30" : "bg-rose-50/70 border-rose-200"
+            )}>
+                <div className="flex items-center gap-3 mb-2">
+                    {isPositive ? <TrendingUp className="w-5 h-5 text-emerald-600" /> : <TrendingDown className="w-5 h-5 text-rose-600" />}
+                    <span className={cn("text-base font-bold capitalize", isPositive ? "text-emerald-900" : "text-rose-900")}>
                         {movement.type === 'sale' ? 'Sold' : movement.type}
                     </span>
                 </div>
-                <div className={`text-3xl font-black ${isPositive ? 'text-green-700' : 'text-red-700'}`}>
+                <div className={cn("text-3xl font-black tracking-tight", isPositive ? "text-emerald-700" : "text-rose-700")}>
                     {isPositive ? '+' : ''}{movement.quantity} units
                 </div>
             </div>
@@ -154,26 +188,28 @@ function StockMovementDetail({ log }: { log: ActivityLog }) {
             </div>
 
             {/* Stock Level Visual */}
-            <div className="bg-gray-50 border border-gray-100 rounded-lg p-4">
-                <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">Stock Level Change</h4>
-                <div className="flex items-center justify-center gap-4">
+            <div className="bg-white/80 border border-white/90 rounded-2xl p-4 shadow-2xs">
+                <h4 className="text-xs font-bold text-neutral-600 uppercase tracking-wider mb-3">Stock Level Change</h4>
+                <div className="flex items-center justify-center gap-6">
                     <div className="text-center">
-                        <div className="text-2xl font-bold text-gray-400">{movement.stock_before}</div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium mt-1">Before</div>
+                        <div className="text-2xl font-bold text-neutral-400">{movement.stock_before}</div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-bold mt-1">Before</div>
                     </div>
-                    <ArrowRight className="w-6 h-6 text-gray-300" />
+                    <ArrowRight className="w-5 h-5 text-neutral-400" />
                     <div className="text-center">
-                        <div className={`text-2xl font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>{movement.stock_after}</div>
-                        <div className="text-[10px] text-gray-500 uppercase font-medium mt-1">After</div>
+                        <div className={cn("text-2xl font-bold", isPositive ? "text-emerald-600" : "text-rose-600")}>
+                            {movement.stock_after}
+                        </div>
+                        <div className="text-[10px] text-neutral-500 uppercase font-bold mt-1">After</div>
                     </div>
                 </div>
             </div>
 
             {/* Notes */}
             {movement.notes && (
-                <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-3">
-                    <h4 className="text-xs font-bold text-yellow-800 uppercase tracking-wider mb-1">Notes</h4>
-                    <p className="text-sm text-yellow-900">{movement.notes}</p>
+                <div className="bg-[#FFF4E8]/80 border border-[#E0781E]/20 rounded-2xl p-3.5 shadow-2xs">
+                    <h4 className="text-xs font-bold text-[#E0781E] uppercase tracking-wider mb-1">Notes</h4>
+                    <p className="text-sm text-neutral-800 font-medium">{movement.notes}</p>
                 </div>
             )}
 
@@ -198,33 +234,33 @@ function StockReceivingDetail({ log }: { log: ActivityLog }) {
 
             {/* Notes */}
             {batch.notes && (
-                <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-3">
-                    <h4 className="text-xs font-bold text-yellow-800 uppercase tracking-wider mb-1">Notes</h4>
-                    <p className="text-sm text-yellow-900">{batch.notes}</p>
+                <div className="bg-[#FFF4E8]/80 border border-[#E0781E]/20 rounded-2xl p-3.5 shadow-2xs">
+                    <h4 className="text-xs font-bold text-[#E0781E] uppercase tracking-wider mb-1">Notes</h4>
+                    <p className="text-sm text-neutral-800 font-medium">{batch.notes}</p>
                 </div>
             )}
 
             {/* Items Table */}
             {batch.items && batch.items.length > 0 && (
                 <div>
-                    <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Restocked Items</h4>
-                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                    <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Restocked Items</h4>
+                    <div className="border border-neutral-200/70 rounded-2xl overflow-hidden shadow-2xs bg-white/60">
                         <table className="w-full text-sm">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-neutral-100/70 border-b border-neutral-200/60">
                                 <tr>
-                                    <th className="px-4 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Product</th>
-                                    <th className="px-4 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">Before</th>
-                                    <th className="px-4 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">Quantity</th>
-                                    <th className="px-4 py-2 text-center text-[10px] font-bold text-gray-500 uppercase">After</th>
+                                    <th className="px-4 py-2.5 text-left text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Product</th>
+                                    <th className="px-4 py-2.5 text-center text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Before</th>
+                                    <th className="px-4 py-2.5 text-center text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Quantity</th>
+                                    <th className="px-4 py-2.5 text-center text-[11px] font-bold text-neutral-600 uppercase tracking-wider">After</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-neutral-200/40">
                                 {batch.items.map((item: any, idx: number) => (
-                                    <tr key={idx} className="hover:bg-gray-50/50">
-                                        <td className="px-4 py-2.5 font-medium text-gray-900">{item.product?.name || 'Unknown Product'}</td>
-                                        <td className="px-4 py-2.5 text-center text-gray-500">{item.stock_before}</td>
-                                        <td className="px-4 py-2.5 text-center font-bold text-green-600">+{item.quantity}</td>
-                                        <td className="px-4 py-2.5 text-center text-gray-900">{item.stock_after}</td>
+                                    <tr key={idx} className="hover:bg-white/80 transition-colors">
+                                        <td className="px-4 py-3 font-semibold text-neutral-900">{item.product?.name || 'Unknown Product'}</td>
+                                        <td className="px-4 py-3 text-center text-neutral-500 font-medium">{item.stock_before}</td>
+                                        <td className="px-4 py-3 text-center font-bold text-emerald-600">+{item.quantity}</td>
+                                        <td className="px-4 py-3 text-center text-neutral-900 font-bold">{item.stock_after}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -252,21 +288,21 @@ function InstallationDetail({ log }: { log: ActivityLog }) {
             </div>
 
             {installation.title && (
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
-                    <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Title</h4>
-                    <p className="text-sm text-blue-900 font-medium">{installation.title}</p>
+                <div className="bg-sky-50 border border-sky-200/60 rounded-2xl p-3.5 shadow-2xs">
+                    <h4 className="text-xs font-bold text-sky-900 uppercase tracking-wider mb-1">Title</h4>
+                    <p className="text-sm text-sky-950 font-semibold">{installation.title}</p>
                 </div>
             )}
 
             {installation.technicians && installation.technicians.length > 0 && (
                 <div>
-                    <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Assigned Technicians</h4>
+                    <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Assigned Technicians</h4>
                     <div className="flex flex-wrap gap-2">
                         {installation.technicians.map((tech: any, idx: number) => (
-                            <span key={idx} className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 border border-blue-200 rounded-full px-3 py-1 text-xs font-medium">
+                            <span key={idx} className="inline-flex items-center gap-1.5 bg-sky-100 text-sky-900 border border-sky-200 rounded-full px-3 py-1 text-xs font-bold shadow-2xs">
                                 <User className="w-3 h-3" />
                                 {tech.name}
-                                {tech.pivot?.role && <span className="text-blue-500">({tech.pivot.role})</span>}
+                                {tech.pivot?.role && <span className="text-sky-700 font-normal">({tech.pivot.role})</span>}
                             </span>
                         ))}
                     </div>
@@ -324,7 +360,7 @@ function GenericDetail({ log }: { log: ActivityLog }) {
         <div className="space-y-5">
             {log.subject && (
                 <div>
-                    <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Record Details</h4>
+                    <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Record Details</h4>
                     <div className="grid grid-cols-2 gap-3">
                         {Object.entries(log.subject)
                             .filter(([key]) => !HIDDEN_FIELDS.includes(key) && !key.endsWith('_id') && key !== 'brand' && key !== 'items' && key !== 'client' && key !== 'technicians')
@@ -345,12 +381,12 @@ function GenericDetail({ log }: { log: ActivityLog }) {
 
 function InfoCard({ icon: IconComp, label, value }: { icon: any; label: string; value: any }) {
     return (
-        <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+        <div className="bg-white/80 rounded-2xl p-3.5 border border-white/90 shadow-2xs backdrop-blur-xs">
             <div className="flex items-center gap-1.5 mb-1">
-                <IconComp className="w-3 h-3 text-gray-400" />
-                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{label}</span>
+                <IconComp className="w-3.5 h-3.5 text-neutral-400" />
+                <span className="text-[10px] text-neutral-500 uppercase font-bold tracking-wider">{label}</span>
             </div>
-            <div className="text-sm font-medium text-gray-900 truncate">{value}</div>
+            <div className="text-sm font-bold text-neutral-900 truncate">{value}</div>
         </div>
     );
 }
@@ -369,24 +405,34 @@ function ChangesSection({ log }: { log: ActivityLog }) {
 
         return (
             <div>
-                <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">What Changed</h4>
-                <div className="border border-gray-100 rounded-lg overflow-hidden">
+                <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">What Changed</h4>
+                <div className="border border-neutral-200/70 rounded-2xl overflow-hidden shadow-2xs bg-white/60">
                     <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-neutral-100/70 border-b border-neutral-200/60">
                             <tr>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Field</th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">Before</th>
-                                <th className="px-4 py-2 text-center text-[10px] text-gray-400 w-8"></th>
-                                <th className="px-4 py-2 text-left text-[10px] font-bold text-gray-500 uppercase">After</th>
+                                <th className="px-4 py-2.5 text-left text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Field</th>
+                                <th className="px-4 py-2.5 text-left text-[11px] font-bold text-neutral-600 uppercase tracking-wider">Before</th>
+                                <th className="px-4 py-2.5 text-center text-[11px] text-neutral-400 w-8"></th>
+                                <th className="px-4 py-2.5 text-left text-[11px] font-bold text-neutral-600 uppercase tracking-wider">After</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-neutral-200/40">
                             {changedKeys.map(key => (
-                                <tr key={key}>
-                                    <td className="px-4 py-2.5 font-medium text-gray-700">{formatFieldName(key)}</td>
-                                    <td className="px-4 py-2.5 text-red-600 bg-red-50/50 font-mono text-xs">{formatFieldValue(oldVals[key])}</td>
-                                    <td className="px-4 py-2.5 text-center"><ArrowRight className="w-3.5 h-3.5 text-gray-300 mx-auto" /></td>
-                                    <td className="px-4 py-2.5 text-green-700 bg-green-50/50 font-mono text-xs">{formatFieldValue(newVals[key])}</td>
+                                <tr key={key} className="hover:bg-white/80 transition-colors">
+                                    <td className="px-4 py-3 font-semibold text-neutral-800 text-xs">{formatFieldName(key)}</td>
+                                    <td className="px-4 py-3 font-mono text-xs">
+                                        <span className="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-rose-700">
+                                            {formatFieldValue(oldVals[key])}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <ArrowRight className="w-3.5 h-3.5 text-neutral-400 mx-auto" />
+                                    </td>
+                                    <td className="px-4 py-3 font-mono text-xs">
+                                        <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold">
+                                            {formatFieldValue(newVals[key])}
+                                        </span>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -402,19 +448,19 @@ function ChangesSection({ log }: { log: ActivityLog }) {
 
     return (
         <div>
-            <h4 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Additional Details</h4>
+            <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Additional Details</h4>
             <div className="space-y-2">
                 {filteredKeys.map(key => (
-                    <div key={key} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                        <span className="text-[10px] text-gray-500 uppercase font-bold">{formatFieldName(key)}</span>
+                    <div key={key} className="bg-white/80 rounded-2xl p-3.5 border border-white/90 shadow-2xs">
+                        <span className="text-[10px] text-neutral-500 uppercase font-bold tracking-wider">{formatFieldName(key)}</span>
                         {Array.isArray(changes[key]) ? (
                             <ul className="mt-1 space-y-1">
                                 {changes[key].map((item: any, idx: number) => (
-                                    <li key={idx} className="text-sm text-gray-800">• {typeof item === 'string' ? item : JSON.stringify(item)}</li>
+                                    <li key={idx} className="text-sm text-neutral-800 font-medium">• {typeof item === 'string' ? item : JSON.stringify(item)}</li>
                                 ))}
                             </ul>
                         ) : (
-                            <div className="text-sm font-medium text-gray-900 mt-1">{formatFieldValue(changes[key])}</div>
+                            <div className="text-sm font-bold text-neutral-900 mt-1">{formatFieldValue(changes[key])}</div>
                         )}
                     </div>
                 ))}
@@ -471,35 +517,60 @@ export default function ActivityLogsPage() {
     };
 
     return (
-        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900 font-orbitron">Activity Logs</h1>
-                <p className="text-gray-500 mt-1">Audit trail of system modifications and administrative actions.</p>
+        <div className="space-y-6">
+            {/* Top Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight">
+                        Activity Logs
+                    </h1>
+                    <p className="text-neutral-500 mt-1 text-sm font-medium">
+                        Audit trail of system modifications and administrative actions
+                    </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <Button
+                        onClick={() => {
+                            setPage(1);
+                            loadLogs();
+                        }}
+                        variant="outline"
+                        className="h-11 px-5 rounded-2xl bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 text-neutral-700 ${loading ? 'animate-spin' : ''}`} />
+                        Refresh
+                    </Button>
+                </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <div className="flex-1 relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Search logs..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+            {/* Filter Tabs & Search Bar */}
+            <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                {/* Search Input */}
+                <div className="relative flex-1 w-full flex items-center">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                    <Input
+                        placeholder="Search logs by description, user, or record..."
+                        className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-white border-white focus:border-white text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/60 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setPage(1);
+                        }}
                     />
                 </div>
-                <div className="sm:w-48">
+
+                {/* Module Dropdown Selector */}
+                <div className="shrink-0 w-full sm:w-auto">
                     <select
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+                        className="h-11 px-4 bg-white hover:bg-white border border-white text-neutral-800 rounded-2xl shadow-2xs text-xs font-bold uppercase tracking-wider focus:outline-none cursor-pointer transition-all w-full sm:w-44"
                         value={logNameFilter}
-                        onChange={(e) => { setLogNameFilter(e.target.value); setPage(1); }}
+                        onChange={(e) => {
+                            setLogNameFilter(e.target.value);
+                            setPage(1);
+                        }}
                     >
                         <option value="">All Modules</option>
-                        <option value="pos">POS</option>
+                        <option value="pos">POS / Sales</option>
                         <option value="installations">Installations</option>
                         <option value="inventory">Inventory</option>
                         <option value="products">Products</option>
@@ -507,123 +578,200 @@ export default function ActivityLogsPage() {
                         <option value="users">Users</option>
                     </select>
                 </div>
-                <div className="sm:w-48">
-                    <select
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
-                        value={eventFilter}
-                        onChange={(e) => { setEventFilter(e.target.value); setPage(1); }}
-                    >
-                        <option value="">All Events</option>
-                        <option value="created">Created</option>
-                        <option value="updated">Updated</option>
-                        <option value="deleted">Deleted</option>
-                    </select>
+
+                {/* Event Action Pill Tabs */}
+                <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 w-full md:w-auto overflow-x-auto scrollbar-none">
+                    {[
+                        { id: '', label: 'All Actions' },
+                        { id: 'created', label: 'Created' },
+                        { id: 'updated', label: 'Updated' },
+                        { id: 'deleted', label: 'Deleted' },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => {
+                                setEventFilter(tab.id);
+                                setPage(1);
+                            }}
+                            className={`flex-1 md:flex-none px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                                eventFilter === tab.id
+                                    ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
+                                    : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Table */}
+            {/* Table Content */}
             {loading && logs.length === 0 ? (
-                <div className="flex justify-center py-12">
-                    <Loader size={40} />
+                <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
+                    <Loader variant="inline" size={80} text="Loading activity logs..." />
                 </div>
             ) : logs.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl border border-gray-100 shadow-sm">
-                    <Activity className="mx-auto h-12 w-12 text-gray-300" />
-                    <h3 className="mt-4 text-sm font-semibold text-gray-900">No activity logs found</h3>
-                    <p className="mt-1 text-sm text-gray-500">Try adjusting your filters or search term.</p>
+                <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl p-16 text-center shadow-[0_12px_36px_rgba(0,0,0,0.06)]">
+                    <Activity className="mx-auto h-12 w-12 text-neutral-400" />
+                    <h3 className="mt-4 text-base font-bold text-neutral-900">No activity logs found</h3>
+                    <p className="mt-1 text-sm text-neutral-500 font-medium">Try adjusting your filters or search term.</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead className="bg-gray-50/50 border-b border-gray-100">
-                                <tr>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Module</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Details</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
+                <div className="space-y-4">
+                    <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="border-b border-neutral-200/70 hover:bg-transparent bg-white/40">
+                                    <TableHead className="py-3 px-6">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                            Module
+                                        </span>
+                                    </TableHead>
+                                    <TableHead className="py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                            Action & Description
+                                        </span>
+                                    </TableHead>
+                                    <TableHead className="py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FFF4E8] text-[#E0781E] border border-white/80 shadow-2xs">
+                                            User
+                                        </span>
+                                    </TableHead>
+                                    <TableHead className="py-3">
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                            Date & Time
+                                        </span>
+                                    </TableHead>
+                                    <TableHead className="py-3 px-6 text-right">
+                                        <div className="flex justify-end">
+                                            <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/80 text-neutral-600 border border-white/80 shadow-2xs">
+                                                Details
+                                            </span>
+                                        </div>
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
                                 {logs.map((log) => {
                                     const modConfig = getModuleConfig(log.log_name);
                                     const eventStyle = getEventStyle(log.event);
                                     const Icon = modConfig.icon;
 
                                     return (
-                                        <tr
+                                        <TableRow
                                             key={log.id}
-                                            className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
+                                            className="border-b border-neutral-200/50 hover:bg-white/60 transition-colors cursor-pointer group"
                                             onClick={() => setSelectedLog(log)}
                                         >
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${modConfig.bg} ${modConfig.color}`}>
-                                                    <Icon className="w-3.5 h-3.5" />
+                                            <TableCell className="py-4 px-6">
+                                                <span className={cn(
+                                                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-2xs border",
+                                                    modConfig.bg,
+                                                    modConfig.color
+                                                )}>
+                                                    <Icon className="w-3.5 h-3.5 stroke-[2.2]" />
                                                     {modConfig.label}
                                                 </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="font-medium text-gray-900">{log.description}</div>
-                                                <span className={`inline-flex mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${eventStyle.bg}`}>
-                                                    {eventStyle.label}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 flex items-center justify-center text-white text-[10px] font-bold">
-                                                        {log.causer?.name?.[0] || '?'}
-                                                    </div>
-                                                    <span className="text-sm font-medium text-gray-900">
-                                                        {log.causer?.name || 'System'}
-                                                    </span>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="font-bold text-neutral-900 text-sm">
+                                                    {log.description}
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-600">{new Date(log.created_at).toLocaleDateString()}</div>
-                                                <div className="text-xs text-gray-400">{new Date(log.created_at).toLocaleTimeString()}</div>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <span className="inline-flex items-center gap-1 text-xs text-gray-400 group-hover:text-blue-600 transition-colors">
-                                                    <Eye className="w-4 h-4" />
-                                                    <span className="hidden sm:inline">View</span>
-                                                </span>
-                                            </td>
-                                        </tr>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className={cn(
+                                                        "inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg border",
+                                                        eventStyle.badge
+                                                    )}>
+                                                        <span className={cn("w-1.5 h-1.5 rounded-full", eventStyle.dot)} />
+                                                        {eventStyle.label}
+                                                    </span>
+                                                    {log.subject_type && (
+                                                        <span className="text-xs text-neutral-400 font-medium font-mono">
+                                                            {log.subject_type.split('\\').pop()} #{log.subject_id}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 flex items-center justify-center text-white text-xs font-bold shadow-xs shrink-0">
+                                                        {log.causer?.name?.[0]?.toUpperCase() || 'S'}
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-bold text-neutral-900">
+                                                            {log.causer?.name || 'System Auto'}
+                                                        </div>
+                                                        <div className="text-xs text-neutral-500 font-medium">
+                                                            {log.causer ? `User #${log.causer.id}` : 'Automated Task'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4">
+                                                <div className="text-sm font-bold text-neutral-900">
+                                                    {new Date(log.created_at).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    })}
+                                                </div>
+                                                <div className="text-xs text-neutral-500 font-medium mt-0.5 flex items-center gap-1">
+                                                    <Clock className="w-3 h-3 text-neutral-400" />
+                                                    {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="py-4 px-6 text-right">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedLog(log);
+                                                    }}
+                                                    className="bg-sky-200/90 hover:bg-sky-300 text-sky-950 font-semibold text-xs px-3.5 h-8 rounded-xl border border-white/80 shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer inline-flex items-center gap-1.5"
+                                                >
+                                                    <Eye className="h-3.5 w-3.5" /> View Log
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
                                     );
                                 })}
-                            </tbody>
-                        </table>
-                    </div>
+                            </TableBody>
+                        </Table>
 
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
-                            <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                                    disabled={page === 1}
-                                    className="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={page === totalPages}
-                                    className="px-3 py-1.5 border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                                >
-                                    Next
-                                </button>
+                        {/* Pagination Footer */}
+                        {totalPages > 1 && (
+                            <div className="p-4 bg-white/40 border-t border-neutral-200/60 flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-wider text-neutral-600 bg-white/60 px-4 py-2 rounded-xl border border-white/80">
+                                    Page {page} of {totalPages}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        disabled={page === 1}
+                                        variant="outline"
+                                        className="px-5 h-10 bg-white/80 hover:bg-white text-neutral-900 border border-white/80 rounded-2xl text-xs font-bold uppercase tracking-wider shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        disabled={page === totalPages}
+                                        variant="outline"
+                                        className="px-5 h-10 bg-white/80 hover:bg-white text-neutral-900 border border-white/80 rounded-2xl text-xs font-bold uppercase tracking-wider shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
 
             {/* ── Detail Modal ─────────────────────────── */}
             <Dialog open={!!selectedLog} onOpenChange={(open) => { if (!open) setSelectedLog(null); }}>
-                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl border border-white/80 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6">
                     {selectedLog && (() => {
                         const modConfig = getModuleConfig(selectedLog.log_name);
                         const eventStyle = getEventStyle(selectedLog.event);
@@ -631,22 +779,38 @@ export default function ActivityLogsPage() {
                         return (
                             <>
                                 <DialogHeader>
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${modConfig.bg} ${modConfig.color}`}>
-                                            <Icon className="w-3.5 h-3.5" />
+                                    <div className="flex items-center gap-2.5 mb-2">
+                                        <span className={cn(
+                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border shadow-2xs",
+                                            modConfig.bg,
+                                            modConfig.color
+                                        )}>
+                                            <Icon className="w-3.5 h-3.5 stroke-[2.2]" />
                                             {modConfig.label}
                                         </span>
-                                        <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${eventStyle.bg}`}>
+                                        <span className={cn(
+                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border",
+                                            eventStyle.badge
+                                        )}>
+                                            <span className={cn("w-1.5 h-1.5 rounded-full", eventStyle.dot)} />
                                             {eventStyle.label}
                                         </span>
                                     </div>
-                                    <DialogTitle className="text-lg">{selectedLog.description}</DialogTitle>
-                                    <DialogDescription className="flex items-center gap-4 text-xs text-gray-500 mt-1">
-                                        <span className="inline-flex items-center gap-1"><User className="w-3 h-3" />{selectedLog.causer?.name || 'System'}</span>
-                                        <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(selectedLog.created_at).toLocaleString()}</span>
+                                    <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">
+                                        {selectedLog.description}
+                                    </DialogTitle>
+                                    <DialogDescription className="flex items-center gap-4 text-xs font-medium text-neutral-500 mt-1">
+                                        <span className="inline-flex items-center gap-1 font-semibold text-neutral-700">
+                                            <User className="w-3.5 h-3.5 text-neutral-400" />
+                                            {selectedLog.causer?.name || 'System Auto'}
+                                        </span>
+                                        <span className="inline-flex items-center gap-1">
+                                            <Clock className="w-3.5 h-3.5 text-neutral-400" />
+                                            {new Date(selectedLog.created_at).toLocaleString()}
+                                        </span>
                                     </DialogDescription>
                                 </DialogHeader>
-                                <div className="mt-2">
+                                <div className="mt-4">
                                     {renderModalContent(selectedLog)}
                                 </div>
                             </>
