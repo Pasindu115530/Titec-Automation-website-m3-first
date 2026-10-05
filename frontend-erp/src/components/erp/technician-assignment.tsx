@@ -3,6 +3,23 @@ import { installationService } from '@/services/installationService';
 import { userService } from '@/services/userService';
 import { toast } from 'sonner';
 import { Users } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const getAvatarGradient = (name: string) => {
+    const gradients = [
+        'from-sky-500 to-indigo-600',
+        'from-purple-500 to-indigo-600',
+        'from-teal-500 to-emerald-600',
+        'from-amber-500 to-orange-600',
+        'from-rose-500 to-pink-600',
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
+};
 
 interface TechnicianAssignmentProps {
     installationId: number;
@@ -76,8 +93,11 @@ export default function TechnicianAssignment({ installationId, currentTechnician
                 <div className="flex flex-wrap gap-2">
                     {currentTechnicians.length > 0 ? (
                         currentTechnicians.map(tech => (
-                            <span key={tech.id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#E2D6FE]/70 text-purple-950 border border-purple-200/80 shadow-2xs">
-                                <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold">
+                            <span key={tech.id} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/90 border border-neutral-200/80 text-neutral-800 shadow-2xs">
+                                <span className={cn(
+                                    "w-5 h-5 rounded-full bg-gradient-to-tr text-white flex items-center justify-center text-[10px] font-bold shrink-0 leading-none shadow-2xs",
+                                    getAvatarGradient(tech.name)
+                                )}>
                                     {tech.name.charAt(0).toUpperCase()}
                                 </span>
                                 <span>{tech.name}</span>

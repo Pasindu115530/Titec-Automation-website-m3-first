@@ -9,7 +9,8 @@ import {
     Building2, 
     MapPin, 
     ChevronDown, 
-    Check 
+    Check,
+    User
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -63,6 +64,22 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const STATUS_MAP = Object.fromEntries(STATUS_OPTIONS.map(opt => [opt.id, opt]));
+
+const getAvatarGradient = (name: string) => {
+    const gradients = [
+        'from-sky-500 to-indigo-600',
+        'from-purple-500 to-indigo-600',
+        'from-teal-500 to-emerald-600',
+        'from-amber-500 to-orange-600',
+        'from-rose-500 to-pink-600',
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
+};
 
 export default function InstallationKanban({
     installations,
@@ -179,20 +196,59 @@ export default function InstallationKanban({
                                     
                                     {/* Card Footer: Technicians & Status Dropdown */}
                                     <div className="border-t border-neutral-100 pt-3 flex justify-between items-center gap-2">
-                                        <div className="flex -space-x-1.5 overflow-hidden">
+                                        <div className="flex items-center min-w-0">
                                             {inst.technicians && inst.technicians.length > 0 ? (
-                                                inst.technicians.map((tech, i) => (
+                                                inst.technicians.length === 1 ? (
                                                     <div 
-                                                        key={tech.id} 
-                                                        className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-[#E2D6FE] text-neutral-900 flex items-center justify-center text-[10px] font-bold shadow-2xs"
-                                                        title={tech.name}
-                                                        style={{ zIndex: 10 - i }}
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/90 border border-neutral-200/80 text-neutral-800 text-xs font-semibold shadow-2xs max-w-[125px] sm:max-w-[140px] transition-all hover:bg-white"
+                                                        title={`Technician: ${inst.technicians[0].name}`}
                                                     >
-                                                        {tech.name.charAt(0).toUpperCase()}
+                                                        <div 
+                                                            className={cn(
+                                                                "w-5 h-5 rounded-full bg-gradient-to-tr text-white flex items-center justify-center text-[10px] font-bold shrink-0 shadow-2xs leading-none",
+                                                                getAvatarGradient(inst.technicians[0].name)
+                                                            )}
+                                                        >
+                                                            {inst.technicians[0].name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span className="truncate">{inst.technicians[0].name}</span>
                                                     </div>
-                                                ))
+                                                ) : (
+                                                    <div 
+                                                        className="inline-flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white/90 border border-neutral-200/80 shadow-2xs"
+                                                        title={`Technicians: ${inst.technicians.map(t => t.name).join(', ')}`}
+                                                    >
+                                                        <div className="flex -space-x-1.5">
+                                                            {inst.technicians.slice(0, 3).map((tech, i) => (
+                                                                <div 
+                                                                    key={tech.id} 
+                                                                    className={cn(
+                                                                        "w-5 h-5 rounded-full ring-2 ring-white bg-gradient-to-tr text-white flex items-center justify-center text-[9px] font-bold shadow-2xs leading-none",
+                                                                        getAvatarGradient(tech.name)
+                                                                    )}
+                                                                    title={tech.name}
+                                                                    style={{ zIndex: 10 - i }}
+                                                                >
+                                                                    {tech.name.charAt(0).toUpperCase()}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        {inst.technicians.length > 3 ? (
+                                                            <span className="text-[11px] font-bold text-neutral-600">
+                                                                +{inst.technicians.length - 3}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[11px] font-semibold text-neutral-600">
+                                                                {inst.technicians.length}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )
                                             ) : (
-                                                <span className="text-xs text-neutral-400 font-medium italic">Unassigned</span>
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs text-neutral-400 font-medium bg-neutral-50/80 border border-neutral-200/60 shadow-2xs italic">
+                                                    <User className="w-3 h-3 text-neutral-400" />
+                                                    <span>Unassigned</span>
+                                                </span>
                                             )}
                                         </div>
                                         
