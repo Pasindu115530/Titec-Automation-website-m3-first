@@ -18,7 +18,21 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://localhost:3000', 'https://127.0.0.1:3000', 'https://titecautomation.lk', 'https://www.titecautomation.lk', 'http://localhost:3001', 'http://127.0.0.1:3001', 'https://localhost:3001', 'https://127.0.0.1:3001', 'https://erp.titecautomation.lk'],
+    'allowed_origins' => array_filter([
+        'http://localhost:3000', 
+        'http://127.0.0.1:3000', 
+        'https://localhost:3000', 
+        'https://127.0.0.1:3000', 
+        'https://titecautomation.lk', 
+        'https://www.titecautomation.lk', 
+        'http://localhost:3001', 
+        'http://127.0.0.1:3001', 
+        'https://localhost:3001', 
+        'https://127.0.0.1:3001', 
+        'https://erp.titecautomation.lk',
+        env('FRONTEND_URL'),
+        env('FRONTEND_ERP_URL')
+    ]),
 
     'allowed_origins_patterns' => [],
 
