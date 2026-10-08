@@ -34,7 +34,7 @@ return [
         env('FRONTEND_ERP_URL')
     ]),
 
-    'allowed_origins_patterns' => ['*'],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
