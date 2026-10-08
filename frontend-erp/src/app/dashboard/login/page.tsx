@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, ShieldCheck, AlertTriangle, AlertCircle, ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import TitecErpLogo from '@/components/titec-erp-logo';
 import { api } from '@/lib/api';
+import { isERPUser } from '@/lib/rbac';
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
@@ -98,8 +99,9 @@ export default function AdminLoginPage() {
                 // Immediately update AuthContext so header reflects login without refresh
                 try {
                     const userObj = data.user as any;
-                    const isSuperAdmin = userObj.roles?.includes('Super Admin');
-                    const actualRole = isSuperAdmin ? 'admin' : 'customer';
+                    const userRoles = userObj.roles || [];
+                    const hasERPAccess = isERPUser({ roles: userRoles });
+                    const actualRole = hasERPAccess ? 'admin' : 'customer';
 
                     setUserExternal({
                         id: userObj.id || userObj._id,
