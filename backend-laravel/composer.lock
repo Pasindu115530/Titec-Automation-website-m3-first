@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "2a9ad95779fc0e4a3521e00fdd199b46",
+=======
+    "content-hash": "d3ba5206fc1aa7f6cfbb393efc02a955",
+>>>>>>> origin/main
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -3727,6 +3731,7 @@
             "time": "2025-09-14T07:37:21+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "spatie/laravel-activitylog",
             "version": "4.12.3",
             "source": {
@@ -3967,6 +3972,8 @@
             "time": "2026-07-03T15:36:01+00:00"
         },
         {
+=======
+>>>>>>> origin/main
             "name": "symfony/clock",
             "version": "v7.4.0",
             "source": {

@@ -14,9 +14,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = \Illuminate\Support\Facades\Cache::remember('projects_index', now()->addMinutes(15), function () {
-            return Project::all();
-        });
+        $projects = Project::all();
         return response()->json([
             'data' => $projects,
             'message' => 'Projects retrieved successfully'
