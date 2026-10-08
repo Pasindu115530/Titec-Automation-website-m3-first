@@ -6,8 +6,8 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "dev": "NODE_OPTIONS='--no-deprecation' next dev --webpack",
+    "build": "NODE_OPTIONS='--no-deprecation' next build --webpack",
     "start": "node server.js",
     "lint": "eslint"
   },
