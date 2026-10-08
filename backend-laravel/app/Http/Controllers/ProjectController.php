@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -42,24 +43,24 @@ class ProjectController extends Controller
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
             $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
-            $file->move(public_path('projects'), $filename);
-            $thumbnailPath = '/projects/' . $filename;
+            $file->storeAs('projects', $filename, 'public');
+            $thumbnailPath = '/storage/projects/' . $filename;
         }
 
         $logoPath = null;
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $filename = time() . '_' . uniqid() . '_logo_' . $file->getClientOriginalName();
-            $file->move(public_path('projects/logos'), $filename);
-            $logoPath = '/projects/logos/' . $filename;
+            $file->storeAs('projects/logos', $filename, 'public');
+            $logoPath = '/storage/projects/logos/' . $filename;
         }
 
         $galleryPaths = [];
         if ($request->hasFile('project_images')) {
             foreach ($request->file('project_images') as $image) {
                 $filename = time() . '_' . uniqid() . '_gallery_' . $image->getClientOriginalName();
-                $image->move(public_path('projects/gallery'), $filename);
-                $galleryPaths[] = '/projects/gallery/' . $filename;
+                $image->storeAs('projects/gallery', $filename, 'public');
+                $galleryPaths[] = '/storage/projects/gallery/' . $filename;
             }
         }
 
@@ -114,43 +115,54 @@ class ProjectController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            // Delete old thumbnail if exists
-            if ($project->thumbnail_path && file_exists(public_path($project->thumbnail_path))) {
-                File::delete(public_path($project->thumbnail_path));
+            // Delete old thumbnail safely
+            if ($project->thumbnail_path) {
+                if (str_starts_with($project->thumbnail_path, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $project->thumbnail_path));
+                } else {
+                    $oldPath = public_path(ltrim($project->thumbnail_path, '/'));
+                    if (file_exists($oldPath)) @unlink($oldPath);
+                }
             }
             
             $file = $request->file('thumbnail');
             $filename = time() . '_' . uniqid() . '_thumb_' . $file->getClientOriginalName();
-            $file->move(public_path('projects'), $filename);
-            $validated['thumbnail_path'] = '/projects/' . $filename;
+            $file->storeAs('projects', $filename, 'public');
+            $validated['thumbnail_path'] = '/storage/projects/' . $filename;
         }
 
         if ($request->hasFile('logo')) {
-            // Delete old logo if exists
-            if ($project->logo_path && file_exists(public_path($project->logo_path))) {
-                File::delete(public_path($project->logo_path));
+            // Delete old logo safely
+            if ($project->logo_path) {
+                if (str_starts_with($project->logo_path, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $project->logo_path));
+                } else {
+                    $oldPath = public_path(ltrim($project->logo_path, '/'));
+                    if (file_exists($oldPath)) @unlink($oldPath);
+                }
             }
             
             $file = $request->file('logo');
             $filename = time() . '_' . uniqid() . '_logo_' . $file->getClientOriginalName();
-            $file->move(public_path('projects/logos'), $filename);
-            $validated['logo_path'] = '/projects/logos/' . $filename;
+            $file->storeAs('projects/logos', $filename, 'public');
+            $validated['logo_path'] = '/storage/projects/logos/' . $filename;
         }
 
         // Handle Gallery Images
-        $currentImages = $project->project_image_urls ?? [];
+        $currentImages = is_array($project->project_image_urls) ? $project->project_image_urls : [];
 
-        // 1. Remove deleted images (with path traversal protection)
+        // 1. Remove deleted images
         if ($request->has('deleted_images')) {
-            $deletedImages = $request->input('deleted_images');
-            $allowedDir = realpath(public_path('projects'));
+            $deletedImages = is_array($request->input('deleted_images')) ? $request->input('deleted_images') : [];
             foreach ($deletedImages as $delImg) {
-                // Remove from array
                 if (in_array($delImg, $currentImages)) {
-                    // Safely delete physical file — only allow files within public/projects/
-                    $realPath = realpath(public_path($delImg));
-                    if ($realPath && $allowedDir && str_starts_with($realPath, $allowedDir)) {
-                        File::delete($realPath);
+                    if (str_starts_with($delImg, '/storage/')) {
+                        Storage::disk('public')->delete(str_replace('/storage/', '', $delImg));
+                    } else {
+                        $fullPath = public_path(ltrim($delImg, '/'));
+                        if (file_exists($fullPath)) {
+                            @unlink($fullPath);
+                        }
                     }
                     $currentImages = array_values(array_diff($currentImages, [$delImg]));
                 }
@@ -161,8 +173,8 @@ class ProjectController extends Controller
         if ($request->hasFile('project_images')) {
             foreach ($request->file('project_images') as $image) {
                 $filename = time() . '_' . uniqid() . '_gallery_' . $image->getClientOriginalName();
-                $image->move(public_path('projects/gallery'), $filename);
-                $currentImages[] = '/projects/gallery/' . $filename;
+                $image->storeAs('projects/gallery', $filename, 'public');
+                $currentImages[] = '/storage/projects/gallery/' . $filename;
             }
         }
 
@@ -181,25 +193,34 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        // Delete thumbnail if exists
+        // Delete thumbnail safely
         if ($project->thumbnail_path) {
-            if (file_exists(public_path($project->thumbnail_path))) {
-                File::delete(public_path($project->thumbnail_path));
+            if (str_starts_with($project->thumbnail_path, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $project->thumbnail_path));
+            } else {
+                $fullPath = public_path(ltrim($project->thumbnail_path, '/'));
+                if (file_exists($fullPath)) @unlink($fullPath);
             }
         }
 
-        // Delete logo if exists
+        // Delete logo safely
         if ($project->logo_path) {
-            if (file_exists(public_path($project->logo_path))) {
-                File::delete(public_path($project->logo_path));
+            if (str_starts_with($project->logo_path, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $project->logo_path));
+            } else {
+                $fullPath = public_path(ltrim($project->logo_path, '/'));
+                if (file_exists($fullPath)) @unlink($fullPath);
             }
         }
 
-        // Delete gallery images
-        if ($project->project_image_urls) {
+        // Delete gallery images safely
+        if (is_array($project->project_image_urls)) {
             foreach ($project->project_image_urls as $imagePath) {
-                if (file_exists(public_path($imagePath))) {
-                    File::delete(public_path($imagePath));
+                if (str_starts_with($imagePath, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $imagePath));
+                } else {
+                    $fullPath = public_path(ltrim($imagePath, '/'));
+                    if (file_exists($fullPath)) @unlink($fullPath);
                 }
             }
         }

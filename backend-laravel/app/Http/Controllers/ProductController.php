@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -60,13 +62,15 @@ class ProductController extends Controller
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
-        // Handle Images
+        $validated['stock'] = $validated['stock'] ?? 0;
+
+        // Handle Images (Safely storing in public disk instead of public_path to support Docker/Coolify)
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('products'), $filename);
-                $imagePaths[] = '/products/' . $filename;
+                $file->storeAs('products', $filename, 'public');
+                $imagePaths[] = '/storage/products/' . $filename;
             }
         }
         $validated['images'] = $imagePaths;
@@ -75,8 +79,8 @@ class ProductController extends Controller
         if ($request->hasFile('datasheet')) {
             $file = $request->file('datasheet');
             $filename = time() . '_datasheet_' . $file->getClientOriginalName();
-            $file->move(public_path('datasheets'), $filename);
-            $validated['datasheet_path'] = '/datasheets/' . $filename;
+            $file->storeAs('datasheets', $filename, 'public');
+            $validated['datasheet_path'] = '/storage/datasheets/' . $filename;
         }
 
         // Ensure model_number is set (fallback to SKU or generate unique default)
@@ -87,12 +91,10 @@ class ProductController extends Controller
         try {
             $product = Product::create($validated);
         } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
-            // Log duplicate entry with context
-            \Illuminate\Support\Facades\Log::warning('Duplicate product entry attempted', [
+            Log::warning('Duplicate product entry attempted', [
                 'user_id' => auth()->id() ?? 'guest',
                 'model_number' => $validated['model_number'] ?? 'N/A',
                 'sku' => $validated['sku'] ?? 'N/A',
-                'name' => $validated['name'] ?? 'N/A',
                 'ip_address' => request()->ip(),
                 'exception' => $e->getMessage()
             ]);
@@ -102,8 +104,7 @@ class ProductController extends Controller
                 'error' => 'Duplicate Entry'
             ], 422);
         } catch (\Exception $e) {
-            // Log unexpected errors with full context
-            \Illuminate\Support\Facades\Log::error('Failed to create product - Unexpected Error', [
+            Log::error('Failed to create product - Unexpected Error', [
                 'user_id' => auth()->id() ?? 'guest',
                 'validated_data' => $validated,
                 'ip_address' => request()->ip(),
@@ -162,47 +163,42 @@ class ProductController extends Controller
             'datasheet' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
-        // Handle Images (If provided, replace or append? Typically replace in simple implementations, or append. Let's append for now or replace? 
-        // User didn't specify, but typically "update" with files replaces the set or adds to it. 
-        // Let's assume simpler REPLACEMENT if files are sent, otherwise keep old.
-        // Actually, for multiple images, standard simple CRUD usually appends or you have a separate delete mechanism.
-        // Let's implement APPEND logic: keep existing, add new. 
-        // If they want to delete, they'd need a delete endpoint or we clear if empty array passed?
-        // Let's go with: if 'images' is present, we add them to existing.
+        // Ensure we always have an array, even if the DB cast failed or returned null
+        $currentImages = is_array($product->images) ? $product->images : [];
         
-        // Wait, typical "HTML form" update replaces content. 
-        // Let's start with APPEND logic as it's safer.
-        // Helper to strip public URL prefix to match DB storage paths if needed
-        // Assuming images are stored as relative paths 'products/filename.jpg' in DB but full URLs sent?
-        // Let's rely on exact string match if possible, or simple filename match.
-        
-        $currentImages = $product->images ?? [];
-        
-        // Handle deletions (with path traversal protection)
+        // Handle deletions
         if ($request->has('deleted_images')) {
-            $deletedImages = $request->deleted_images; // Expected to be array of paths as stored in DB
+            $deletedImages = $request->input('deleted_images', []);
+            if (!is_array($deletedImages)) {
+                $deletedImages = [$deletedImages]; // Fallback if sent as single string
+            }
+            
+            Log::info('Deleting product images', ['product_id' => $product->id, 'deleted_images' => $deletedImages, 'current_images' => $currentImages]);
+            
             $currentImages = array_values(array_filter($currentImages, function($img) use ($deletedImages) {
                 return !in_array($img, $deletedImages);
             }));
 
-            // Safely delete physical files — only allow files within public/products/
-            $allowedDir = realpath(public_path('products'));
+            // Safely delete physical files
             foreach ($deletedImages as $delImg) {
-                $fullPath = public_path($delImg);
-                $realPath = realpath($fullPath);
-                // Only delete if file exists AND is within the allowed directory
-                if ($realPath && $allowedDir && str_starts_with($realPath, $allowedDir)) {
-                    File::delete($realPath);
+                if (str_starts_with($delImg, '/storage/')) {
+                    $path = str_replace('/storage/', '', $delImg);
+                    Storage::disk('public')->delete($path);
+                } else {
+                    $fullPath = public_path(ltrim($delImg, '/'));
+                    if (file_exists($fullPath)) {
+                        @unlink($fullPath);
+                    }
                 }
             }
         }
         
-        // Handle new images (append)
+        // Handle new images (append) safely using storage
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('products'), $filename);
-                $currentImages[] = '/products/' . $filename; // Ensure this format matches DB
+                $file->storeAs('products', $filename, 'public');
+                $currentImages[] = '/storage/products/' . $filename;
             }
         }
         
@@ -216,14 +212,19 @@ class ProductController extends Controller
         // Handle Datasheet (Replace)
         if ($request->hasFile('datasheet')) {
             // Delete old
-            if ($product->datasheet_path && file_exists(public_path($product->datasheet_path))) {
-                File::delete(public_path($product->datasheet_path));
+            if ($product->datasheet_path) {
+                if (str_starts_with($product->datasheet_path, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $product->datasheet_path));
+                } else {
+                    $oldPath = public_path(ltrim($product->datasheet_path, '/'));
+                    if (file_exists($oldPath)) @unlink($oldPath);
+                }
             }
             
             $file = $request->file('datasheet');
             $filename = time() . '_datasheet_' . $file->getClientOriginalName();
-            $file->move(public_path('datasheets'), $filename);
-            $validated['datasheet_path'] = '/datasheets/' . $filename;
+            $file->storeAs('datasheets', $filename, 'public');
+            $validated['datasheet_path'] = '/storage/datasheets/' . $filename;
         }
 
         try {
@@ -253,17 +254,25 @@ class ProductController extends Controller
     {
         try {
             // Delete images
-            if ($product->images) {
+            if (is_array($product->images)) {
                 foreach ($product->images as $img) {
-                    if (file_exists(public_path($img))) {
-                        File::delete(public_path($img));
+                    if (str_starts_with($img, '/storage/')) {
+                        Storage::disk('public')->delete(str_replace('/storage/', '', $img));
+                    } else {
+                        $fullPath = public_path(ltrim($img, '/'));
+                        if (file_exists($fullPath)) @unlink($fullPath);
                     }
                 }
             }
 
             // Delete datasheet
-            if ($product->datasheet_path && file_exists(public_path($product->datasheet_path))) {
-                File::delete(public_path($product->datasheet_path));
+            if ($product->datasheet_path) {
+                if (str_starts_with($product->datasheet_path, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $product->datasheet_path));
+                } else {
+                    $fullPath = public_path(ltrim($product->datasheet_path, '/'));
+                    if (file_exists($fullPath)) @unlink($fullPath);
+                }
             }
 
             $product->delete();

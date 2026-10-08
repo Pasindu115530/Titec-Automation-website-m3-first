@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export type UserRole = 'customer' | 'admin' | 'retailer';
+export type UserRole = 'customer' | 'admin';
 
 export type User = {
     id: string;
@@ -21,7 +21,6 @@ interface AuthContextType {
     logout: () => void;
     isAdmin: boolean;
     isCustomer: boolean;
-    isRetailer: boolean;
     // Allows external flows (e.g., Laravel login page) to update auth state immediately
     setUserExternal: (payload: Omit<Partial<User>, 'id'> & { id?: string | number; email?: string; name?: string; role?: UserRole; token?: string }) => void;
 }
@@ -49,8 +48,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (email: string, password: string, role: UserRole) => {
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://127.0.0.1:8000';
-            const response = await fetch(`${backendUrl}/api/users/login`, {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+            console.log(`[Auth] Sending POST request to ${backendUrl}/api/login...`);
+            const response = await fetch(`${backendUrl}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('user', JSON.stringify(userData));
 
             // Redirect based on role
-            if (role === 'admin' || role === 'retailer') {
+            if (role === 'admin') {
                 router.push('/admin');
             } else {
                 router.push('/store');
@@ -120,7 +120,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const isAdmin = user?.role === 'admin';
     const isCustomer = user?.role === 'customer';
-    const isRetailer = user?.role === 'retailer';
 
     return (
         <AuthContext.Provider value={{
@@ -130,7 +129,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             logout,
             isAdmin,
             isCustomer,
-            isRetailer,
             setUserExternal,
         }}>
             {children}

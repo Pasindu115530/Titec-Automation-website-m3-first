@@ -18,6 +18,11 @@ backend-laravel/
 │   │   │   ├── ServiceController.php
 │   │   │   ├── QuotationController.php
 │   │   │   ├── QuotationRequestController.php
+│   │   │   ├── ReportController.php
+│   │   │   ├── ServiceController.php
+│   │   │   ├── ServiceLogController.php
+│   │   │   ├── ActivityLogController.php
+│   │   │   ├── UserController.php
 │   │   │   ├── ContactController.php
 │   │   │   ├── DashboardController.php
 │   │   │   └── Controller.php   ← Base controller
@@ -221,6 +226,10 @@ Key tables created:
 - `quotation_request_items` — pivot table (product_id, quantity)
 - `quotations` — admin replies with PDF path
 - `contact_messages` — contact form submissions
+- `invoices` & `invoice_items` — ERP POS billing records
+- `clients` & `employees` — ERP CRM and HR
+- `installations` & `installation_notes` — tracking installations
+- `activity_log` — Spatie Activity Log for audit trails
 
 ### Seeders (9 seeders)
 - `DatabaseSeeder` — orchestrates all seeders

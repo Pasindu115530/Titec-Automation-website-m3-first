@@ -87,3 +87,168 @@ Route::middleware('throttle:3,1')->group(function () {
     Route::post('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'store']);
     Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store']);
 });
+// Email provisioning confirmation (developers click this from their email)
+Route::get('/email/confirm/{token}', [\App\Http\Controllers\UserController::class, 'confirmEmailProvisioned']);
+
+// ═══════════════════════════════════════════════
+// AUTHENTICATED ROUTES
+// ═══════════════════════════════════════════════
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+    Route::get('/user', function (Request $request) {
+        $user = $request->user();
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+            'requires_password_reset' => (bool)$user->force_password_reset,
+        ]);
+    });
+
+    // ── Users & Employees ────────────────────────
+    Route::middleware('permission:users.view')->group(function () {
+        Route::get('/users', [\App\Http\Controllers\UserController::class, 'index']);
+        Route::get('/roles', [\App\Http\Controllers\UserController::class, 'roles']);
+        Route::get('/employees', [\App\Http\Controllers\EmployeeController::class, 'index']);
+        Route::get('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show']);
+    });
+    Route::middleware('permission:users.create')->post('/users', [\App\Http\Controllers\UserController::class, 'store']);
+    Route::middleware('permission:users.edit')->group(function () {
+        Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update']);
+        Route::post('/users/{user}/resend-welcome', [\App\Http\Controllers\UserController::class, 'resendWelcome']);
+        Route::put('/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'update']);
+    });
+    Route::middleware('permission:users.delete')->delete('/users/{user}', [\App\Http\Controllers\UserController::class, 'destroy']);
+
+    // ── Content Management ──────────────────────
+    Route::middleware('permission:products.create')->post('/products', [ProductController::class, 'store']);
+    Route::middleware('permission:products.edit')->group(function () {
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::patch('/products/{product}/visibility', [ProductController::class, 'toggleVisibility']);
+    });
+    Route::middleware('permission:products.delete')->delete('/products/{product}', [ProductController::class, 'destroy']);
+
+    Route::middleware('permission:projects.create')->post('/projects', [ProjectController::class, 'store']);
+    Route::middleware('permission:projects.edit')->put('/projects/{project}', [ProjectController::class, 'update']);
+    Route::middleware('permission:projects.delete')->delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
+    Route::middleware('permission:brands.create')->post('/brands', [BrandController::class, 'store']);
+    Route::middleware('permission:brands.edit')->put('/brands/{brand}', [BrandController::class, 'update']);
+    Route::middleware('permission:brands.delete')->delete('/brands/{brand}', [BrandController::class, 'destroy']);
+
+    Route::middleware('permission:services.create')->post('/services', [ServiceController::class, 'store']);
+    Route::middleware('permission:services.edit')->put('/services/{service}', [ServiceController::class, 'update']);
+    Route::middleware('permission:services.delete')->delete('/services/{service}', [ServiceController::class, 'destroy']);
+
+    // ── Quotations ──────────────────────────────
+    Route::middleware('permission:quotations.view')->group(function () {
+        Route::get('/quotations', [App\Http\Controllers\QuotationController::class, 'index']);
+        Route::get('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'show']);
+        Route::get('/quotation-requests', [App\Http\Controllers\QuotationRequestController::class, 'index']);
+        Route::get('/quotation-requests/{id}/download', [App\Http\Controllers\QuotationRequestController::class, 'download']);
+    });
+    Route::middleware('permission:quotations.reply')->group(function () {
+        Route::post('/quotation-requests/{id}/reply', [App\Http\Controllers\QuotationRequestController::class, 'reply']);
+        Route::post('/quotation-requests/direct', [App\Http\Controllers\QuotationRequestController::class, 'sendDirectQuote']);
+        Route::post('/quotations/preview', [App\Http\Controllers\QuotationController::class, 'preview']);
+        Route::put('/quotations/{quotation}', [App\Http\Controllers\QuotationController::class, 'update']);
+    });
+
+    // ── Dashboard ───────────────────────────────
+    Route::middleware('permission:dashboard.view')->get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'index']);
+
+    // ═══════════════════════════════════════════════
+    // NEW ERP CORE MODULES
+    // ═══════════════════════════════════════════════
+
+    // ── Activity Logs ───────────────────────────
+    Route::middleware('permission:activity_logs.view')
+        ->get('/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index']);
+
+
+    // ── Clients ──────────────────────────────────
+    Route::middleware('permission:clients.view')->group(function () {
+        Route::get('/clients', [\App\Http\Controllers\ClientController::class, 'index']);
+        Route::get('/clients/{client}', [\App\Http\Controllers\ClientController::class, 'show']);
+        Route::get('/clients/{client}/history', [\App\Http\Controllers\ClientController::class, 'history']);
+    });
+    Route::middleware('permission:clients.create')->post('/clients', [\App\Http\Controllers\ClientController::class, 'store']);
+    Route::middleware('permission:clients.edit')->put('/clients/{client}', [\App\Http\Controllers\ClientController::class, 'update']);
+    Route::middleware('permission:clients.delete')->delete('/clients/{client}', [\App\Http\Controllers\ClientController::class, 'destroy']);
+
+    // ── Invoices ─────────────────────────────────
+    Route::middleware('permission:invoices.view')->group(function () {
+        Route::get('/invoices', [\App\Http\Controllers\InvoiceController::class, 'index']);
+        Route::get('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'show']);
+        Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'generatePdf']);
+    });
+    Route::middleware('permission:invoices.create')->group(function () {
+        Route::post('/invoices', [\App\Http\Controllers\InvoiceController::class, 'store']);
+        Route::post('/invoices/batch', [\App\Http\Controllers\InvoiceController::class, 'batch']);
+    });
+    Route::middleware('permission:invoices.edit')->group(function () {
+        Route::put('/invoices/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'update']);
+        Route::post('/invoices/{invoice}/confirm', [\App\Http\Controllers\InvoiceController::class, 'confirm']);
+        Route::post('/invoices/{invoice}/payment', [\App\Http\Controllers\InvoiceController::class, 'payment']);
+        Route::post('/invoices/{invoice}/void', [\App\Http\Controllers\InvoiceController::class, 'void']);
+    });
+
+    // ── Inventory ────────────────────────────────
+    Route::middleware('permission:inventory.view')->group(function () {
+        Route::get('/inventory', [\App\Http\Controllers\InventoryController::class, 'index']);
+        Route::get('/inventory/{product}/movements', [\App\Http\Controllers\InventoryController::class, 'movements']);
+    });
+    Route::middleware('permission:inventory.adjust')->group(function () {
+        Route::post('/inventory/{product}/adjust', [\App\Http\Controllers\InventoryController::class, 'adjust']);
+        Route::post('/inventory/movement', [\App\Http\Controllers\InventoryController::class, 'createMovement']);
+        Route::post('/inventory/movements/bulk', [\App\Http\Controllers\InventoryController::class, 'createBulkMovement']);
+    });
+    Route::middleware('permission:inventory.receive')->post('/inventory/{product}/receive', [\App\Http\Controllers\InventoryController::class, 'receive']);
+
+    // ── Installations ────────────────────────────
+    Route::get('/my-installations', [\App\Http\Controllers\InstallationController::class, 'myInstallations']); // Technician specific
+    
+    Route::middleware('permission:installations.view')->group(function () {
+        Route::get('/installations', [\App\Http\Controllers\InstallationController::class, 'index']);
+        Route::get('/installations/{installation}', [\App\Http\Controllers\InstallationController::class, 'show']);
+    });
+    Route::middleware('permission:installations.create')->post('/installations', [\App\Http\Controllers\InstallationController::class, 'store']);
+    Route::middleware('permission:installations.edit')->group(function () {
+        Route::put('/installations/{installation}', [\App\Http\Controllers\InstallationController::class, 'update']);
+        Route::post('/installations/{installation}/assign', [\App\Http\Controllers\InstallationController::class, 'assign']);
+    });
+    Route::middleware('permission:installations.update_status')->group(function () {
+        Route::patch('/installations/{installation}/status', [\App\Http\Controllers\InstallationController::class, 'updateStatus']);
+        Route::post('/installations/{installation}/notes', [\App\Http\Controllers\InstallationController::class, 'addNote']);
+    });
+    Route::middleware('permission:installations.review_costs')->group(function () {
+        Route::post('/installations/{installation}/notes/{note}/review', [\App\Http\Controllers\InstallationController::class, 'reviewNote']);
+        Route::get('/installation-notes/pending-review', [\App\Http\Controllers\InstallationController::class, 'pendingReviews']);
+    });
+
+    // ── Service Logs & Warranty ──────────────────
+    Route::middleware('permission:service_logs.view')->group(function () {
+        Route::get('/service-logs', [\App\Http\Controllers\ServiceLogController::class, 'index']);
+        Route::get('/service-logs/{serviceLog}', [\App\Http\Controllers\ServiceLogController::class, 'show']);
+        Route::get('/warranty/check', [\App\Http\Controllers\ServiceLogController::class, 'checkWarranty']);
+        Route::get('/warranty/expiring', [\App\Http\Controllers\ServiceLogController::class, 'expiringWarranties']);
+    });
+    Route::middleware('permission:service_logs.create')->group(function () {
+        Route::post('/service-logs', [\App\Http\Controllers\ServiceLogController::class, 'store']);
+        Route::post('/service-logs/batch', [\App\Http\Controllers\ServiceLogController::class, 'batch']);
+    });
+    Route::middleware('permission:service_logs.edit')->put('/service-logs/{serviceLog}', [\App\Http\Controllers\ServiceLogController::class, 'update']);
+
+    // ── Reports ──────────────────────────────────
+    Route::middleware('permission:dashboard.view')->group(function () {
+        Route::get('/reports/sales', [\App\Http\Controllers\ReportController::class, 'sales']);
+        Route::get('/reports/inventory', [\App\Http\Controllers\ReportController::class, 'inventory']);
+        Route::get('/reports/warranty', [\App\Http\Controllers\ReportController::class, 'warranty']);
+        Route::get('/reports/top-products', [\App\Http\Controllers\ReportController::class, 'topProducts']);
+        Route::get('/reports/client-revenue', [\App\Http\Controllers\ReportController::class, 'clientRevenue']);
+    });
+});
