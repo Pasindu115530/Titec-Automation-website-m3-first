@@ -173,7 +173,13 @@ class ProductController extends Controller
         
         // Handle deletions
         if ($request->has('deleted_images')) {
-            $deletedImages = is_array($request->deleted_images) ? $request->deleted_images : [];
+            $deletedImages = $request->input('deleted_images', []);
+            if (!is_array($deletedImages)) {
+                $deletedImages = [$deletedImages]; // Fallback if sent as single string
+            }
+            
+            Log::info('Deleting product images', ['product_id' => $product->id, 'deleted_images' => $deletedImages, 'current_images' => $currentImages]);
+            
             $currentImages = array_values(array_filter($currentImages, function($img) use ($deletedImages) {
                 return !in_array($img, $deletedImages);
             }));
