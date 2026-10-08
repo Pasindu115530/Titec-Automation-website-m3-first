@@ -29,7 +29,6 @@ class Product extends Model
         'on_store',
         'brand_id',
         'show_price',
-        'warranty_months',
     ];
 
     protected $casts = [

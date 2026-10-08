@@ -55,38 +55,8 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'roles' => $user->getRoleNames(),
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-                'requires_password_reset' => (bool)$user->force_password_reset,
-            ],
+            'user' => $user
         ]);
-    }
-
-    public function changePassword(Request $request)
-    {
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
-        ]);
-
-        $user = $request->user();
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            throw ValidationException::withMessages([
-                'current_password' => ['The provided current password does not match our records.'],
-            ]);
-        }
-
-        $user->update([
-            'password' => Hash::make($request->password),
-            'force_password_reset' => false,
-        ]);
-
-        return response()->json(['message' => 'Password changed successfully.']);
     }
 
     public function logout(Request $request)

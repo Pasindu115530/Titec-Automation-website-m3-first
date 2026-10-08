@@ -6,6 +6,7 @@ use App\Models\ServiceCategory;
 use App\Models\ServiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ServiceController extends Controller
@@ -15,11 +16,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = \Illuminate\Support\Facades\Cache::remember('services_index', now()->addMinutes(15), function () {
-            return ServiceCategory::with('items')
-                ->orderBy('sort_order')
-                ->get();
-        });
+        $services = ServiceCategory::with('items')
+            ->orderBy('sort_order')
+            ->get();
 
         return response()->json([
             'data' => $services,
@@ -67,12 +66,12 @@ class ServiceController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
 
-        // Handle image upload
+        // Handle image upload using Storage for Docker compatibility
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('services'), $filename);
-            $validated['image_path'] = '/services/' . $filename;
+            $file->storeAs('services', $filename, 'public');
+            $validated['image_path'] = '/storage/services/' . $filename;
         }
 
         try {
@@ -129,15 +128,20 @@ class ServiceController extends Controller
 
         // Handle image upload (replace old)
         if ($request->hasFile('image')) {
-            // Delete old image
-            if ($service->image_path && file_exists(public_path($service->image_path))) {
-                File::delete(public_path($service->image_path));
+            // Delete old image safely
+            if ($service->image_path) {
+                if (str_starts_with($service->image_path, '/storage/')) {
+                    Storage::disk('public')->delete(str_replace('/storage/', '', $service->image_path));
+                } else {
+                    $oldPath = public_path(ltrim($service->image_path, '/'));
+                    if (file_exists($oldPath)) @unlink($oldPath);
+                }
             }
 
             $file = $request->file('image');
             $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('services'), $filename);
-            $validated['image_path'] = '/services/' . $filename;
+            $file->storeAs('services', $filename, 'public');
+            $validated['image_path'] = '/storage/services/' . $filename;
         }
 
         try {
@@ -181,9 +185,14 @@ class ServiceController extends Controller
      */
     public function destroy(ServiceCategory $service)
     {
-        // Delete image file
-        if ($service->image_path && file_exists(public_path($service->image_path))) {
-            File::delete(public_path($service->image_path));
+        // Delete image file safely
+        if ($service->image_path) {
+            if (str_starts_with($service->image_path, '/storage/')) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $service->image_path));
+            } else {
+                $oldPath = public_path(ltrim($service->image_path, '/'));
+                if (file_exists($oldPath)) @unlink($oldPath);
+            }
         }
 
         $service->delete(); // cascade deletes items
