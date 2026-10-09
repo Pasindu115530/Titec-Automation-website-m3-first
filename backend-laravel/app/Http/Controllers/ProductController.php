@@ -40,6 +40,8 @@ class ProductController extends Controller
         ]);
     }
 
+    // testing
+
     /**
      * Store a newly created resource in storage.
      */
