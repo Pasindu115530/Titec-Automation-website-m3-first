@@ -15,6 +15,7 @@ import { projectService } from "@/services/projectService";
 import ClientMarquee from "@/components/client/client-marquee";
 import BrandMarquee from "./brand-marquee";
 
+// testing
 // Custom Hook for Scroll Detection
 function useInView(threshold = 0) {
     const [isInView, setIsInView] = useState(false);
