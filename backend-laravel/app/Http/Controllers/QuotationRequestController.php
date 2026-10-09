@@ -185,7 +185,7 @@ class QuotationRequestController extends Controller
                         $mail->bcc(config('mail.sales.address'));
                     }
                     // Pass null for PDF content if not including PDF
-                    $mail->queue(new QuotationReplyMail($includePdf ? $pdfContent : null, $messageContent));
+                    $mail->queue(new QuotationReplyMail($includePdf ? $path : null, $messageContent));
                     
                     \Illuminate\Support\Facades\Log::info('Quotation email sent successfully', [
                         'quotation_id' => $quoteRequest->id,
@@ -304,7 +304,7 @@ class QuotationRequestController extends Controller
             if (config('mail.sales.address')) {
                 $mail->bcc(config('mail.sales.address'));
             }
-            $mail->queue(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
+            $mail->queue(new QuotationReplyMail($path, $validated['message'] ?? ''));
             
             \Illuminate\Support\Facades\Log::info('Direct quotation email sent successfully', [
                 'recipient' => $validated['email'],
