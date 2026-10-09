@@ -14,6 +14,8 @@ export type User = {
     token: string;
 };
 
+// testing
+
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
