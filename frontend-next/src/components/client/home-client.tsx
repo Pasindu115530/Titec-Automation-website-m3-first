@@ -83,12 +83,13 @@ export default function HomeClient({ initialProjects = [] }: HomeClientProps) {
         return () => clearTimeout(timer);
     }, []);
 
-    if (status === "loading") {
-        return <Loader />;
-    }
-
     return (
         <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-white">
+            {status === "loading" && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white">
+                    <Loader />
+                </div>
+            )}
             {/* Main Content starts after loading */}
 
             <section
