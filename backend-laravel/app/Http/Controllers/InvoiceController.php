@@ -273,7 +273,7 @@ class InvoiceController extends Controller
 
         if ($invoice->client?->email) {
             \Illuminate\Support\Facades\Mail::to($invoice->client->email)
-                ->send(new \App\Mail\InvoiceReceiptMail($invoice, $validated['amount']));
+                ->queue(new \App\Mail\InvoiceReceiptMail($invoice, $validated['amount']));
         }
 
         return response()->json($invoice);

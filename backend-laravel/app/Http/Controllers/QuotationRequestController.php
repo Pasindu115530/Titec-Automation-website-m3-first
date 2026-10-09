@@ -65,13 +65,13 @@ class QuotationRequestController extends Controller
         try {
             // Email to Customer
             Mail::to($quoteRequest->email)
-                ->send(new \App\Mail\QuotationRequestNotification($quoteRequest));
+                ->queue(new \App\Mail\QuotationRequestNotification($quoteRequest));
             
             // Email to Admin/Sales
             $salesEmail = config('mail.sales.address');
             if ($salesEmail) {
                 Mail::to($salesEmail)
-                    ->send(new \App\Mail\AdminQuotationNotification($quoteRequest));
+                    ->queue(new \App\Mail\AdminQuotationNotification($quoteRequest));
             } else {
                  // Fallback or log warning if no sales email configured, maybe send to "from" address
                  // For now, let's try sending to a default if not set, or just skip.
@@ -185,7 +185,7 @@ class QuotationRequestController extends Controller
                         $mail->bcc(config('mail.sales.address'));
                     }
                     // Pass null for PDF content if not including PDF
-                    $mail->send(new QuotationReplyMail($includePdf ? $pdfContent : null, $messageContent));
+                    $mail->queue(new QuotationReplyMail($includePdf ? $pdfContent : null, $messageContent));
                     
                     \Illuminate\Support\Facades\Log::info('Quotation email sent successfully', [
                         'quotation_id' => $quoteRequest->id,
@@ -304,7 +304,7 @@ class QuotationRequestController extends Controller
             if (config('mail.sales.address')) {
                 $mail->bcc(config('mail.sales.address'));
             }
-            $mail->send(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
+            $mail->queue(new QuotationReplyMail($pdfContent, $validated['message'] ?? ''));
             
             \Illuminate\Support\Facades\Log::info('Direct quotation email sent successfully', [
                 'recipient' => $validated['email'],
