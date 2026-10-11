@@ -98,7 +98,7 @@ export default function AddServiceLogModal({ isOpen, onClose, onSuccess }: AddSe
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[660px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+            <DialogContent className="w-[95vw] sm:max-w-[860px] md:max-w-[920px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <DialogHeader>
                         <div className="flex items-center gap-3.5">
@@ -112,7 +112,7 @@ export default function AddServiceLogModal({ isOpen, onClose, onSuccess }: AddSe
                         </div>
                     </DialogHeader>
 
-                    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                    <div className="space-y-4 max-h-[70vh] overflow-y-auto -mx-2 px-2 py-1.5 pr-4 sm:pr-5 modal-scroll">
                         {/* Service Title */}
                         <div className="space-y-2">
                             <Label htmlFor="title" className="text-xs font-bold uppercase tracking-wider text-neutral-700">

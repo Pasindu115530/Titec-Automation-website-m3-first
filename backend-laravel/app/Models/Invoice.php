@@ -34,6 +34,11 @@ class Invoice extends Model
         'synced_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'balance_due',
+        'pdf_url',
+    ];
+
     // ── Boot ─────────────────────────────────────
 
     protected static function boot()
@@ -111,6 +116,11 @@ class Invoice extends Model
     public function getBalanceDueAttribute(): float
     {
         return $this->grand_total - $this->amount_paid;
+    }
+
+    public function getPdfUrlAttribute(): ?string
+    {
+        return $this->pdf_path ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->pdf_path) : null;
     }
 
     public function isPaid(): bool

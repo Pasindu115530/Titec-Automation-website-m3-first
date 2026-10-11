@@ -22,7 +22,7 @@ interface POSConfirmModalProps {
 
 export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubmitting }: POSConfirmModalProps) {
   const [paymentMethod, setPaymentMethod] = useState('cash');
-  const [amountPaid, setAmountPaid] = useState(grandTotal);
+  const [amountPaid, setAmountPaid] = useState<string>(Number(grandTotal || 0).toFixed(2));
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -30,7 +30,7 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
   // Reset state when opened
   React.useEffect(() => {
     if (isOpen) {
-      setAmountPaid(grandTotal);
+      setAmountPaid(Number(grandTotal || 0).toFixed(2));
       setPaymentMethod('cash');
       setNotes('');
       setTerms('');
@@ -40,14 +40,18 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const parsedAmount = parseFloat(amountPaid);
     onConfirm({
       payment_method: paymentMethod,
-      amount_paid: amountPaid,
+      amount_paid: isNaN(parsedAmount) ? 0 : Number(parsedAmount.toFixed(2)),
       notes,
       terms,
       due_date: dueDate || undefined,
     });
   };
+
+  const parsedPaid = parseFloat(amountPaid) || 0;
+  const changeDue = parsedPaid - grandTotal;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -60,7 +64,9 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
           <div className="py-4 space-y-4">
             <div className="p-4 bg-neutral-50 text-neutral-900 rounded-2xl text-center mb-4 border border-neutral-200/80 shadow-2xs">
               <div className="text-neutral-500 text-xs font-semibold uppercase tracking-wider">Grand Total</div>
-              <div className="text-3xl font-extrabold text-neutral-950 tracking-tight mt-0.5">Rs. {grandTotal.toLocaleString()}</div>
+              <div className="text-3xl font-extrabold text-neutral-950 tracking-tight mt-0.5 font-mono">
+                Rs. {Number(grandTotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3.5">
@@ -82,13 +88,22 @@ export function POSConfirmModal({ isOpen, onClose, onConfirm, grandTotal, isSubm
 
               {paymentMethod !== 'credit' && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-neutral-700">Amount Paid</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-neutral-700">Amount Paid</Label>
+                    {changeDue > 0.001 ? (
+                      <span className="text-[10px] font-bold text-emerald-600 font-mono">Change: Rs. {changeDue.toFixed(2)}</span>
+                    ) : changeDue < -0.001 && parsedPaid > 0 ? (
+                      <span className="text-[10px] font-bold text-rose-600 font-mono">Due: Rs. {Math.abs(changeDue).toFixed(2)}</span>
+                    ) : null}
+                  </div>
                   <Input 
                     type="number" 
-                    value={amountPaid} 
-                    onChange={(e) => setAmountPaid(parseFloat(e.target.value) || 0)}
-                    className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
+                    step="0.01"
                     min="0"
+                    placeholder="0.00"
+                    value={amountPaid} 
+                    onChange={(e) => setAmountPaid(e.target.value)}
+                    className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors font-mono"
                   />
                 </div>
               )}

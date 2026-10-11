@@ -41,8 +41,8 @@ export default function TitecErpLogo({
                 <div
                     className="absolute left-0 top-[44.1%] -translate-y-1/2 pointer-events-none"
                     style={{
-                        width: `${logoWidth * 0.20}px`,
-                        height: `${logoWidth * 0.20}px`,
+                        width: `${Math.round(logoWidth * 0.20)}px`,
+                        height: `${Math.round(logoWidth * 0.20)}px`,
                     }}
                 >
                     <img

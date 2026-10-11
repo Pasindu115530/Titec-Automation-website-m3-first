@@ -99,7 +99,7 @@ export default function InstallationsPage() {
                 </div>
 
                 {/* Status Filter Tabs matching Quotation tabs */}
-                <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 overflow-x-auto w-full md:w-auto">
+                <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 overflow-x-auto no-scrollbar w-full md:w-auto">
                     <button
                         onClick={() => setStatusFilter('')}
                         className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${

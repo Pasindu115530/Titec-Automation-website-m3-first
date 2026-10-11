@@ -10,7 +10,7 @@ import { POSSummary } from '@/components/erp/pos-summary';
 import { POSConfirmModal } from '@/components/erp/pos-confirm-modal';
 import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
-import { FileText, Save, History, Printer, Package, Receipt } from 'lucide-react';
+import { FileText, Save, History, Printer, Package, Receipt, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -27,24 +27,29 @@ export default function POSPage() {
   // Modal State
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   // Derived calculations
-  const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.line_total, 0), [items]);
+  const subtotal = useMemo(() => {
+    const sum = items.reduce((acc, item) => acc + item.line_total, 0);
+    return Number(sum.toFixed(2));
+  }, [items]);
   
   const discountVal = useMemo(() => {
     if (discountType === 'percentage') {
-      return (subtotal * discountAmount) / 100;
+      return Number(((subtotal * discountAmount) / 100).toFixed(2));
     }
-    return discountAmount;
+    return Number(discountAmount);
   }, [subtotal, discountType, discountAmount]);
 
   const taxAmount = useMemo(() => {
     const afterDiscount = Math.max(0, subtotal - discountVal);
-    return (afterDiscount * taxRate) / 100;
+    return Number(((afterDiscount * taxRate) / 100).toFixed(2));
   }, [subtotal, discountVal, taxRate]);
 
   const grandTotal = useMemo(() => {
-    return Math.max(0, subtotal - discountVal) + taxAmount;
+    const total = Math.max(0, subtotal - discountVal) + taxAmount;
+    return Number(total.toFixed(2));
   }, [subtotal, discountVal, taxAmount]);
 
   // Handlers
@@ -64,7 +69,7 @@ export default function POSPage() {
       quantity: 1,
       unit: 'pcs',
       warranty_months: product.warranty_months || 12,
-      line_total: Number(product.price) || 0,
+      line_total: Number(Number(product.price || 0).toFixed(2)),
     };
 
     setItems([...items, newItem]);
@@ -73,14 +78,14 @@ export default function POSPage() {
   const handleUpdateQuantity = (index: number, quantity: number) => {
     const newItems = [...items];
     newItems[index].quantity = quantity;
-    newItems[index].line_total = newItems[index].unit_price * quantity;
+    newItems[index].line_total = Number((newItems[index].unit_price * quantity).toFixed(2));
     setItems(newItems);
   };
 
   const handleUpdatePrice = (index: number, price: number) => {
     const newItems = [...items];
     newItems[index].unit_price = price;
-    newItems[index].line_total = price * newItems[index].quantity;
+    newItems[index].line_total = Number((price * newItems[index].quantity).toFixed(2));
     setItems(newItems);
   };
 
@@ -136,6 +141,48 @@ export default function POSPage() {
       toast.error('Failed to process order. Please try again.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!selectedClient) {
+      toast.error('Please select a client first');
+      return;
+    }
+
+    if (items.length === 0) {
+      toast.error('Add at least one item to save as draft');
+      return;
+    }
+
+    setIsSavingDraft(true);
+    try {
+      const payload = {
+        client_id: selectedClient.id,
+        client_name: selectedClient.company_name || selectedClient.contact_person,
+        items,
+        tax_rate: taxRate,
+        discount_amount: discountAmount,
+        discount_type: discountType,
+        subtotal,
+        tax_amount: taxAmount,
+        grand_total: grandTotal,
+      };
+
+      const result = await invoiceService.createInvoice(payload);
+      const invNumber = result?.invoice_number || (result?.offline ? 'Draft (Offline)' : 'Draft');
+      toast.success(`Draft saved successfully! (${invNumber})`);
+
+      // Reset POS cart & selection
+      setSelectedClient(null);
+      setItems([]);
+      setDiscountAmount(0);
+      setTaxRate(0);
+    } catch (error: any) {
+      console.error('Failed to save draft:', error);
+      toast.error(error.response?.data?.message || 'Failed to save draft. Please try again.');
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -228,13 +275,19 @@ export default function POSPage() {
           </Button>
           <Button 
             variant="outline" 
-            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-            onClick={() => {
-              if(!selectedClient) toast.error('Select a client first');
-              else toast.info('Draft saving to be implemented');
-            }}
+            disabled={isSavingDraft || isSubmitting}
+            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+            onClick={handleSaveDraft}
           >
-            <Save className="mr-2 h-4 w-4 text-amber-600" /> Save Draft
+            {isSavingDraft ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-amber-600" /> Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4 text-amber-600" /> Save Draft
+              </>
+            )}
           </Button>
           <Button 
             className="h-16 col-span-2 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none"

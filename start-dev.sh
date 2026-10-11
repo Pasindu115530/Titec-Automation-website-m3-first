@@ -5,6 +5,13 @@ cd "$(dirname "$0")"
 
 echo "Starting TiTEC Automation Development Environment..."
 
+# Check if running on Windows / Git Bash with PowerShell available
+if command -v powershell.exe &> /dev/null && [ -f "./start-dev.ps1" ]; then
+    echo "Windows environment detected. Launching via start-dev.ps1..."
+    powershell.exe -ExecutionPolicy Bypass -File "./start-dev.ps1"
+    exit 0
+fi
+
 # Check if gnome-terminal is available (Standard Ubuntu/Debian)
 if command -v gnome-terminal &> /dev/null; then
     echo "Launching services in gnome-terminal tabs..."

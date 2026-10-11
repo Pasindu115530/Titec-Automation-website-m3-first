@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import {
     Save,
     User,
@@ -23,6 +24,7 @@ import { toast } from 'sonner';
 type TabKey = 'all' | 'profile' | 'general' | 'email' | 'notifications' | 'security' | 'database' | 'appearance';
 
 export default function SettingsPage() {
+    const { theme, setTheme } = useTheme();
     const [activeTab, setActiveTab] = useState<TabKey>('all');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState('');
@@ -61,9 +63,19 @@ export default function SettingsPage() {
         confirmPassword: ''
     });
 
+    useEffect(() => {
+        if (theme) {
+            setFormData(prev => ({ ...prev, theme }));
+        }
+    }, [theme]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
+
+        if (name === 'theme') {
+            setTheme(value);
+        }
 
         setFormData(prev => ({
             ...prev,

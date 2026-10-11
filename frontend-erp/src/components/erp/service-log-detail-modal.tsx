@@ -70,7 +70,7 @@ export default function ServiceLogDetailModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[660px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
+            <DialogContent className="w-[95vw] sm:max-w-[860px] md:max-w-[920px] bg-white/95 backdrop-blur-xl rounded-[32px] sm:rounded-[32px] p-7 sm:p-8 border border-white/80 shadow-[0_24px_60px_rgba(0,0,0,0.15)] text-neutral-900">
                 <DialogHeader>
                     <div className="flex items-center gap-3.5">
                         <div className="h-12 w-12 rounded-2xl bg-[#E2D6FE] text-neutral-900 flex items-center justify-center border border-white/80 shadow-2xs shrink-0">
@@ -130,7 +130,7 @@ export default function ServiceLogDetailModal({
                 </div>
 
                 {/* Technical Details */}
-                <div className="space-y-3.5 max-h-[40vh] overflow-y-auto pr-1">
+                <div className="space-y-3.5 max-h-[45vh] overflow-y-auto -mx-2 px-2 py-1.5 pr-4 sm:pr-5 modal-scroll">
                     {log.description && (
                         <div className="space-y-1">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Description / Report</span>

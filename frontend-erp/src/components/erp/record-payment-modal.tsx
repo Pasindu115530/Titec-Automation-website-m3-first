@@ -64,17 +64,20 @@ export function RecordPaymentModal({ isOpen, onClose, invoice, onPaymentRecorded
           <div className="grid gap-4 py-4">
             <div className="bg-[#E2D6FE] text-black rounded-2xl p-4 border border-white/80 shadow-xs text-center">
               <div className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">Balance Due</div>
-              <div className="text-3xl font-extrabold text-black tracking-tight mt-0.5">Rs. {balance.toLocaleString()}</div>
+              <div className="text-3xl font-extrabold text-black tracking-tight mt-0.5 font-mono">
+                Rs. {Number(balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
             </div>
 
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-neutral-700">Payment Amount (Rs.)</Label>
               <Input 
                 type="number" 
+                step="0.01"
                 value={amount} 
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors"
-                min="1"
+                className="bg-neutral-50 border-neutral-200 text-neutral-900 rounded-xl focus:bg-amber-50 focus:border-amber-200 focus-visible:border-amber-200 focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-colors font-mono"
+                min="0.01"
                 max={balance}
                 required
               />

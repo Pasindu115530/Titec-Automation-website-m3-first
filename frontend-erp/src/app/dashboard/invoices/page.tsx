@@ -64,7 +64,26 @@ export default function InvoicesPage() {
   };
 
   const handlePrint = async (invoice: any) => {
-    toast.info('Printing... In a real app, this would open a PDF.');
+    if (!invoice?.id) return;
+    const toastId = toast.loading('Generating invoice PDF...');
+    try {
+      const blob = await invoiceService.downloadInvoicePdf(invoice.id);
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const printWindow = window.open(url, '_blank');
+      if (!printWindow || printWindow.closed || typeof printWindow.closed === 'undefined') {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Invoice_${invoice.invoice_number || invoice.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      toast.success('Invoice PDF ready!', { id: toastId });
+    } catch (error: any) {
+      console.error('Print failed', error);
+      const msg = error.response?.data?.message || 'Failed to generate invoice PDF.';
+      toast.error(msg, { id: toastId });
+    }
   };
 
   return (
@@ -116,6 +135,7 @@ export default function InvoicesPage() {
         onClose={() => setIsDetailModalOpen(false)} 
         invoice={selectedInvoice}
         onPayment={openPaymentModal}
+        onInvoiceUpdated={handleInvoiceUpdated}
       />
 
       <RecordPaymentModal 

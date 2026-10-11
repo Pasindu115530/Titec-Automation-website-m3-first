@@ -5,9 +5,27 @@ This repository contains the source code for the Titec Automation website. It is
 - **[Frontend](./frontend-next/README.md):** A Next.js application.
 - **[Backend](./backend-laravel/README.md):** A Laravel application.
 
-## Getting Started
+## Quick Start (Start All Services)
 
-To get started with development, you will need to set up both the frontend and backend applications. Please refer to their respective README files for detailed instructions:
+### Windows (PowerShell / CMD)
+```powershell
+.\start-dev.ps1
+# or
+.\start-dev.bat
+```
+
+### Linux / macOS / Git Bash
+```bash
+./start-dev.sh
+```
+
+This launches all 4 services:
+1. **Laravel API** (`http://127.0.0.1:8000`)
+2. **Queue Worker** (`php artisan queue:work`)
+3. **Frontend Store** (`http://localhost:3000`)
+4. **Frontend ERP** (`http://localhost:3001`)
+
+## Getting Started Manually
 
 ### Frontend (Next.js)
 

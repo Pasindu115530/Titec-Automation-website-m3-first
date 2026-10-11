@@ -1,7 +1,24 @@
 import React from 'react';
 import { Installation } from '@/services/installationService';
 import Loader from '@/components/loader';
-import { Calendar, Clock, AlertCircle, CheckCircle2, Building2, MapPin } from 'lucide-react';
+import { 
+    Calendar, 
+    Clock, 
+    AlertCircle, 
+    CheckCircle2, 
+    Building2, 
+    MapPin, 
+    ChevronDown, 
+    Check,
+    User
+} from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface InstallationKanbanProps {
     installations: Installation[];
@@ -10,6 +27,59 @@ interface InstallationKanbanProps {
     onViewDetail: (id: number) => void;
     activeFilter?: string;
 }
+
+const STATUS_OPTIONS = [
+    { 
+        id: 'scheduled', 
+        title: 'Scheduled',
+        label: 'Scheduled', 
+        badgeClass: 'bg-[#E2D6FE] text-neutral-900 border border-purple-200/80 hover:bg-[#d8c7fd]',
+        dotClass: 'bg-purple-600',
+        icon: Calendar
+    },
+    { 
+        id: 'in_progress', 
+        title: 'In Progress',
+        label: 'In Progress', 
+        badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200/80 hover:bg-amber-100',
+        dotClass: 'bg-amber-500',
+        icon: Clock
+    },
+    { 
+        id: 'on_hold', 
+        title: 'On Hold',
+        label: 'On Hold', 
+        badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200/80 hover:bg-rose-100',
+        dotClass: 'bg-rose-500',
+        icon: AlertCircle
+    },
+    { 
+        id: 'completed', 
+        title: 'Completed',
+        label: 'Completed', 
+        badgeClass: 'bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60 hover:bg-teal-100',
+        dotClass: 'bg-[#0D9488]',
+        icon: CheckCircle2
+    },
+] as const;
+
+const STATUS_MAP = Object.fromEntries(STATUS_OPTIONS.map(opt => [opt.id, opt]));
+
+const getAvatarGradient = (name: string) => {
+    const gradients = [
+        'from-sky-500 to-indigo-600',
+        'from-purple-500 to-indigo-600',
+        'from-teal-500 to-emerald-600',
+        'from-amber-500 to-orange-600',
+        'from-rose-500 to-pink-600',
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
+};
 
 export default function InstallationKanban({
     installations,
@@ -26,36 +96,7 @@ export default function InstallationKanban({
         );
     }
 
-    const allColumns = [
-        { 
-            id: 'scheduled', 
-            title: 'Scheduled', 
-            badgeClass: 'bg-[#E2D6FE] text-neutral-900 border border-purple-200/80',
-            dotClass: 'bg-purple-600',
-            icon: Calendar
-        },
-        { 
-            id: 'in_progress', 
-            title: 'In Progress', 
-            badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200/80',
-            dotClass: 'bg-amber-500',
-            icon: Clock
-        },
-        { 
-            id: 'on_hold', 
-            title: 'On Hold', 
-            badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200/80',
-            dotClass: 'bg-rose-500',
-            icon: AlertCircle
-        },
-        { 
-            id: 'completed', 
-            title: 'Completed', 
-            badgeClass: 'bg-[#E6F9F7] text-[#0D9488] border border-teal-200/60',
-            dotClass: 'bg-[#0D9488]',
-            icon: CheckCircle2
-        },
-    ];
+    const allColumns = STATUS_OPTIONS;
 
     const columns = activeFilter 
         ? allColumns.filter(c => c.id === activeFilter) 
@@ -90,7 +131,7 @@ export default function InstallationKanban({
                         </div>
                         
                         {/* Column Cards */}
-                        <div className="flex-1 space-y-3.5 overflow-y-auto max-h-[70vh] pr-1">
+                        <div className="flex-1 space-y-3.5">
                             {columnItems.map(inst => (
                                 <div 
                                     key={inst.id} 
@@ -155,37 +196,116 @@ export default function InstallationKanban({
                                     
                                     {/* Card Footer: Technicians & Status Dropdown */}
                                     <div className="border-t border-neutral-100 pt-3 flex justify-between items-center gap-2">
-                                        <div className="flex -space-x-1.5 overflow-hidden">
+                                        <div className="flex items-center min-w-0">
                                             {inst.technicians && inst.technicians.length > 0 ? (
-                                                inst.technicians.map((tech, i) => (
+                                                inst.technicians.length === 1 ? (
                                                     <div 
-                                                        key={tech.id} 
-                                                        className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-[#E2D6FE] text-neutral-900 flex items-center justify-center text-[10px] font-bold shadow-2xs"
-                                                        title={tech.name}
-                                                        style={{ zIndex: 10 - i }}
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/90 border border-neutral-200/80 text-neutral-800 text-xs font-semibold shadow-2xs max-w-[125px] sm:max-w-[140px] transition-all hover:bg-white"
+                                                        title={`Technician: ${inst.technicians[0].name}`}
                                                     >
-                                                        {tech.name.charAt(0).toUpperCase()}
+                                                        <div 
+                                                            className={cn(
+                                                                "w-5 h-5 rounded-full bg-gradient-to-tr text-white flex items-center justify-center text-[10px] font-bold shrink-0 shadow-2xs leading-none",
+                                                                getAvatarGradient(inst.technicians[0].name)
+                                                            )}
+                                                        >
+                                                            {inst.technicians[0].name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span className="truncate">{inst.technicians[0].name}</span>
                                                     </div>
-                                                ))
+                                                ) : (
+                                                    <div 
+                                                        className="inline-flex items-center gap-1.5 px-2 py-1 rounded-xl bg-white/90 border border-neutral-200/80 shadow-2xs"
+                                                        title={`Technicians: ${inst.technicians.map(t => t.name).join(', ')}`}
+                                                    >
+                                                        <div className="flex -space-x-1.5">
+                                                            {inst.technicians.slice(0, 3).map((tech, i) => (
+                                                                <div 
+                                                                    key={tech.id} 
+                                                                    className={cn(
+                                                                        "w-5 h-5 rounded-full ring-2 ring-white bg-gradient-to-tr text-white flex items-center justify-center text-[9px] font-bold shadow-2xs leading-none",
+                                                                        getAvatarGradient(tech.name)
+                                                                    )}
+                                                                    title={tech.name}
+                                                                    style={{ zIndex: 10 - i }}
+                                                                >
+                                                                    {tech.name.charAt(0).toUpperCase()}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        {inst.technicians.length > 3 ? (
+                                                            <span className="text-[11px] font-bold text-neutral-600">
+                                                                +{inst.technicians.length - 3}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[11px] font-semibold text-neutral-600">
+                                                                {inst.technicians.length}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )
                                             ) : (
-                                                <span className="text-xs text-neutral-400 font-medium italic">Unassigned</span>
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs text-neutral-400 font-medium bg-neutral-50/80 border border-neutral-200/60 shadow-2xs italic">
+                                                    <User className="w-3 h-3 text-neutral-400" />
+                                                    <span>Unassigned</span>
+                                                </span>
                                             )}
                                         </div>
                                         
-                                        <select
-                                            className="text-xs font-bold rounded-xl border border-neutral-200/80 bg-neutral-50 hover:bg-white text-neutral-700 py-1 px-2.5 shadow-2xs focus:bg-amber-50/40 focus:border-amber-200 focus:outline-none transition-all cursor-pointer opacity-75 group-hover:opacity-100"
-                                            value={inst.status}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onChange={(e) => {
-                                                e.stopPropagation();
-                                                onStatusChange(inst.id, e.target.value);
-                                            }}
+                                        <div 
+                                            onClick={(e) => e.stopPropagation()} 
+                                            onPointerDown={(e) => e.stopPropagation()}
+                                            className="relative"
                                         >
-                                            <option value="scheduled">Scheduled</option>
-                                            <option value="in_progress">In Progress</option>
-                                            <option value="on_hold">On Hold</option>
-                                            <option value="completed">Completed</option>
-                                        </select>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button
+                                                        type="button"
+                                                        className={cn(
+                                                            "inline-flex items-center gap-1.5 text-xs font-bold rounded-xl border py-1 px-2.5 shadow-2xs transition-all cursor-pointer select-none",
+                                                            STATUS_MAP[inst.status]?.badgeClass || "bg-neutral-50 text-neutral-700 border-neutral-200/80 hover:bg-white"
+                                                        )}
+                                                    >
+                                                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", STATUS_MAP[inst.status]?.dotClass || "bg-neutral-400")} />
+                                                        <span>{STATUS_MAP[inst.status]?.label || inst.status}</span>
+                                                        <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5" />
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent
+                                                    align="end"
+                                                    sideOffset={6}
+                                                    className="w-44 p-1.5 bg-white/95 backdrop-blur-xl border border-neutral-200/80 rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.12)] space-y-0.5 z-50"
+                                                >
+                                                    {STATUS_OPTIONS.map((opt) => {
+                                                        const isSelected = inst.status === opt.id;
+                                                        return (
+                                                            <DropdownMenuItem
+                                                                key={opt.id}
+                                                                onSelect={() => {
+                                                                    if (inst.status !== opt.id) {
+                                                                        onStatusChange(inst.id, opt.id);
+                                                                    }
+                                                                }}
+                                                                className={cn(
+                                                                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all",
+                                                                    isSelected
+                                                                        ? "bg-neutral-100 text-neutral-900 font-extrabold"
+                                                                        : "text-neutral-700 hover:bg-neutral-50 hover:text-neutral-950"
+                                                                )}
+                                                            >
+                                                                <span className="flex items-center gap-2">
+                                                                    <span className={cn("w-2 h-2 rounded-full shrink-0", opt.dotClass)} />
+                                                                    <span>{opt.label}</span>
+                                                                </span>
+                                                                {isSelected && (
+                                                                    <Check className="w-3.5 h-3.5 text-neutral-900 stroke-[2.5]" />
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                        );
+                                                    })}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

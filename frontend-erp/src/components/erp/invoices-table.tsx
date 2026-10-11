@@ -77,11 +77,25 @@ export function InvoicesTable({ invoices, isLoading, onView, onPrint, onPayment 
             Voided
           </span>
         );
+      case 'draft':
+        return (
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            Draft
+          </span>
+        );
+      case 'confirmed':
+        return (
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-purple-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+            Confirmed
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-600">
             <span className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
-            {status || 'Draft'}
+            {status || 'Unknown'}
           </span>
         );
     }
