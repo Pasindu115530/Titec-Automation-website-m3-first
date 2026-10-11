@@ -36,7 +36,9 @@ export function POSSummary({
 
       <div className="flex justify-between items-center text-neutral-600 text-sm font-medium py-1">
         <span>Subtotal</span>
-        <span className="font-bold text-neutral-900 text-base">Rs. {subtotal.toLocaleString()}</span>
+        <span className="font-bold text-neutral-900 text-base font-mono">
+          Rs. {Number(subtotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </span>
       </div>
 
       <div className="grid grid-cols-12 gap-2 items-center text-neutral-600 text-sm font-medium">
@@ -58,9 +60,10 @@ export function POSSummary({
         <div className="col-span-4">
           <Input
             type="number"
+            step="0.01"
             value={discountAmount}
             onChange={(e) => onUpdateDiscount(discountType, parseFloat(e.target.value) || 0)}
-            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right text-xs shadow-2xs focus:bg-white"
+            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right text-xs shadow-2xs focus:bg-white font-mono"
             min="0"
           />
         </div>
@@ -69,10 +72,10 @@ export function POSSummary({
       {discountAmount > 0 && (
         <div className="flex justify-between items-center text-xs font-semibold text-rose-600 bg-rose-50/80 border border-rose-100 rounded-xl px-3 py-2">
           <span>Discount Deducted</span>
-          <span>
-            - Rs. {discountType === 'percentage' 
-              ? ((subtotal * discountAmount) / 100).toLocaleString() 
-              : discountAmount.toLocaleString()}
+          <span className="font-mono">
+            - Rs. {Number(discountType === 'percentage' 
+              ? ((subtotal * discountAmount) / 100)
+              : discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
       )}
@@ -84,9 +87,9 @@ export function POSSummary({
             type="number"
             value={taxRate}
             onChange={(e) => onUpdateTax(parseFloat(e.target.value) || 0)}
-            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right w-20 text-xs shadow-2xs focus:bg-white"
+            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right w-20 text-xs shadow-2xs focus:bg-white font-mono"
             min="0"
-            step="0.1"
+            step="0.01"
           />
           <span className="text-neutral-400 text-xs font-bold">%</span>
         </div>
@@ -95,7 +98,9 @@ export function POSSummary({
       {taxRate > 0 && (
         <div className="flex justify-between items-center text-xs font-semibold text-blue-600 bg-blue-50/80 border border-blue-100 rounded-xl px-3 py-2">
           <span>Tax Applied</span>
-          <span>+ Rs. {taxAmount.toLocaleString()}</span>
+          <span className="font-mono">
+            + Rs. {Number(taxAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
         </div>
       )}
 
@@ -106,8 +111,8 @@ export function POSSummary({
             <span className="text-xs text-neutral-500 mt-0.5 block font-medium">Net payable amount</span>
           </div>
           <div className="text-right">
-            <span className="text-3xl font-extrabold text-neutral-900 tracking-tight leading-none">
-              Rs. {grandTotal.toLocaleString()}
+            <span className="text-3xl font-extrabold text-neutral-900 tracking-tight leading-none font-mono">
+              Rs. {Number(grandTotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         </div>

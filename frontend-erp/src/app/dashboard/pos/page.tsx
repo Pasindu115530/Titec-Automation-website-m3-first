@@ -29,22 +29,26 @@ export default function POSPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Derived calculations
-  const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.line_total, 0), [items]);
+  const subtotal = useMemo(() => {
+    const sum = items.reduce((acc, item) => acc + item.line_total, 0);
+    return Number(sum.toFixed(2));
+  }, [items]);
   
   const discountVal = useMemo(() => {
     if (discountType === 'percentage') {
-      return (subtotal * discountAmount) / 100;
+      return Number(((subtotal * discountAmount) / 100).toFixed(2));
     }
-    return discountAmount;
+    return Number(discountAmount);
   }, [subtotal, discountType, discountAmount]);
 
   const taxAmount = useMemo(() => {
     const afterDiscount = Math.max(0, subtotal - discountVal);
-    return (afterDiscount * taxRate) / 100;
+    return Number(((afterDiscount * taxRate) / 100).toFixed(2));
   }, [subtotal, discountVal, taxRate]);
 
   const grandTotal = useMemo(() => {
-    return Math.max(0, subtotal - discountVal) + taxAmount;
+    const total = Math.max(0, subtotal - discountVal) + taxAmount;
+    return Number(total.toFixed(2));
   }, [subtotal, discountVal, taxAmount]);
 
   // Handlers
@@ -64,7 +68,7 @@ export default function POSPage() {
       quantity: 1,
       unit: 'pcs',
       warranty_months: product.warranty_months || 12,
-      line_total: Number(product.price) || 0,
+      line_total: Number(Number(product.price || 0).toFixed(2)),
     };
 
     setItems([...items, newItem]);
@@ -73,14 +77,14 @@ export default function POSPage() {
   const handleUpdateQuantity = (index: number, quantity: number) => {
     const newItems = [...items];
     newItems[index].quantity = quantity;
-    newItems[index].line_total = newItems[index].unit_price * quantity;
+    newItems[index].line_total = Number((newItems[index].unit_price * quantity).toFixed(2));
     setItems(newItems);
   };
 
   const handleUpdatePrice = (index: number, price: number) => {
     const newItems = [...items];
     newItems[index].unit_price = price;
-    newItems[index].line_total = price * newItems[index].quantity;
+    newItems[index].line_total = Number((price * newItems[index].quantity).toFixed(2));
     setItems(newItems);
   };
 

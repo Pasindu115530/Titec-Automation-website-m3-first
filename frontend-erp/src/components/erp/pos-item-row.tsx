@@ -28,9 +28,10 @@ export function POSItemRow({ item, index, onUpdateQuantity, onUpdatePrice, onRem
         <span className="text-neutral-400 text-xs font-semibold">Rs.</span>
         <Input
           type="number"
+          step="0.01"
           value={item.unit_price}
           onChange={(e) => onUpdatePrice(index, parseFloat(e.target.value) || 0)}
-          className="w-24 sm:w-28 bg-neutral-50 border-neutral-200 text-neutral-900 font-semibold text-right h-9 rounded-xl focus:bg-white"
+          className="w-24 sm:w-28 bg-neutral-50 border-neutral-200 text-neutral-900 font-semibold text-right h-9 rounded-xl focus:bg-white font-mono"
           min="0"
         />
       </div>
@@ -61,8 +62,8 @@ export function POSItemRow({ item, index, onUpdateQuantity, onUpdatePrice, onRem
         </Button>
       </div>
 
-      <div className="w-28 sm:w-32 text-right font-extrabold text-neutral-900 text-base sm:text-lg tracking-tight">
-        Rs. {item.line_total.toLocaleString()}
+      <div className="w-28 sm:w-32 text-right font-extrabold text-neutral-900 text-base sm:text-lg tracking-tight font-mono">
+        Rs. {Number(item.line_total || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
 
       <Button 
