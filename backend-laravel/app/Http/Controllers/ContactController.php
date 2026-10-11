@@ -26,7 +26,7 @@ class ContactController extends Controller
         $salesEmail = config('mail.sales.address', 'info@titecautomation.lk'); 
         
         try {
-            Mail::to($salesEmail)->send(new ContactFormSubmitted($contactMessage));
+            Mail::to($salesEmail)->queue(new ContactFormSubmitted($contactMessage));
         } catch (\Exception $e) {
             // Log error but don't fail the request if email fails?
             // Or fail? For now, we'll just log it.

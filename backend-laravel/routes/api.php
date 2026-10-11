@@ -252,3 +252,27 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reports/client-revenue', [\App\Http\Controllers\ReportController::class, 'clientRevenue']);
     });
 });
+
+Route::get('/debug-login', function () {
+    try {
+        // Force config cache to clear
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        
+        // Try the exact login process that is crashing
+        $user = \App\Models\User::where('email', 'lahiru@titecautomation.lk')->first();
+        
+        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        activity()
+            ->causedBy($user)
+            ->useLog('users')
+            ->log("User logged in");
+            
+        $roles = $user->getRoleNames();
+        
+        return "Success!";
+    } catch (\Exception $e) {
+        // This will print the EXACT error directly to the browser
+        return $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine();
+    }
+});

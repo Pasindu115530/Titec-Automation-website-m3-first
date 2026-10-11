@@ -11,15 +11,15 @@ use Illuminate\Queue\SerializesModels;
 
 class QuotationReplyMail extends Mailable
 {
-    public $pdfContent;
+    public $pdfPath;
     public $adminMessage;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($pdfContent, $adminMessage)
+    public function __construct($pdfPath, $adminMessage)
     {
-        $this->pdfContent = $pdfContent;
+        $this->pdfPath = $pdfPath;
         $this->adminMessage = $adminMessage;
     }
 
@@ -57,10 +57,11 @@ class QuotationReplyMail extends Mailable
      */
     public function attachments(): array
     {
-        // Only attach PDF if content is provided
-        if ($this->pdfContent) {
+        // Only attach PDF if path is provided
+        if ($this->pdfPath) {
             return [
-                \Illuminate\Mail\Mailables\Attachment::fromData(fn () => $this->pdfContent, 'Quotation.pdf')
+                \Illuminate\Mail\Mailables\Attachment::fromStorageDisk('quotations', $this->pdfPath)
+                    ->as('Quotation.pdf')
                     ->withMime('application/pdf'),
             ];
         }

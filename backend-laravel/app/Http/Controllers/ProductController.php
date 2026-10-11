@@ -40,6 +40,8 @@ class ProductController extends Controller
         ]);
     }
 
+    // testing
+
     /**
      * Store a newly created resource in storage.
      */
@@ -68,7 +70,8 @@ class ProductController extends Controller
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                $safeName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', $file->getClientOriginalName());
+                $filename = time() . '_' . uniqid() . '_' . $safeName;
                 $file->storeAs('products', $filename, 'public');
                 $imagePaths[] = '/storage/products/' . $filename;
             }
@@ -78,7 +81,8 @@ class ProductController extends Controller
         // Handle Datasheet
         if ($request->hasFile('datasheet')) {
             $file = $request->file('datasheet');
-            $filename = time() . '_datasheet_' . $file->getClientOriginalName();
+            $safeName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_datasheet_' . $safeName;
             $file->storeAs('datasheets', $filename, 'public');
             $validated['datasheet_path'] = '/storage/datasheets/' . $filename;
         }
@@ -196,7 +200,8 @@ class ProductController extends Controller
         // Handle new images (append) safely using storage
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                $safeName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', $file->getClientOriginalName());
+                $filename = time() . '_' . uniqid() . '_' . $safeName;
                 $file->storeAs('products', $filename, 'public');
                 $currentImages[] = '/storage/products/' . $filename;
             }
@@ -222,7 +227,8 @@ class ProductController extends Controller
             }
             
             $file = $request->file('datasheet');
-            $filename = time() . '_datasheet_' . $file->getClientOriginalName();
+            $safeName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_datasheet_' . $safeName;
             $file->storeAs('datasheets', $filename, 'public');
             $validated['datasheet_path'] = '/storage/datasheets/' . $filename;
         }

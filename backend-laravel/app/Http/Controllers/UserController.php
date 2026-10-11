@@ -93,7 +93,7 @@ class UserController extends Controller
         if (!empty($devEmails)) {
             $user->load('employee');
             foreach ($devEmails as $devEmail) {
-                Mail::to($devEmail)->send(new EmailProvisioningRequest($user, $password, $confirmUrl));
+                Mail::to($devEmail)->queue(new EmailProvisioningRequest($user, $password, $confirmUrl));
             }
         }
 
@@ -182,7 +182,7 @@ class UserController extends Controller
             ? $user->employee->personal_email
             : $user->email;
 
-        Mail::to($emailDestination)->send(new EmployeeWelcomeMail($user, $password));
+        Mail::to($emailDestination)->queue(new EmployeeWelcomeMail($user, $password));
 
         // Mark as fully active once welcome email is sent
         if ($user->employee && $user->employee->email_provisioning_status === 'provisioned') {
