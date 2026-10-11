@@ -3,6 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer utilities {
 	.perspective-1000 {
 		perspective: 1000px;
@@ -525,3 +527,159 @@
 		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
 	}
 }
+
+/* ════════════════════════════════════════════════════════════════
+   STARLINE ERP DARK MODE DESIGN SYSTEM
+   ════════════════════════════════════════════════════════════════ */
+
+.dark {
+	color-scheme: dark;
+}
+
+.dark body {
+	background-color: #080B11;
+	color: #F3F4F6;
+}
+
+/* Glassmorphic panels & cards in Dark Mode */
+.dark .starline-card {
+	background: rgba(15, 22, 36, 0.78);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25);
+	color: #F3F4F6;
+}
+
+.dark .glass-panel {
+	background: rgba(255, 255, 255, 0.04);
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .glass-effect {
+	background: rgba(15, 22, 36, 0.72);
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .starline-pill-inactive {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: #9CA3AF;
+}
+
+.dark .starline-pill-inactive:hover {
+	background-color: rgba(255, 255, 255, 0.14);
+	color: #FFFFFF;
+}
+
+/* Adaptive glass card surfaces for existing white translucency utilities */
+.dark [class*="bg-white/40"],
+.dark [class*="bg-white/50"],
+.dark [class*="bg-white/55"],
+.dark [class*="bg-white/60"],
+.dark [class*="bg-white/70"],
+.dark [class*="bg-white/80"],
+.dark [class*="bg-white/85"],
+.dark [class*="bg-white/90"],
+.dark [class*="bg-white/95"] {
+	background-color: rgba(15, 22, 36, 0.75) !important;
+	border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Neutral text high-contrast adaptations */
+.dark .text-neutral-950,
+.dark .text-neutral-900 {
+	color: #F9FAFB !important;
+}
+
+.dark .text-neutral-800 {
+	color: #F3F4F6 !important;
+}
+
+.dark .text-neutral-700 {
+	color: #E5E7EB !important;
+}
+
+.dark .text-neutral-600 {
+	color: #9CA3AF !important;
+}
+
+.dark .text-neutral-500 {
+	color: #9CA3AF !important;
+}
+
+.dark .text-neutral-400 {
+	color: #6B7280 !important;
+}
+
+/* Subtle borders adaptation */
+.dark .border-neutral-200,
+.dark .border-neutral-200\/70,
+.dark .border-neutral-200\/60,
+.dark .border-neutral-200\/50,
+.dark .border-neutral-100,
+.dark [class*="border-white/80"],
+.dark [class*="border-white/70"] {
+	border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Table rows hover adaptation */
+.dark tr[class*="hover:bg-white"]:hover,
+.dark tr[class*="hover:bg-neutral-50"]:hover {
+	background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Stat badge cards adaptation in Dark Mode */
+.dark [class*="bg-[#FFE7D1]"],
+.dark [class*="bg-[#FFF4E8]"] {
+	background-color: rgba(249, 115, 22, 0.16) !important;
+	border-color: rgba(249, 115, 22, 0.28) !important;
+}
+
+.dark [class*="bg-[#F1EBFF]"],
+.dark [class*="bg-[#E2D6FE]"] {
+	background-color: rgba(139, 92, 246, 0.16) !important;
+	border-color: rgba(139, 92, 246, 0.28) !important;
+}
+
+.dark [class*="bg-[#E6F9F7]"],
+.dark [class*="bg-[#C7F3ED]"] {
+	background-color: rgba(20, 184, 166, 0.16) !important;
+	border-color: rgba(20, 184, 166, 0.28) !important;
+}
+
+/* Dialog & popup dark styling */
+.dark [role="dialog"],
+.dark [data-radix-popper-content-wrapper] > div {
+	background-color: rgba(13, 19, 33, 0.96) !important;
+	border-color: rgba(255, 255, 255, 0.1) !important;
+	color: #F3F4F6 !important;
+}
+
+/* Form input fields in Dark Mode */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+	background-color: rgba(13, 19, 33, 0.6) !important;
+	color: #F9FAFB !important;
+	border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+	border-color: #38BDF8 !important;
+	box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+}
+
+/* Dark mode scrollbars */
+.dark .modal-scroll {
+	scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+.dark .modal-scroll::-webkit-scrollbar-thumb {
+	background: rgba(148, 163, 184, 0.3);
+}
+
+.dark .modal-scroll::-webkit-scrollbar-thumb:hover {
+	background: rgba(148, 163, 184, 0.5);
+}

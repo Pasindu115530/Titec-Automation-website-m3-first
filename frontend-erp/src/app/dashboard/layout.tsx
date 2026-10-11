@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { ConnectionStatus } from '@/components/layout/connection-status';
 import { Toaster } from '@/components/ui/sonner';
 import Link from 'next/link';
@@ -70,8 +71,8 @@ function SidebarGroup({
                 className={cn(
                     "flex items-center justify-between w-full px-5 py-2 text-[10.5px] font-bold uppercase tracking-[0.12em] transition-colors duration-200 rounded-lg",
                     hasActiveItem
-                        ? "text-neutral-800"
-                        : "text-neutral-500 hover:text-neutral-700"
+                        ? "text-neutral-800 dark:text-neutral-200"
+                        : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
                 )}
             >
                 <span>{group.label}</span>
@@ -113,13 +114,13 @@ function SidebarGroup({
                                                 "flex items-center gap-3 pl-7 pr-5 py-2.5 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer",
                                                 isActive
                                                     ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
-                                                    : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
+                                                    : "bg-white/55 dark:bg-white/[0.06] backdrop-blur-md text-neutral-800 dark:text-neutral-200 border border-white/70 dark:border-white/[0.08] shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:bg-white/80 dark:hover:bg-white/[0.12] hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 dark:hover:text-white hover:scale-[1.01]"
                                             )}
                                         >
                                             <item.icon
                                                 className={cn(
                                                     "h-4 w-4 shrink-0",
-                                                    isActive ? "text-white" : "text-neutral-600"
+                                                    isActive ? "text-white" : "text-neutral-600 dark:text-neutral-400"
                                                 )}
                                             />
                                             <span className="truncate">{item.name}</span>
@@ -155,7 +156,14 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const { theme, setTheme, resolvedTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isDarkMode = mounted && (resolvedTheme === 'dark' || theme === 'dark');
     const pathname = usePathname();
     const router = useRouter();
     const { user, logout, isAdmin, isLoading } = useAuth();
@@ -222,13 +230,13 @@ export default function AdminLayout({
     }
 
     return (
-        <div className="min-h-screen bg-[#D0D4DA] text-neutral-900 flex flex-col antialiased relative overflow-hidden">
+        <div className="min-h-screen bg-[#D0D4DA] dark:bg-[#080B11] text-neutral-900 dark:text-neutral-100 flex flex-col antialiased relative overflow-hidden transition-colors duration-300">
             {/* Ambient Background Depth Layer (Down Level) */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-                <div className="absolute -top-32 right-1/4 w-[650px] h-[650px] bg-blue-400/15 rounded-full blur-[140px]" />
-                <div className="absolute top-1/2 right-10 w-[550px] h-[550px] bg-purple-400/15 rounded-full blur-[140px]" />
-                <div className="absolute bottom-0 left-1/3 w-[600px] h-[600px] bg-cyan-400/15 rounded-full blur-[140px]" />
-                <div className="absolute top-20 left-10 w-[400px] h-[400px] bg-amber-300/15 rounded-full blur-[120px]" />
+                <div className="absolute -top-32 right-1/4 w-[650px] h-[650px] bg-blue-400/15 dark:bg-blue-600/25 rounded-full blur-[140px]" />
+                <div className="absolute top-1/2 right-10 w-[550px] h-[550px] bg-purple-400/15 dark:bg-purple-600/25 rounded-full blur-[140px]" />
+                <div className="absolute bottom-0 left-1/3 w-[600px] h-[600px] bg-cyan-400/15 dark:bg-cyan-500/25 rounded-full blur-[140px]" />
+                <div className="absolute top-20 left-10 w-[400px] h-[400px] bg-amber-300/15 dark:bg-amber-500/15 rounded-full blur-[120px]" />
             </div>
 
             {/* Mobile Overlay */}
@@ -265,9 +273,9 @@ export default function AdminLayout({
                             variant="ghost"
                             size="icon"
                             onClick={toggleSidebar}
-                            className="lg:hidden rounded-2xl hover:bg-neutral-300/60"
+                            className="lg:hidden rounded-2xl hover:bg-neutral-300/60 dark:hover:bg-neutral-800/80"
                         >
-                            <X className="h-5 w-5 text-neutral-800" />
+                            <X className="h-5 w-5 text-neutral-800 dark:text-neutral-200" />
                         </Button>
                     </div>
 
@@ -287,13 +295,13 @@ export default function AdminLayout({
                                             "flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer",
                                             isActive
                                                 ? "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-[0_4px_18px_rgba(37,99,235,0.35),0_1px_3px_rgba(0,0,0,0.06)] border border-white/25 scale-[1.02]"
-                                                : "bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 hover:scale-[1.01]"
+                                                : "bg-white/55 dark:bg-white/[0.06] backdrop-blur-md text-neutral-800 dark:text-neutral-200 border border-white/70 dark:border-white/[0.08] shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:bg-white/80 dark:hover:bg-white/[0.12] hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 dark:hover:text-white hover:scale-[1.01]"
                                         )}
                                     >
                                         <DashboardGridIcon
                                             className={cn(
                                                 "h-5 w-5 shrink-0",
-                                                isActive ? "text-white" : "text-neutral-600"
+                                                isActive ? "text-white" : "text-neutral-600 dark:text-neutral-400"
                                             )}
                                         />
                                         <span className="truncate">Dashboard</span>
@@ -318,8 +326,8 @@ export default function AdminLayout({
                         {/* Help / Support Link */}
                         <div className="pt-3">
                             <Link href="/dashboard" className="block">
-                                <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 backdrop-blur-md text-neutral-800 border border-white/70 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950">
-                                    <HelpCircle className="h-5 w-5 text-neutral-600 shrink-0" />
+                                <span className="flex items-center gap-3.5 px-6 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer bg-white/55 dark:bg-white/[0.06] backdrop-blur-md text-neutral-800 dark:text-neutral-200 border border-white/70 dark:border-white/[0.08] shadow-[0_4px_16px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] hover:bg-white/80 dark:hover:bg-white/[0.12] hover:shadow-[0_6px_20px_rgba(0,0,0,0.07)] hover:text-neutral-950 dark:hover:text-white">
+                                    <HelpCircle className="h-5 w-5 text-neutral-600 dark:text-neutral-400 shrink-0" />
                                     <span>Help & Docs</span>
                                 </span>
                             </Link>
@@ -330,7 +338,7 @@ export default function AdminLayout({
                     <div className="p-4 min-w-[17.5rem]">
                         <button
                             onClick={logout}
-                            className="flex items-center gap-3 px-6 py-3 w-full rounded-full text-sm font-medium text-red-600 bg-red-100/60 backdrop-blur-md border border-red-200/60 hover:bg-red-100/90 shadow-[0_4px_14px_rgba(239,68,68,0.06)] transition-all"
+                            className="flex items-center gap-3 px-6 py-3 w-full rounded-full text-sm font-medium text-red-600 dark:text-red-400 bg-red-100/60 dark:bg-red-950/30 backdrop-blur-md border border-red-200/60 dark:border-red-900/40 hover:bg-red-100/90 dark:hover:bg-red-900/50 shadow-[0_4px_14px_rgba(239,68,68,0.06)] transition-all cursor-pointer"
                         >
                             <LogOut className="h-4 w-4" />
                             <span>Sign Out</span>
@@ -347,18 +355,18 @@ export default function AdminLayout({
                                 variant="ghost"
                                 size="icon"
                                 onClick={toggleSidebar}
-                                className={cn("rounded-full hover:bg-neutral-300/70", isSidebarOpen && "lg:hidden")}
+                                className={cn("rounded-full hover:bg-neutral-300/70 dark:hover:bg-neutral-800/80", isSidebarOpen && "lg:hidden")}
                                 aria-label="Toggle navigation"
                             >
-                                <Menu className="h-5 w-5 text-neutral-800" />
+                                <Menu className="h-5 w-5 text-neutral-800 dark:text-neutral-200" />
                             </Button>
 
                             {/* Welcome Greeting Title */}
                             <div>
-                                <h1 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+                                <h1 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white tracking-tight flex items-center gap-2">
                                     Welcome, {user?.firstName || 'Hashan'}
                                 </h1>
-                                <p className="text-xs md:text-sm text-neutral-600 mt-0.5 font-normal">
+                                <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 font-normal">
                                     Here`s what happening in your store.
                                 </p>
                             </div>
@@ -366,11 +374,11 @@ export default function AdminLayout({
 
                         {/* Right Pill Actions: Search, Theme Toggle, Notifications, Profile (Upper Level) */}
                         <div className="flex items-center gap-3">
-                            <div className="bg-white/70 backdrop-blur-md rounded-full px-4 py-1.5 flex items-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] border border-white/80">
+                            <div className="bg-white/70 dark:bg-neutral-900/80 backdrop-blur-md rounded-full px-4 py-1.5 flex items-center gap-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.03)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.4)] border border-white/80 dark:border-neutral-800/80">
                                 {/* Search Button */}
                                 <button
                                     type="button"
-                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition-colors"
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
                                     title="Search"
                                     onClick={() => router.push('/dashboard/pos')}
                                 >
@@ -380,17 +388,17 @@ export default function AdminLayout({
                                 {/* Dark/Light mode icon */}
                                 <button
                                     type="button"
-                                    onClick={() => setIsDarkMode(!isDarkMode)}
-                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 transition-colors"
-                                    title="Toggle theme"
+                                    onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
+                                    title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
                                 >
-                                    {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
+                                    {isDarkMode ? <Sun className="w-4 h-4 text-amber-400 animate-in fade-in" /> : <Moon className="w-4 h-4 text-neutral-700 dark:text-neutral-300 animate-in fade-in" />}
                                 </button>
 
                                 {/* Notification Bell with Red Count Badge */}
                                 <Link
                                     href="/dashboard/quotations"
-                                    className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-neutral-900 relative transition-colors"
+                                    className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white relative transition-colors cursor-pointer"
                                     title="Notifications"
                                 >
                                     <Bell className="w-4 h-4" />
@@ -399,7 +407,7 @@ export default function AdminLayout({
                                     </span>
                                 </Link>
 
-                                <div className="h-4 w-px bg-neutral-200 mx-0.5" />
+                                <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800 mx-0.5" />
 
                                 {/* Connection Status Indicator */}
                                 <div className="hidden sm:block">
@@ -409,35 +417,35 @@ export default function AdminLayout({
                                 {/* User Dropdown */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <button className="flex items-center gap-2 pl-1 pr-1.5 py-0.5 rounded-full hover:bg-neutral-100 transition-colors outline-hidden">
-                                            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                                        <button className="flex items-center gap-2 pl-1 pr-1.5 py-0.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors outline-hidden cursor-pointer">
+                                            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 dark:from-neutral-700 dark:to-neutral-900 text-white flex items-center justify-center text-xs font-bold shadow-xs">
                                                 {user?.firstName?.[0] || 'A'}
                                             </div>
-                                            <ChevronDown className="w-3.5 h-3.5 text-neutral-500" />
+                                            <ChevronDown className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400" />
                                         </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl p-2.5 bg-white border border-neutral-200/90 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] z-50">
-                                        <div className="flex items-center gap-3 p-2.5 bg-neutral-50 rounded-xl mb-1.5 border border-neutral-100">
-                                            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 text-white flex items-center justify-center text-sm font-bold shadow-xs shrink-0">
+                                    <DropdownMenuContent align="end" sideOffset={12} className="w-64 rounded-2xl p-2.5 bg-white dark:bg-neutral-900 border border-neutral-200/90 dark:border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.15),0_4px_12px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50">
+                                        <div className="flex items-center gap-3 p-2.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-xl mb-1.5 border border-neutral-100 dark:border-neutral-700/60">
+                                            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 dark:from-neutral-700 dark:to-neutral-900 text-white flex items-center justify-center text-sm font-bold shadow-xs shrink-0">
                                                 {user?.firstName?.[0] || 'T'}
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-bold text-neutral-900 truncate leading-tight">{userDisplayName}</p>
-                                                <p className="text-xs text-neutral-500 truncate mt-0.5">{userRoleDisplay}</p>
+                                                <p className="text-sm font-bold text-neutral-900 dark:text-white truncate leading-tight">{userDisplayName}</p>
+                                                <p className="text-xs text-neutral-500 dark:text-neutral-400 capitalize truncate mt-0.5">{userRoleDisplay}</p>
                                             </div>
                                         </div>
-                                        <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer hover:bg-neutral-100 transition-colors">
-                                            <Link href="/dashboard/settings" className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 w-full">
-                                                <Settings className="w-4 h-4 text-neutral-500" />
+                                        <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+                                            <Link href="/dashboard/settings" className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300 w-full">
+                                                <Settings className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                                                 <span>Settings</span>
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuSeparator className="my-1 bg-neutral-100" />
+                                        <DropdownMenuSeparator className="my-1 bg-neutral-100 dark:bg-neutral-800" />
                                         <DropdownMenuItem
                                             onClick={logout}
-                                            className="rounded-xl px-3 py-2 cursor-pointer text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 transition-colors flex items-center gap-2.5 text-sm font-medium w-full"
+                                            className="rounded-xl px-3 py-2 cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 focus:text-red-600 focus:bg-red-50 transition-colors flex items-center gap-2.5 text-sm font-medium w-full"
                                         >
-                                            <LogOut className="w-4 h-4 text-red-500" />
+                                            <LogOut className="w-4 h-4 text-red-500 dark:text-red-400" />
                                             <span>Sign Out</span>
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
