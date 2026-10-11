@@ -160,8 +160,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const token = payload.token ?? (typeof window !== 'undefined' ? localStorage.getItem('token') ?? '' : '');
         const roles = payload.roles ?? user?.roles ?? [];
         const permissions = payload.permissions ?? user?.permissions ?? [];
+        // Explicitly carry requiresPasswordReset so clearing it (false) is persisted correctly
+        const requiresPasswordReset = payload.requiresPasswordReset ?? user?.requiresPasswordReset ?? false;
 
-        const normalized: User = { id, email, firstName, lastName, role, token, roles, permissions };
+        const normalized: User = { id, email, firstName, lastName, role, token, roles, permissions, requiresPasswordReset };
         setUser(normalized);
         try {
             localStorage.setItem('user', JSON.stringify(normalized));
