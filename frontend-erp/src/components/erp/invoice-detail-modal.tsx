@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Printer, CreditCard } from 'lucide-react';
+import { Printer, CreditCard, CheckCircle, Loader2 } from 'lucide-react';
 import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
 
@@ -11,10 +11,12 @@ interface InvoiceDetailModalProps {
   onClose: () => void;
   invoice: any;
   onPayment: (invoice: any) => void;
+  onInvoiceUpdated?: (invoice: any) => void;
 }
 
-export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: InvoiceDetailModalProps) {
+export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment, onInvoiceUpdated }: InvoiceDetailModalProps) {
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   if (!invoice) return null;
 
@@ -49,6 +51,23 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
     }
   };
 
+  const handleConfirmDraft = async () => {
+    if (!invoice?.id) return;
+    setIsConfirming(true);
+    try {
+      const res = await invoiceService.confirmInvoice(invoice.id);
+      toast.success('Invoice confirmed and stock deducted!');
+      if (onInvoiceUpdated) {
+        onInvoiceUpdated(res.data || { ...invoice, status: 'confirmed' });
+      }
+    } catch (error: any) {
+      console.error('Failed to confirm draft invoice', error);
+      toast.error(error.response?.data?.message || 'Failed to confirm invoice');
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   const balance = Number(invoice.grand_total) - Number(invoice.paid_amount || 0);
 
   return (
@@ -64,8 +83,10 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
             </DialogTitle>
             <Badge variant="outline" className={`uppercase tracking-wider font-bold text-xs px-2.5 py-1 rounded-xl shadow-2xs ${
               invoice.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
-              invoice.status === 'partial' ? 'bg-sky-100 text-sky-800 border-sky-300' :
-              'bg-amber-100 text-amber-800 border-amber-300'
+              invoice.status === 'partial' || invoice.status === 'partially_paid' ? 'bg-sky-100 text-sky-800 border-sky-300' :
+              invoice.status === 'confirmed' ? 'bg-purple-100 text-purple-800 border-purple-300' :
+              invoice.status === 'draft' ? 'bg-amber-100 text-amber-800 border-amber-300' :
+              'bg-neutral-100 text-neutral-800 border-neutral-300'
             }`}>
               {invoice.status}
             </Badge>
@@ -172,8 +193,26 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
           <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium shadow-2xs">
             Close
           </Button>
-          {balance > 0 && (invoice.status === 'confirmed' || invoice.status === 'partially_paid') && (
-            <Button type="button" className="bg-emerald-200 border border-emerald-300 text-emerald-800 hover:bg-emerald-300 font-bold rounded-xl shadow-2xs" onClick={() => onPayment(invoice)}>
+          {invoice.status === 'draft' && (
+            <Button
+              type="button"
+              disabled={isConfirming}
+              className="bg-sky-200 border border-sky-300 text-sky-800 hover:bg-sky-300 font-bold rounded-xl shadow-2xs cursor-pointer"
+              onClick={handleConfirmDraft}
+            >
+              {isConfirming ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Confirming...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" /> Confirm Order
+                </>
+              )}
+            </Button>
+          )}
+          {balance > 0 && (invoice.status === 'confirmed' || invoice.status === 'partially_paid' || invoice.status === 'draft') && (
+            <Button type="button" className="bg-emerald-200 border border-emerald-300 text-emerald-800 hover:bg-emerald-300 font-bold rounded-xl shadow-2xs cursor-pointer" onClick={() => onPayment(invoice)}>
               <CreditCard className="mr-2 h-4 w-4" /> Record Payment
             </Button>
           )}

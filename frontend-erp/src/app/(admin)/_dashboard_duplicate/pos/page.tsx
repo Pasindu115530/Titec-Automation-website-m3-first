@@ -10,7 +10,7 @@ import { POSSummary } from '@/components/erp/pos-summary';
 import { POSConfirmModal } from '@/components/erp/pos-confirm-modal';
 import { invoiceService } from '@/services/invoiceService';
 import { toast } from 'sonner';
-import { FileText, Save, History, Printer, Package } from 'lucide-react';
+import { FileText, Save, History, Printer, Package, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
@@ -27,6 +27,7 @@ export default function POSPage() {
   // Modal State
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   // Derived calculations
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.line_total, 0), [items]);
@@ -129,6 +130,48 @@ export default function POSPage() {
     }
   };
 
+  const handleSaveDraft = async () => {
+    if (!selectedClient) {
+      toast.error('Please select a client first');
+      return;
+    }
+
+    if (items.length === 0) {
+      toast.error('Add at least one item to save as draft');
+      return;
+    }
+
+    setIsSavingDraft(true);
+    try {
+      const payload = {
+        client_id: selectedClient.id,
+        client_name: selectedClient.company_name || selectedClient.contact_person,
+        items,
+        tax_rate: taxRate,
+        discount_amount: discountAmount,
+        discount_type: discountType,
+        subtotal,
+        tax_amount: taxAmount,
+        grand_total: grandTotal,
+      };
+
+      const result = await invoiceService.createInvoice(payload);
+      const invNumber = result?.invoice_number || (result?.offline ? 'Draft (Offline)' : 'Draft');
+      toast.success(`Draft saved successfully! (${invNumber})`);
+
+      // Reset POS cart & selection
+      setSelectedClient(null);
+      setItems([]);
+      setDiscountAmount(0);
+      setTaxRate(0);
+    } catch (error: any) {
+      console.error('Failed to save draft:', error);
+      toast.error(error.response?.data?.message || 'Failed to save draft. Please try again.');
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
       {/* Left Area - POS Input (70%) */}
@@ -196,14 +239,19 @@ export default function POSPage() {
           </Button>
           <Button 
             variant="outline" 
-            className="h-16 border-amber-500/30 hover:bg-amber-500/10 text-amber-500"
-            onClick={() => {
-              // Usually saves as draft
-              if(!selectedClient) toast.error('Select a client first');
-              else toast.info('Draft saving to be implemented');
-            }}
+            disabled={isSavingDraft || isSubmitting}
+            className="h-16 border-amber-500/30 hover:bg-amber-500/10 text-amber-500 disabled:opacity-50 disabled:pointer-events-none"
+            onClick={handleSaveDraft}
           >
-            <Save className="mr-2 h-5 w-5" /> Save Draft
+            {isSavingDraft ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-5 w-5" /> Save Draft
+              </>
+            )}
           </Button>
           <Button 
             className="h-20 col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/20 text-lg font-bold font-orbitron"

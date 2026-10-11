@@ -135,6 +135,7 @@ export default function InvoicesPage() {
         onClose={() => setIsDetailModalOpen(false)} 
         invoice={selectedInvoice}
         onPayment={openPaymentModal}
+        onInvoiceUpdated={handleInvoiceUpdated}
       />
 
       <RecordPaymentModal 
