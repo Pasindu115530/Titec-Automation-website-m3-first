@@ -86,5 +86,12 @@ export const invoiceService = {
       payment_date: new Date().toISOString().split('T')[0],
     });
     return response.data;
+  },
+
+  async downloadInvoicePdf(id: number): Promise<Blob> {
+    const response = await api.get(`/api/invoices/${id}/pdf`, {
+      responseType: 'blob',
+    });
+    return response.data;
   }
 };

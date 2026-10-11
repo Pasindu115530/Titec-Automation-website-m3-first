@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Printer, CreditCard } from 'lucide-react';
 import { invoiceService } from '@/services/invoiceService';
+import { toast } from 'sonner';
 
 interface InvoiceDetailModalProps {
   isOpen: boolean;
@@ -18,13 +19,31 @@ export function InvoiceDetailModal({ isOpen, onClose, invoice, onPayment }: Invo
   if (!invoice) return null;
 
   const handlePrint = async () => {
+    if (!invoice?.id) return;
     setIsPrinting(true);
+    const toastId = toast.loading('Generating invoice PDF...');
     try {
-      // In a real implementation, you might fetch a PDF URL from the backend
-      // window.open(invoice.pdf_url, '_blank');
-      console.log('Printing invoice...', invoice.id);
-    } catch (error) {
+      const blob = await invoiceService.downloadInvoicePdf(invoice.id);
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      
+      // Try opening in new tab for preview and printing
+      const printWindow = window.open(url, '_blank');
+      
+      // If popup blocker blocked the new tab, trigger direct download
+      if (!printWindow || printWindow.closed || typeof printWindow.closed === 'undefined') {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Invoice_${invoice.invoice_number || invoice.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      
+      toast.success('Invoice PDF ready!', { id: toastId });
+    } catch (error: any) {
       console.error('Print failed', error);
+      const msg = error.response?.data?.message || 'Failed to generate invoice PDF.';
+      toast.error(msg, { id: toastId });
     } finally {
       setIsPrinting(false);
     }

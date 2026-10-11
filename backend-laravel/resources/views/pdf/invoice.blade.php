@@ -46,15 +46,25 @@
 <div class="details-container">
     <div>
         <div class="section-title">Bill To:</div>
-        <strong>{{ $invoice->client->company_name ?: $invoice->client->contact_person }}</strong><br>
-        @if($invoice->client->company_name)
-            Attn: {{ $invoice->client->contact_person }}<br>
-        @endif
-        {!! nl2br(e($invoice->client->address)) !!}<br>
-        {{ $invoice->client->city }}<br>
-        Phone: {{ $invoice->client->phone }}<br>
-        @if($invoice->client->tax_id)
-            TIN: {{ $invoice->client->tax_id }}
+        @if($invoice->client)
+            <strong>{{ $invoice->client->company_name ?: $invoice->client->contact_person }}</strong><br>
+            @if($invoice->client->company_name && $invoice->client->contact_person)
+                Attn: {{ $invoice->client->contact_person }}<br>
+            @endif
+            @if($invoice->client->address)
+                {!! nl2br(e($invoice->client->address)) !!}<br>
+            @endif
+            @if($invoice->client->city)
+                {{ $invoice->client->city }}<br>
+            @endif
+            @if($invoice->client->phone)
+                Phone: {{ $invoice->client->phone }}<br>
+            @endif
+            @if($invoice->client->tax_id)
+                TIN: {{ $invoice->client->tax_id }}
+            @endif
+        @else
+            <strong>Walk-in Customer</strong><br>
         @endif
     </div>
     <div>
