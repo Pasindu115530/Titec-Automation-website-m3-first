@@ -147,10 +147,10 @@ export function AddClientModal({ isOpen, onClose, onClientAdded }: AddClientModa
             </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-200 border border-rose-300 text-red-600 hover:bg-rose-300 rounded-xl font-medium">
+            <Button type="button" variant="outline" onClick={onClose} className="bg-rose-100 hover:bg-rose-200 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 dark:text-rose-300 dark:border-rose-900/40 rounded-xl font-medium cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="bg-sky-200 border border-sky-300 hover:bg-sky-300 text-sky-600 rounded-xl font-semibold shadow-xs">
+            <Button type="submit" disabled={isSubmitting} className="bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold border border-sky-200 shadow-[0_8px_20px_rgba(125,211,252,0.35)] dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 rounded-xl px-5 transition-all cursor-pointer">
               {isSubmitting ? 'Saving...' : 'Save Client'}
             </Button>
           </DialogFooter>

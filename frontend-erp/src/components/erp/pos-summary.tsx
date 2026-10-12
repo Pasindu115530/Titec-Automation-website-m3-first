@@ -105,13 +105,13 @@ export function POSSummary({
       )}
 
       <div className="pt-2">
-        <div className="bg-sky-200/90 text-neutral-900 rounded-2xl p-5 shadow-xs flex justify-between items-end border border-white/80">
+        <div className="bg-sky-200/90 dark:bg-gradient-to-br dark:from-blue-950/70 dark:to-indigo-950/70 dark:border-blue-800/40 text-neutral-900 dark:text-white rounded-2xl p-5 shadow-xs dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] flex justify-between items-end border border-white/80 transition-all">
           <div>
-            <span className="text-[11px] font-bold text-neutral-600 uppercase tracking-wider block">Grand Total</span>
-            <span className="text-xs text-neutral-500 mt-0.5 block font-medium">Net payable amount</span>
+            <span className="text-[11px] font-bold text-neutral-600 dark:text-blue-300 uppercase tracking-wider block">Grand Total</span>
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 block font-medium">Net payable amount</span>
           </div>
           <div className="text-right">
-            <span className="text-3xl font-extrabold text-neutral-900 tracking-tight leading-none font-mono">
+            <span className="text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight leading-none font-mono">
               Rs. {Number(grandTotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>

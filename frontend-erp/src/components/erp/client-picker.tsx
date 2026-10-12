@@ -110,7 +110,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
         <Button 
           type="button"
           onClick={() => setIsAddModalOpen(true)} 
-          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02]"
+          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_4px_18px_rgba(37,99,235,0.45)] rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02] cursor-pointer"
         >
           <UserPlus className="h-4 w-4 mr-1.5" /> New
         </Button>
