@@ -628,6 +628,15 @@
 	background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
+/* Table headers adaptation in Dark Mode (removes milky white header bars, matches Products & Stock) */
+.dark thead[class*="bg-white/30"],
+.dark thead[class*="bg-white/40"],
+.dark thead,
+.dark thead tr {
+	background-color: transparent !important;
+	border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
 /* Stat badge cards adaptation in Dark Mode */
 .dark [class*="bg-[#FFE7D1]"],
 .dark [class*="bg-[#FFF4E8]"] {

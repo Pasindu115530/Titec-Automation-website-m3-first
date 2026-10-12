@@ -46,12 +46,12 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
     return (
         <>
             <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
-                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 dark:border-white/5 bg-white/40">
                     <h3 className="font-bold text-neutral-800 dark:text-neutral-100 text-sm">Existing Brands</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm border-collapse">
-                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                        <thead className="border-b border-neutral-200/70 dark:border-white/5 bg-white/30 dark:bg-transparent">
                             <tr className="hover:bg-transparent">
                                 <th className="px-6 py-3 w-[120px]">
                                     <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] dark:text-purple-300 border border-white/80 dark:border-purple-500/20 shadow-2xs">
