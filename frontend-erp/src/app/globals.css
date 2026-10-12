@@ -747,85 +747,85 @@
 }
 
 /* Event & Status Badges Adaptation in Dark Mode (Activity Logs, Status Pills, Diffs) */
-.dark [class*="bg-emerald-50"]:not(.login-isolated):not(.login-isolated *),
-.dark [class*="bg-emerald-100"]:not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-emerald-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *),
+.dark [class*="bg-emerald-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(6, 78, 59, 0.35) !important;
 	border-color: rgba(16, 185, 129, 0.3) !important;
 	color: #6EE7B7 !important;
 }
 
-.dark [class*="bg-amber-50"]:not(.login-isolated):not(.login-isolated *),
-.dark [class*="bg-amber-100"]:not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-amber-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *),
+.dark [class*="bg-amber-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(120, 53, 15, 0.35) !important;
 	border-color: rgba(245, 158, 11, 0.3) !important;
 	color: #FCD34D !important;
 }
 
-.dark [class*="bg-rose-50"]:not(.login-isolated):not(.login-isolated *),
-.dark [class*="bg-rose-100"]:not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-rose-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *),
+.dark [class*="bg-rose-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(136, 19, 55, 0.35) !important;
 	border-color: rgba(244, 63, 94, 0.3) !important;
 	color: #FDA4AF !important;
 }
 
-.dark [class*="bg-sky-50"]:not(.login-isolated):not(.login-isolated *),
-.dark [class*="bg-sky-100"]:not(button):not(a):not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-sky-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(button):not(a):not(.login-isolated):not(.login-isolated *),
+.dark [class*="bg-sky-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(button):not(a):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(8, 47, 73, 0.35) !important;
 	border-color: rgba(14, 165, 233, 0.3) !important;
 	color: #7DD3FC !important;
 }
 
-.dark [class*="bg-teal-50"]:not(.login-isolated):not(.login-isolated *),
-.dark [class*="bg-teal-100"]:not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-teal-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *),
+.dark [class*="bg-teal-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(19, 78, 74, 0.35) !important;
 	border-color: rgba(20, 184, 166, 0.3) !important;
 	color: #5EEAD4 !important;
 }
 
-.dark [class*="bg-neutral-100"]:not(input):not(textarea):not(select):not(.login-isolated):not(.login-isolated *) {
+.dark [class*="bg-neutral-100"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(30, 41, 59, 0.6) !important;
 	border-color: rgba(255, 255, 255, 0.1) !important;
 	color: #D1D5DB !important;
 }
 
-.dark .text-emerald-700:not(.login-isolated):not(.login-isolated *) {
+.dark .text-emerald-700:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #6EE7B7 !important;
 }
 
-.dark .text-amber-700:not(.login-isolated):not(.login-isolated *) {
+.dark .text-amber-700:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #FCD34D !important;
 }
 
-.dark .text-rose-700:not(.login-isolated):not(.login-isolated *) {
+.dark .text-rose-700:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #FDA4AF !important;
 }
 
-.dark .text-rose-600:not(.login-isolated):not(.login-isolated *) {
+.dark .text-rose-600:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #FB7185 !important;
 }
 
-.dark .text-emerald-600:not(.login-isolated):not(.login-isolated *) {
+.dark .text-emerald-600:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #34D399 !important;
 }
 
-.dark .text-sky-700:not(.login-isolated):not(.login-isolated *),
-.dark .text-sky-800:not(.login-isolated):not(.login-isolated *) {
+.dark .text-sky-700:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *),
+.dark .text-sky-800:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #7DD3FC !important;
 }
 
-.dark .text-teal-800:not(.login-isolated):not(.login-isolated *) {
+.dark .text-teal-800:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	color: #5EEAD4 !important;
 }
 
-.dark [class*="border-emerald-200"] {
+.dark [class*="border-emerald-200"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]) {
 	border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
-.dark [class*="border-amber-200"] {
+.dark [class*="border-amber-200"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]) {
 	border-color: rgba(245, 158, 11, 0.3) !important;
 }
 
-.dark [class*="border-rose-200"] {
+.dark [class*="border-rose-200"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]) {
 	border-color: rgba(244, 63, 94, 0.3) !important;
 }
 
@@ -853,22 +853,22 @@
 }
 
 /* Form input fields & select dropdowns in Dark Mode */
-.dark input:not([type="checkbox"]):not([type="radio"]),
-.dark textarea,
-.dark select,
-.dark [role="combobox"],
-.dark button[role="combobox"] {
+.dark input:not([type="checkbox"]):not([type="radio"]):not(.login-isolated):not(.login-isolated *),
+.dark textarea:not(.login-isolated):not(.login-isolated *),
+.dark select:not(.login-isolated):not(.login-isolated *),
+.dark [role="combobox"]:not(.login-isolated):not(.login-isolated *),
+.dark button[role="combobox"]:not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(13, 19, 33, 0.6) !important;
 	color: #F9FAFB !important;
 	border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus,
-.dark [role="combobox"]:focus,
-.dark button[role="combobox"]:focus,
-.dark [role="combobox"][data-state="open"] {
+.dark input:not(.login-isolated):not(.login-isolated *):focus,
+.dark textarea:not(.login-isolated):not(.login-isolated *):focus,
+.dark select:not(.login-isolated):not(.login-isolated *):focus,
+.dark [role="combobox"]:not(.login-isolated):not(.login-isolated *):focus,
+.dark button[role="combobox"]:not(.login-isolated):not(.login-isolated *):focus,
+.dark [role="combobox"]:not(.login-isolated):not(.login-isolated *)[data-state="open"] {
 	background-color: rgba(13, 19, 33, 0.85) !important;
 	border-color: #38BDF8 !important;
 	box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
