@@ -682,4 +682,98 @@
 
 .dark .modal-scroll::-webkit-scrollbar-thumb:hover {
 	background: rgba(148, 163, 184, 0.5);
+}
+
+/* ============================================================
+   LOGIN ISOLATION: Dark mode never affects the login interface
+   ============================================================ */
+.login-isolated,
+.dark .login-isolated,
+html.dark .login-isolated {
+	color-scheme: light !important;
+}
+
+/* Glassmorphic card must stay pristine light on login interface */
+.login-isolated [class*="bg-white/80"],
+.dark .login-isolated [class*="bg-white/80"],
+html.dark .login-isolated [class*="bg-white/80"] {
+	background-color: rgba(255, 255, 255, 0.8) !important;
+	border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Badges and pills */
+.login-isolated [class*="bg-neutral-100/90"],
+.dark .login-isolated [class*="bg-neutral-100/90"],
+html.dark .login-isolated [class*="bg-neutral-100/90"] {
+	background-color: rgba(245, 245, 245, 0.9) !important;
+}
+
+/* Text colors must retain light-theme values */
+.login-isolated .text-neutral-950,
+.dark .login-isolated .text-neutral-950,
+html.dark .login-isolated .text-neutral-950,
+.login-isolated .text-neutral-900,
+.dark .login-isolated .text-neutral-900,
+html.dark .login-isolated .text-neutral-900 {
+	color: #171717 !important;
+}
+
+.login-isolated .text-neutral-800,
+.dark .login-isolated .text-neutral-800,
+html.dark .login-isolated .text-neutral-800 {
+	color: #262626 !important;
+}
+
+.login-isolated .text-neutral-700,
+.dark .login-isolated .text-neutral-700,
+html.dark .login-isolated .text-neutral-700 {
+	color: #404040 !important;
+}
+
+.login-isolated .text-neutral-600,
+.dark .login-isolated .text-neutral-600,
+html.dark .login-isolated .text-neutral-600 {
+	color: #525252 !important;
+}
+
+.login-isolated .text-neutral-500,
+.dark .login-isolated .text-neutral-500,
+html.dark .login-isolated .text-neutral-500 {
+	color: #737373 !important;
+}
+
+.login-isolated .text-neutral-400,
+.dark .login-isolated .text-neutral-400,
+html.dark .login-isolated .text-neutral-400 {
+	color: #a3a3a3 !important;
+}
+
+/* Subtle borders */
+.login-isolated [class*="border-neutral-200"],
+.dark .login-isolated [class*="border-neutral-200"],
+html.dark .login-isolated [class*="border-neutral-200"],
+.login-isolated .border-neutral-200,
+.dark .login-isolated .border-neutral-200,
+html.dark .login-isolated .border-neutral-200,
+.login-isolated [class*="border-white/80"],
+.dark .login-isolated [class*="border-white/80"],
+html.dark .login-isolated [class*="border-white/80"] {
+	border-color: rgba(229, 231, 235, 0.8) !important;
+}
+
+/* Input elements in login interface */
+.login-isolated input:not([type="checkbox"]):not([type="radio"]),
+.dark .login-isolated input:not([type="checkbox"]):not([type="radio"]),
+html.dark .login-isolated input:not([type="checkbox"]):not([type="radio"]) {
+	background-color: rgba(249, 250, 251, 0.8) !important;
+	color: #171717 !important;
+	border-color: rgba(229, 231, 235, 0.8) !important;
+}
+
+.login-isolated input:focus,
+.dark .login-isolated input:focus,
+html.dark .login-isolated input:focus {
+	background-color: #ffffff !important;
+	border-color: #171717 !important;
+	box-shadow: 0 0 0 2px rgba(23, 23, 23, 0.1) !important;
 }
