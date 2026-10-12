@@ -820,6 +820,21 @@
 	border-color: rgba(244, 63, 94, 0.3) !important;
 }
 
+/* Brand & Partner Logo Display Badge in Light & Dark Mode */
+.brand-logo-tile,
+.dark .brand-logo-tile,
+.dark [class*="brand-logo-tile"] {
+	background-color: #FFFFFF !important;
+	border-color: rgba(255, 255, 255, 0.3) !important;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28), 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+.dark .brand-logo-tile img,
+.dark [class*="brand-logo-tile"] img {
+	/* Keep authentic, sharp contrast for dark/colored transparent brand logos */
+	filter: contrast(1.05);
+}
+
 /* Dialog & popup dark styling */
 .dark [role="dialog"],
 .dark [data-radix-popper-content-wrapper] > div {
