@@ -149,9 +149,9 @@ export default function ClientsPage() {
           <Button
             onClick={handleExportCSV}
             variant="outline"
-            className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+            className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-white/80 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] dark:text-neutral-200 dark:hover:text-white dark:border-white/10 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
           >
-            <Download className="h-4 w-4 text-neutral-700" /> Export CSV
+            <Download className="h-4 w-4 text-neutral-700 dark:text-neutral-300" /> Export CSV
           </Button>
           <Button
             onClick={() => setIsAddModalOpen(true)}

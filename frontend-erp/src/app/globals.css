@@ -698,6 +698,25 @@
 	border-color: rgba(147, 197, 253, 0.5) !important;
 }
 
+/* Neutral white outline/secondary buttons (e.g. Export CSV) adaptation in Dark Mode */
+.dark button[class*="bg-white"]:not(.login-isolated):not(.login-isolated *),
+.dark a[class*="bg-white"]:not(.login-isolated):not(.login-isolated *) {
+	background-color: rgba(255, 255, 255, 0.08) !important;
+	border-color: rgba(255, 255, 255, 0.12) !important;
+	color: #F3F4F6 !important;
+}
+
+.dark button[class*="bg-white"]:hover:not(.login-isolated):not(.login-isolated *),
+.dark a[class*="bg-white"]:hover:not(.login-isolated):not(.login-isolated *) {
+	background-color: rgba(255, 255, 255, 0.14) !important;
+	color: #FFFFFF !important;
+}
+
+.dark button[class*="bg-white"]:not(.login-isolated):not(.login-isolated *) svg,
+.dark a[class*="bg-white"]:not(.login-isolated):not(.login-isolated *) svg {
+	color: #D1D5DB !important;
+}
+
 /* Grand Total box in Dark Mode */
 .dark [class*="bg-sky-200/90"] {
 	background: linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.65) 100%) !important;
