@@ -27,43 +27,74 @@ import { cn } from '@/lib/utils';
 // ── Helpers ──────────────────────────────────────────
 
 const MODULE_CONFIG: Record<string, { color: string; bg: string; icon: any; label: string }> = {
-    pos:            { color: 'text-[#0D9488]',   bg: 'bg-[#E6F9F7] border-white/80', icon: ShoppingBag, label: 'POS / Sales' },
-    installations:  { color: 'text-sky-800',     bg: 'bg-sky-100 border-white/80',   icon: Wrench,      label: 'Installations' },
-    inventory:      { color: 'text-[#E0781E]',   bg: 'bg-[#FFF4E8] border-white/80', icon: Package,     label: 'Inventory' },
-    products:       { color: 'text-[#7C3AED]',   bg: 'bg-[#F1EBFF] border-white/80', icon: Box,         label: 'Products' },
-    clients:        { color: 'text-teal-800',    bg: 'bg-teal-50 border-white/80',   icon: Users,       label: 'Clients' },
-    users:          { color: 'text-neutral-800', bg: 'bg-white/80 border-white/80', icon: UserCog,     label: 'Users' },
+    pos:            { color: 'text-[#0D9488]',                                bg: 'bg-[#E6F9F7] border-white/80', icon: ShoppingBag, label: 'POS / Sales' },
+    installations:  { color: 'text-sky-800 dark:text-sky-300',                bg: 'bg-sky-100 dark:bg-sky-950/40 border-white/80 dark:border-sky-800/30', icon: Wrench, label: 'Installations' },
+    inventory:      { color: 'text-[#E0781E]',                                bg: 'bg-[#FFF4E8] border-white/80', icon: Package,     label: 'Inventory' },
+    products:       { color: 'text-[#7C3AED]',                                bg: 'bg-[#F1EBFF] border-white/80', icon: Box,         label: 'Products' },
+    clients:        { color: 'text-teal-800 dark:text-teal-300',              bg: 'bg-teal-50 dark:bg-teal-950/40 border-white/80 dark:border-teal-800/30', icon: Users, label: 'Clients' },
+    users:          { color: 'text-neutral-800 dark:text-neutral-200',        bg: 'bg-white/80 dark:bg-white/10 border-white/80 dark:border-white/10', icon: UserCog, label: 'Users' },
 };
 
 function getModuleConfig(logName: string) {
-    return MODULE_CONFIG[logName] || { color: 'text-neutral-700', bg: 'bg-white/80 border-white/80', icon: Activity, label: logName || 'System' };
+    return MODULE_CONFIG[logName] || { color: 'text-neutral-700 dark:text-neutral-300', bg: 'bg-white/80 dark:bg-white/10 border-white/80 dark:border-white/10', icon: Activity, label: logName || 'System' };
 }
 
-function getEventStyle(event: string) {
-    switch (event) {
+function getEventStyle(event?: string, description?: string) {
+    const rawEvent = (event || '').toLowerCase().trim();
+    const rawDesc = (description || '').toLowerCase().trim();
+
+    // Determine normalized event type from event column or description text
+    let normalizedEvent = rawEvent;
+    if (!normalizedEvent) {
+        if (rawDesc.includes('logged in') || rawDesc.includes('login') || rawDesc.includes('signed in')) {
+            normalizedEvent = 'login';
+        } else if (rawDesc.includes('logged out') || rawDesc.includes('logout') || rawDesc.includes('signed out')) {
+            normalizedEvent = 'logout';
+        } else if (rawDesc.includes('created') || rawDesc.includes('added') || rawDesc.includes('registered')) {
+            normalizedEvent = 'created';
+        } else if (rawDesc.includes('updated') || rawDesc.includes('modified') || rawDesc.includes('changed') || rawDesc.includes('edited')) {
+            normalizedEvent = 'updated';
+        } else if (rawDesc.includes('deleted') || rawDesc.includes('removed') || rawDesc.includes('cancelled')) {
+            normalizedEvent = 'deleted';
+        }
+    }
+
+    switch (normalizedEvent) {
         case 'created':
             return {
-                badge: 'text-emerald-700 bg-emerald-50/80 border-emerald-200/80',
-                dot: 'bg-emerald-500',
+                badge: 'text-emerald-700 bg-emerald-50/80 border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/50',
+                dot: 'bg-emerald-500 dark:bg-emerald-400',
                 label: 'Created',
             };
         case 'updated':
             return {
-                badge: 'text-amber-700 bg-amber-50/80 border-amber-200/80',
-                dot: 'bg-amber-500',
+                badge: 'text-amber-700 bg-amber-50/80 border-amber-200/80 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/50',
+                dot: 'bg-amber-500 dark:bg-amber-400',
                 label: 'Updated',
             };
         case 'deleted':
             return {
-                badge: 'text-rose-700 bg-rose-50/80 border-rose-200/80',
-                dot: 'bg-rose-500',
+                badge: 'text-rose-700 bg-rose-50/80 border-rose-200/80 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/50',
+                dot: 'bg-rose-500 dark:bg-rose-400',
                 label: 'Deleted',
+            };
+        case 'login':
+            return {
+                badge: 'text-sky-700 bg-sky-50/80 border-sky-200/80 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/50',
+                dot: 'bg-sky-500 dark:bg-sky-400',
+                label: 'Login',
+            };
+        case 'logout':
+            return {
+                badge: 'text-slate-700 bg-slate-50/80 border-slate-200/80 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-700/50',
+                dot: 'bg-slate-500 dark:bg-slate-400',
+                label: 'Logout',
             };
         default:
             return {
-                badge: 'text-neutral-700 bg-neutral-100 border-neutral-200/80',
-                dot: 'bg-neutral-400',
-                label: event || 'Action',
+                badge: 'text-neutral-700 bg-neutral-100/90 border-neutral-200/80 dark:bg-slate-800/70 dark:text-slate-300 dark:border-slate-700/60',
+                dot: 'bg-neutral-400 dark:bg-slate-400',
+                label: event ? (event.charAt(0).toUpperCase() + event.slice(1)) : 'Action',
             };
     }
 }
@@ -421,7 +452,7 @@ function ChangesSection({ log }: { log: ActivityLog }) {
                                 <tr key={key} className="hover:bg-white/80 transition-colors">
                                     <td className="px-4 py-3 font-semibold text-neutral-800 text-xs">{formatFieldName(key)}</td>
                                     <td className="px-4 py-3 font-mono text-xs">
-                                        <span className="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-rose-700">
+                                        <span className="inline-block px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300">
                                             {formatFieldValue(oldVals[key])}
                                         </span>
                                     </td>
@@ -429,7 +460,7 @@ function ChangesSection({ log }: { log: ActivityLog }) {
                                         <ArrowRight className="w-3.5 h-3.5 text-neutral-400 mx-auto" />
                                     </td>
                                     <td className="px-4 py-3 font-mono text-xs">
-                                        <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold">
+                                        <span className="inline-block px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 font-bold">
                                             {formatFieldValue(newVals[key])}
                                         </span>
                                     </td>
@@ -654,13 +685,13 @@ export default function ActivityLogsPage() {
                             <TableBody>
                                 {logs.map((log) => {
                                     const modConfig = getModuleConfig(log.log_name);
-                                    const eventStyle = getEventStyle(log.event);
+                                    const eventStyle = getEventStyle(log.event, log.description);
                                     const Icon = modConfig.icon;
 
                                     return (
                                         <TableRow
                                             key={log.id}
-                                            className="border-b border-neutral-200/50 hover:bg-white/60 transition-colors cursor-pointer group"
+                                            className="border-b border-neutral-200/50 dark:border-white/5 hover:bg-white/60 dark:hover:bg-white/5 transition-colors cursor-pointer group"
                                             onClick={() => setSelectedLog(log)}
                                         >
                                             <TableCell className="py-4 px-6">
@@ -674,19 +705,19 @@ export default function ActivityLogsPage() {
                                                 </span>
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="font-bold text-neutral-900 text-sm">
+                                                <div className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">
                                                     {log.description}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className={cn(
-                                                        "inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg border",
+                                                        "inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg border shadow-2xs",
                                                         eventStyle.badge
                                                     )}>
-                                                        <span className={cn("w-1.5 h-1.5 rounded-full", eventStyle.dot)} />
+                                                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", eventStyle.dot)} />
                                                         {eventStyle.label}
                                                     </span>
                                                     {log.subject_type && (
-                                                        <span className="text-xs text-neutral-400 font-medium font-mono">
+                                                        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium font-mono">
                                                             {log.subject_type.split('\\').pop()} #{log.subject_id}
                                                         </span>
                                                     )}
@@ -694,28 +725,28 @@ export default function ActivityLogsPage() {
                                             </TableCell>
                                             <TableCell className="py-4">
                                                 <div className="flex items-center gap-2.5">
-                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 flex items-center justify-center text-white text-xs font-bold shadow-xs shrink-0">
+                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-950 border border-white/10 flex items-center justify-center text-white text-xs font-bold shadow-xs shrink-0">
                                                         {log.causer?.name?.[0]?.toUpperCase() || 'S'}
                                                     </div>
                                                     <div>
-                                                        <div className="text-sm font-bold text-neutral-900">
+                                                        <div className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                                                             {log.causer?.name || 'System Auto'}
                                                         </div>
-                                                        <div className="text-xs text-neutral-500 font-medium">
+                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
                                                             {log.causer ? `User #${log.causer.id}` : 'Automated Task'}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="py-4">
-                                                <div className="text-sm font-bold text-neutral-900">
+                                                <div className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                                                     {new Date(log.created_at).toLocaleDateString('en-US', {
                                                         year: 'numeric',
                                                         month: 'short',
                                                         day: 'numeric',
                                                     })}
                                                 </div>
-                                                <div className="text-xs text-neutral-500 font-medium mt-0.5 flex items-center gap-1">
+                                                <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-0.5 flex items-center gap-1">
                                                     <Clock className="w-3 h-3 text-neutral-400" />
                                                     {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
@@ -771,10 +802,10 @@ export default function ActivityLogsPage() {
 
             {/* ── Detail Modal ─────────────────────────── */}
             <Dialog open={!!selectedLog} onOpenChange={(open) => { if (!open) setSelectedLog(null); }}>
-                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/95 backdrop-blur-xl border border-white/80 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6">
+                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl border border-white/80 dark:border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6">
                     {selectedLog && (() => {
                         const modConfig = getModuleConfig(selectedLog.log_name);
-                        const eventStyle = getEventStyle(selectedLog.event);
+                        const eventStyle = getEventStyle(selectedLog.event, selectedLog.description);
                         const Icon = modConfig.icon;
                         return (
                             <>
@@ -789,22 +820,22 @@ export default function ActivityLogsPage() {
                                             {modConfig.label}
                                         </span>
                                         <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border",
+                                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold uppercase tracking-wider border shadow-2xs",
                                             eventStyle.badge
                                         )}>
-                                            <span className={cn("w-1.5 h-1.5 rounded-full", eventStyle.dot)} />
+                                            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", eventStyle.dot)} />
                                             {eventStyle.label}
                                         </span>
                                     </div>
-                                    <DialogTitle className="text-xl font-bold text-neutral-900 tracking-tight">
+                                    <DialogTitle className="text-xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">
                                         {selectedLog.description}
                                     </DialogTitle>
-                                    <DialogDescription className="flex items-center gap-4 text-xs font-medium text-neutral-500 mt-1">
-                                        <span className="inline-flex items-center gap-1 font-semibold text-neutral-700">
+                                    <DialogDescription className="flex items-center gap-4 text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-1">
+                                        <span className="inline-flex items-center gap-1 font-semibold text-neutral-700 dark:text-neutral-300">
                                             <User className="w-3.5 h-3.5 text-neutral-400" />
                                             {selectedLog.causer?.name || 'System Auto'}
                                         </span>
-                                        <span className="inline-flex items-center gap-1">
+                                        <span className="inline-flex items-center gap-1 text-neutral-500 dark:text-neutral-400">
                                             <Clock className="w-3.5 h-3.5 text-neutral-400" />
                                             {new Date(selectedLog.created_at).toLocaleString()}
                                         </span>
