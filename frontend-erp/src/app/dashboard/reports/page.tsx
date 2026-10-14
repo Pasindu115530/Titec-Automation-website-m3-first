@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { reportService } from '@/services/reportService';
 import Loader from '@/components/loader';
 import ReportChart from '@/components/erp/report-chart';
-import { Printer, Download, AlertTriangle, Search, Package, Coins, TrendingUp, AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Printer, Download, AlertTriangle, Search, Package, Coins, TrendingUp, AlertCircle, FileText, CheckCircle2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ReportsPage() {
@@ -12,6 +13,19 @@ export default function ReportsPage() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<any>(null);
     const [stockSearch, setStockSearch] = useState('');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const searchWrapperRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
+                setIsSearchOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Sales Report State
     const [dateRange, setDateRange] = useState('month'); // week, month, year
@@ -171,33 +185,6 @@ export default function ReportsPage() {
                         <h2 className="text-lg font-bold text-neutral-900 dark:text-white tracking-tight">Stock Valuation Report</h2>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 font-medium">Real-time asset valuation and inventory stock distribution</p>
                     </div>
-                    <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-64">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
-                            <input 
-                                type="text"
-                                placeholder="Search products..."
-                                value={stockSearch}
-                                onChange={(e) => setStockSearch(e.target.value)}
-                                className="w-full pl-9 pr-8 py-2 bg-white/80 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] focus:bg-white dark:focus:bg-[#0F172A] text-neutral-800 dark:text-neutral-200 border border-neutral-200/80 dark:border-white/10 backdrop-blur-md rounded-2xl font-medium text-xs sm:text-sm placeholder:text-neutral-400 dark:placeholder:text-neutral-500 shadow-xs transition-all outline-none focus:ring-2 focus:ring-sky-500/30"
-                            />
-                            {stockSearch && (
-                                <button 
-                                    onClick={() => setStockSearch('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 text-xs font-bold"
-                                >
-                                    ✕
-                                </button>
-                            )}
-                        </div>
-                        <button 
-                            onClick={handleExportCSV}
-                            className="px-4 py-2 bg-white/80 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border border-neutral-200/80 dark:border-white/10 backdrop-blur-md rounded-2xl font-semibold text-xs sm:text-sm shadow-xs transition-all outline-none cursor-pointer flex items-center gap-2 hover:scale-[1.01] active:scale-[0.99] shrink-0"
-                        >
-                            <Download className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                            Export CSV
-                        </button>
-                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -227,6 +214,93 @@ export default function ReportsPage() {
                         <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20">
                             <AlertTriangle className="w-5 h-5" />
                         </div>
+                    </div>
+                </div>
+
+                {/* Filter & Search Bar - Matching Quotations, Invoices & POS Search Bar Style */}
+                <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                    <div className="relative flex-1 w-full" ref={searchWrapperRef}>
+                        <div className="relative flex items-center">
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+                            <Input
+                                type="text"
+                                placeholder="Search products by name..."
+                                value={stockSearch}
+                                onChange={(e) => setStockSearch(e.target.value)}
+                                onFocus={() => setIsSearchOpen(true)}
+                                onClick={() => setIsSearchOpen(true)}
+                                className="w-full pl-10 pr-9 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+                            />
+                            {stockSearch ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setStockSearch('');
+                                        setIsSearchOpen(false);
+                                    }}
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                                    title="Clear search"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            ) : null}
+                        </div>
+
+                        {/* Quick 4-record dropdown matching other search bars & dark mode */}
+                        {isSearchOpen && rawItems.length > 0 && !stockSearch.trim() && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl border border-neutral-200/90 dark:border-white/10 rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.45)] z-50 overflow-hidden p-1.5 modal-scroll max-h-72">
+                                <div className="px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-white/5 flex items-center justify-between">
+                                    <span>Quick Select Products</span>
+                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium">({Math.min(rawItems.length, 4)} records)</span>
+                                </div>
+                                {rawItems.slice(0, 4).map((prod: any, idx: number) => (
+                                    <div
+                                        key={idx}
+                                        onClick={() => {
+                                            setStockSearch(prod.name);
+                                            setIsSearchOpen(false);
+                                        }}
+                                        className="px-3.5 py-2.5 hover:bg-neutral-100/80 dark:hover:bg-white/[0.06] rounded-xl cursor-pointer border-b border-neutral-100 dark:border-white/5 last:border-0 flex justify-between items-center transition-colors group gap-3"
+                                    >
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="h-8 w-8 bg-neutral-100 dark:bg-white/[0.05] border border-neutral-200/70 dark:border-white/10 rounded-xl flex items-center justify-center shrink-0">
+                                                <Package className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="font-semibold text-sm text-neutral-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">
+                                                    {prod.name}
+                                                </div>
+                                                <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium flex items-center gap-2 mt-0.5">
+                                                    <span className={cn(
+                                                        "px-1.5 py-0.2 rounded-full font-semibold text-[10px]",
+                                                        Number(prod.stock_quantity || 0) > 0 
+                                                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30" 
+                                                            : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/30"
+                                                    )}>
+                                                        Stock: {prod.stock_quantity ?? 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <div className="font-bold text-neutral-900 dark:text-white text-sm font-mono">
+                                                Rs. {Number(prod.price || 0).toLocaleString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex gap-2 w-full md:w-auto pr-0.5 shrink-0">
+                        <button 
+                            onClick={handleExportCSV}
+                            className="h-11 px-5 rounded-2xl bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-neutral-800 dark:text-neutral-200 border border-white dark:border-white/10 backdrop-blur-md font-semibold text-sm shadow-2xs transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer w-full md:w-auto"
+                        >
+                            <Download className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                            <span>Export CSV</span>
+                        </button>
                     </div>
                 </div>
 
