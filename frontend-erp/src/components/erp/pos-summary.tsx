@@ -26,32 +26,32 @@ export function POSSummary({
   onUpdateDiscount,
 }: POSSummaryProps) {
   return (
-    <div className="bg-white/60 backdrop-blur-md border border-white/80 rounded-3xl p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] space-y-4">
+    <div className="bg-white/60 dark:bg-white/[0.04] backdrop-blur-md border border-white/80 dark:border-white/10 rounded-3xl p-6 shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.3)] space-y-4">
       <div className="flex items-center gap-2.5 mb-2">
-        <div className="h-8 w-8 rounded-xl bg-sky-200/90 text-neutral-800 flex items-center justify-center shadow-2xs">
-          <Calculator className="h-4 w-4 text-neutral-700" />
+        <div className="h-8 w-8 rounded-xl bg-sky-200/90 dark:bg-blue-600/20 text-neutral-800 dark:text-blue-400 flex items-center justify-center shadow-2xs">
+          <Calculator className="h-4 w-4 text-neutral-700 dark:text-blue-400" />
         </div>
-        <h3 className="font-bold text-lg text-neutral-900 tracking-tight">Order Summary</h3>
+        <h3 className="font-bold text-lg text-neutral-900 dark:text-white tracking-tight">Order Summary</h3>
       </div>
 
-      <div className="flex justify-between items-center text-neutral-600 text-sm font-medium py-1">
+      <div className="flex justify-between items-center text-neutral-600 dark:text-neutral-400 text-sm font-medium py-1">
         <span>Subtotal</span>
-        <span className="font-bold text-neutral-900 text-base font-mono">
+        <span className="font-bold text-neutral-900 dark:text-white text-base font-mono">
           Rs. {Number(subtotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
       </div>
 
-      <div className="grid grid-cols-12 gap-2 items-center text-neutral-600 text-sm font-medium">
+      <div className="grid grid-cols-12 gap-2 items-center text-neutral-600 dark:text-neutral-400 text-sm font-medium">
         <span className="col-span-4">Discount</span>
         <div className="col-span-4">
           <Select 
             value={discountType} 
             onValueChange={(val: 'fixed' | 'percentage') => onUpdateDiscount(val, discountAmount)}
           >
-            <SelectTrigger className="bg-white border-neutral-200 text-neutral-800 rounded-xl h-9 text-xs shadow-2xs">
+            <SelectTrigger className="bg-white dark:bg-white/[0.06] border-neutral-200 dark:border-white/10 text-neutral-800 dark:text-white rounded-xl h-9 text-xs shadow-2xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-white text-neutral-900 border-neutral-200 rounded-xl shadow-xl">
+            <SelectContent className="bg-white dark:bg-[#0F172A] text-neutral-900 dark:text-white border-neutral-200 dark:border-white/10 rounded-xl shadow-xl">
               <SelectItem value="fixed">Fixed (Rs)</SelectItem>
               <SelectItem value="percentage">Percent (%)</SelectItem>
             </SelectContent>
@@ -63,14 +63,14 @@ export function POSSummary({
             step="0.01"
             value={discountAmount}
             onChange={(e) => onUpdateDiscount(discountType, parseFloat(e.target.value) || 0)}
-            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right text-xs shadow-2xs focus:bg-white font-mono"
+            className="bg-white dark:bg-white/[0.06] border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white font-semibold rounded-xl h-9 text-right text-xs shadow-2xs focus:bg-white dark:focus:bg-white/10 font-mono"
             min="0"
           />
         </div>
       </div>
 
       {discountAmount > 0 && (
-        <div className="flex justify-between items-center text-xs font-semibold text-rose-600 bg-rose-50/80 border border-rose-100 rounded-xl px-3 py-2">
+        <div className="flex justify-between items-center text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50/80 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/40 rounded-xl px-3 py-2">
           <span>Discount Deducted</span>
           <span className="font-mono">
             - Rs. {Number(discountType === 'percentage' 
@@ -80,23 +80,23 @@ export function POSSummary({
         </div>
       )}
 
-      <div className="grid grid-cols-12 gap-2 items-center text-neutral-600 text-sm font-medium">
+      <div className="grid grid-cols-12 gap-2 items-center text-neutral-600 dark:text-neutral-400 text-sm font-medium">
         <span className="col-span-4">Tax</span>
         <div className="col-span-8 flex items-center justify-end gap-2">
           <Input
             type="number"
             value={taxRate}
             onChange={(e) => onUpdateTax(parseFloat(e.target.value) || 0)}
-            className="bg-white border-neutral-200 text-neutral-900 font-semibold rounded-xl h-9 text-right w-20 text-xs shadow-2xs focus:bg-white font-mono"
+            className="bg-white dark:bg-white/[0.06] border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white font-semibold rounded-xl h-9 text-right w-20 text-xs shadow-2xs focus:bg-white dark:focus:bg-white/10 font-mono"
             min="0"
             step="0.01"
           />
-          <span className="text-neutral-400 text-xs font-bold">%</span>
+          <span className="text-neutral-400 dark:text-neutral-500 text-xs font-bold">%</span>
         </div>
       </div>
 
       {taxRate > 0 && (
-        <div className="flex justify-between items-center text-xs font-semibold text-blue-600 bg-blue-50/80 border border-blue-100 rounded-xl px-3 py-2">
+        <div className="flex justify-between items-center text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 rounded-xl px-3 py-2">
           <span>Tax Applied</span>
           <span className="font-mono">
             + Rs. {Number(taxAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

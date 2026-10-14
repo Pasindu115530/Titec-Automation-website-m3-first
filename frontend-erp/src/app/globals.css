@@ -528,6 +528,17 @@
 	}
 }
 
+/* Prevent default browser rectangular focus rings across styled inputs & components */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible,
+button:focus-visible {
+	outline: none !important;
+}
+
 /* ════════════════════════════════════════════════════════════════
    STARLINE ERP DARK MODE DESIGN SYSTEM
    ════════════════════════════════════════════════════════════════ */
@@ -581,6 +592,12 @@
 .dark [class*="bg-white/85"],
 .dark [class*="bg-white/90"],
 .dark [class*="bg-white/95"] {
+	background-color: rgba(15, 22, 36, 0.75) !important;
+	border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Adaptive neutral surfaces for cards, headers, and footers */
+.dark [class*="bg-neutral-50"]:not(input):not(textarea):not(select):not([role="combobox"]):not(button[role="combobox"]):not(.login-isolated):not(.login-isolated *) {
 	background-color: rgba(15, 22, 36, 0.75) !important;
 	border-color: rgba(255, 255, 255, 0.08) !important;
 }

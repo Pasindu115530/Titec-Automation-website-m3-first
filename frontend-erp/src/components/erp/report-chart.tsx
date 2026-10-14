@@ -9,8 +9,8 @@ interface ReportChartProps {
 export default function ReportChart({ data, height = 250, color = 'bg-blue-500' }: ReportChartProps) {
     if (!data || data.length === 0) {
         return (
-            <div className="w-full flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-200" style={{ height }}>
-                <span className="text-gray-400 text-sm">No data available</span>
+            <div className="w-full flex items-center justify-center bg-gray-50 dark:bg-white/[0.02] rounded-2xl border border-dashed border-gray-200 dark:border-white/10" style={{ height }}>
+                <span className="text-gray-400 dark:text-neutral-500 text-sm font-medium">No data available</span>
             </div>
         );
     }
@@ -25,18 +25,18 @@ export default function ReportChart({ data, height = 250, color = 'bg-blue-500' 
                     return (
                         <div key={index} className="flex flex-col items-center flex-1 h-full justify-end group">
                             {/* Tooltip and Value */}
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-2 text-xs font-semibold text-gray-700 whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm border border-gray-100 absolute -mt-10 z-10 pointer-events-none">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-2 text-xs font-semibold text-gray-700 dark:text-white whitespace-nowrap bg-white dark:bg-[#0F172A] px-2.5 py-1 rounded-lg shadow-md border border-gray-100 dark:border-white/10 absolute -mt-10 z-10 pointer-events-none font-mono">
                                 Rs. {item.value.toLocaleString()}
                             </div>
 
                             {/* Bar */}
                             <div
-                                className={`w-full max-w-[40px] rounded-t-sm transition-all duration-500 ${color} opacity-80 group-hover:opacity-100`}
+                                className={`w-full max-w-[40px] rounded-t-lg transition-all duration-500 ${color} opacity-80 group-hover:opacity-100`}
                                 style={{ height: `${Math.max(barHeight, 2)}%` }}
                             ></div>
 
                             {/* Label */}
-                            <div className="text-[10px] sm:text-xs text-gray-500 mt-2 truncate w-full text-center" title={item.label}>
+                            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-neutral-400 mt-2 truncate w-full text-center font-medium" title={item.label}>
                                 {item.label}
                             </div>
                         </div>

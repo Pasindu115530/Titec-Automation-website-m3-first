@@ -169,25 +169,25 @@ export default function AdminQuotationsPage() {
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+      <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
         <div className="relative flex-1 w-full flex items-center">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
           <Input
             placeholder="Search quotation requests by customer, email, or ID..."
-            className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-white border-white focus:border-white text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/60 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+            className="w-full pl-10 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 shrink-0 w-full md:w-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-white/60 dark:bg-white/[0.04] backdrop-blur-md rounded-2xl border border-white/80 dark:border-white/10 shrink-0 w-full md:w-auto">
           <button
             onClick={() => setStatusFilter('pending')}
             className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               statusFilter === 'pending'
-                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
-                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                ? 'bg-sky-300 dark:bg-blue-600 text-neutral-950 dark:text-white shadow-[0_4px_14px_rgba(125,211,252,0.35)] dark:shadow-[0_4px_14px_rgba(37,99,235,0.4)] border border-sky-200 dark:border-blue-400/40'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/[0.06]'
             }`}
           >
             Pending Requests
@@ -196,8 +196,8 @@ export default function AdminQuotationsPage() {
             onClick={() => setStatusFilter('quoted')}
             className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               statusFilter === 'quoted'
-                ? 'bg-sky-300 text-neutral-950 shadow-[0_4px_14px_rgba(125,211,252,0.35)] border border-sky-200'
-                : 'text-neutral-600 hover:text-neutral-950 hover:bg-white/60'
+                ? 'bg-sky-300 dark:bg-blue-600 text-neutral-950 dark:text-white shadow-[0_4px_14px_rgba(125,211,252,0.35)] dark:shadow-[0_4px_14px_rgba(37,99,235,0.4)] border border-sky-200 dark:border-blue-400/40'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/[0.06]'
             }`}
           >
             Quoted History
