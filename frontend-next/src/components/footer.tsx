@@ -17,7 +17,7 @@ export default function Footer() {
                         Let&apos;s make something<br />great together.
                     </h2>
                     <p className="text-blue-200/80 mb-10 text-lg">
-                        Let us know what challenges you are<br className="hidden md:block" />
+                        Let us know what challenges you are <br className="hidden md:block" />
                         trying to solve so we can help.
                     </p>
 

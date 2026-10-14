@@ -25,6 +25,15 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('/brands/{brand}', [BrandController::class, 'show']);
     Route::get('/services', [ServiceController::class, 'index']);
     Route::get('/services/{slug}', [ServiceController::class, 'show']);
+
+    // Health check endpoint — referenced by /.well-known/api-catalog (RFC 9727)
+    Route::get('/health', function () {
+        return response()->json([
+            'status' => 'ok',
+            'service' => 'TiTEC Automation API',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    });
 });
 
 // Protected routes (any authenticated user)

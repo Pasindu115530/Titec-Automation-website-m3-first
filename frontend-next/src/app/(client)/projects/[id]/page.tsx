@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { cache } from 'react';
+import { notFound } from 'next/navigation';
 import { projectService } from '@/services/projectService';
 import { Project } from '@/types';
 import { getImageUrl } from '@/utils/image-utils';
@@ -12,6 +13,15 @@ type Props = {
 
 // Re-validate every 60 seconds (ISR) so new projects appear quickly
 export const revalidate = 60;
+
+// Deduplicate project fetching between generateMetadata and Page render
+const getProject = cache(async (id: string): Promise<Project | null> => {
+    try {
+        return await projectService.getProjectById(id);
+    } catch {
+        return null;
+    }
+});
 
 // ── Pre-render known project pages at build time ──
 // Falls back gracefully if the API is unreachable during build
@@ -46,17 +56,16 @@ export async function generateMetadata(
     const { id } = await params;
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
-    let project: Project | null = null;
-    try {
-        project = await projectService.getProjectById(id);
-    } catch {
-        // Project not found — return minimal metadata
-    }
+    const project = await getProject(id);
 
     if (!project) {
         return {
             title: 'Project Not Found | TiTEC Automation',
             description: 'The requested project could not be found.',
+            robots: {
+                index: false,
+                follow: false,
+            },
         };
     }
 
@@ -123,22 +132,10 @@ export default async function ProjectDetailsPage({ params }: Props) {
     const { id } = await params;
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.titecautomation.lk';
 
-    let project: Project | null = null;
-    try {
-        project = await projectService.getProjectById(id);
-    } catch {
-        // Will render not-found state in client component or handled below
-    }
+    const project = await getProject(id);
 
     if (!project) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-white">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4">Project Not Found</h1>
-                    <p className="text-gray-500">The project you're looking for doesn't exist or has been removed.</p>
-                </div>
-            </div>
-        );
+        notFound();
     }
 
     // ── JSON-LD: CreativeWork / Engineering Project Schema ──

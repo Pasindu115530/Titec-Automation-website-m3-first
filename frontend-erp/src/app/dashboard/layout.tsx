@@ -207,6 +207,18 @@ export default function AdminLayout({
         }
     }, [isAdmin, isLoading, pathname, router]);
 
+    // Password reset guard — force users to change password before accessing any other page
+    useEffect(() => {
+        if (
+            !isLoading &&
+            isAdmin &&
+            user?.requiresPasswordReset &&
+            pathname !== '/dashboard/change-password'
+        ) {
+            router.replace('/dashboard/change-password');
+        }
+    }, [isLoading, isAdmin, user?.requiresPasswordReset, pathname, router]);
+
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
     const toggleGroup = (label: string) => {

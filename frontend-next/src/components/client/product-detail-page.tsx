@@ -228,12 +228,19 @@ export default function ProductDetailPage({
                             </p>
                         )}
 
-                        {/* Price: Show if show_price is explicitly true or undefined */}
-                        {product.show_price !== false && (
-                            <div className="text-3xl font-bold text-gray-900 mb-5">
-                                LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
-                            </div>
-                        )}
+                        {/* Price: Show if valid numeric price and enabled; otherwise show Price on Request */}
+                        {(() => {
+                            const numPrice = typeof product.price === 'string' ? parseFloat(product.price) : Number(product.price || 0);
+                            return product.show_price !== false && !isNaN(numPrice) && numPrice > 0 ? (
+                                <div className="text-3xl font-bold text-gray-900 mb-5">
+                                    LKR {numPrice.toFixed(2)}
+                                </div>
+                            ) : (
+                                <div className="inline-block bg-blue-50 text-blue-700 text-sm font-semibold px-3 py-1.5 rounded-md mb-5">
+                                    Price on Request · Contact for Quotation
+                                </div>
+                            );
+                        })()}
 
                         {/* Description */}
                         <div className="prose prose-sm text-gray-600 mb-6 leading-relaxed max-w-none whitespace-pre-wrap">

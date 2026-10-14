@@ -43,10 +43,15 @@ export function ProductCard({ product, onAddToQuote }: ProductCardProps) {
                             <div className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase tracking-wider">{product.brand}</div>
                         )}
                     </div>
-                    {/* Show price if show_price is true (defaulting to true if undefined) */}
-                    {product.show_price !== false && (
-                        <div className="font-bold text-gray-900">LKR {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price}</div>
-                    )}
+                    {/* Show price if valid and enabled; otherwise show Price on Request */}
+                    {(() => {
+                        const numPrice = typeof product.price === 'string' ? parseFloat(product.price) : Number(product.price || 0);
+                        return product.show_price !== false && !isNaN(numPrice) && numPrice > 0 ? (
+                            <div className="font-bold text-gray-900">LKR {numPrice.toFixed(2)}</div>
+                        ) : (
+                            <div className="text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">Price on Request</div>
+                        );
+                    })()}
                 </div>
 
                 <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1" title={product.name}>{product.name}</h3>
