@@ -204,14 +204,14 @@ export default function POSPage() {
         </div>
 
         {/* Invoice Items Card */}
-        <div className="flex-1 bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] min-h-[360px]">
-          <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center text-sm font-bold text-neutral-900 tracking-tight">
+        <div className="flex-1 bg-white/40 dark:bg-white/[0.03] backdrop-blur-md border border-white/80 dark:border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.3)] min-h-[360px]">
+          <div className="px-6 py-4 border-b border-neutral-100 dark:border-white/10 flex justify-between items-center text-sm font-bold text-neutral-900 dark:text-white tracking-tight">
             <div className="flex items-center gap-2.5 ">
-              <div className="h-8 w-8 rounded-xl bg-[#C7F3ED] text-neutral-900 flex items-center justify-center shadow-xs">
+              <div className="h-8 w-8 rounded-xl bg-[#C7F3ED] dark:bg-emerald-950/50 text-neutral-900 dark:text-emerald-400 flex items-center justify-center shadow-xs">
                 <Receipt className="h-4 w-4" />
               </div>
-              <span className="font-bold text-base text-neutral-900">Invoice Items</span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C7F3ED] text-neutral-900 shadow-2xs">
+              <span className="font-bold text-base text-neutral-900 dark:text-white">Invoice Items</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#C7F3ED] dark:bg-emerald-950/50 text-neutral-900 dark:text-emerald-400 shadow-2xs">
                 {items.length}
               </span>
             </div>
@@ -220,20 +220,20 @@ export default function POSPage() {
               size="sm" 
               onClick={() => setItems([])} 
               disabled={items.length === 0}
-              className="text-neutral-400 hover:text-red-600 hover:bg-red-50 h-8 px-3 rounded-xl text-xs font-semibold transition-colors disabled:opacity-30 disabled:pointer-events-none"
+              className="text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 h-8 px-3 rounded-xl text-xs font-semibold transition-colors disabled:opacity-30 disabled:pointer-events-none"
             >
               Clear All
             </Button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 sm:p-5">
             {items.length === 0 ? (
-              <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-neutral-400 gap-3 py-10">
-                <div className="w-16 h-16 rounded-2xl bg-[#E6F9F7] border border-neutral-200/70 flex items-center justify-center text-neutral-400 shadow-inner">
+              <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-neutral-400 dark:text-neutral-500 gap-3 py-10">
+                <div className="w-16 h-16 rounded-2xl bg-[#E6F9F7] dark:bg-white/[0.04] border border-neutral-200/70 dark:border-white/10 flex items-center justify-center text-neutral-400 dark:text-emerald-400 shadow-inner">
                   <Package className="h-8 w-8 stroke-[1.75]" />
                 </div>
                 <div className="text-center">
-                  <p className="font-bold text-neutral-700 text-sm sm:text-base">No items in invoice yet</p>
-                  <p className="text-xs text-neutral-400 mt-0.5 font-medium">Scan barcode or search products above to start adding</p>
+                  <p className="font-bold text-neutral-700 dark:text-neutral-200 text-sm sm:text-base">No items in invoice yet</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5 font-medium">Scan barcode or search products above to start adding</p>
                 </div>
               </div>
             ) : (
