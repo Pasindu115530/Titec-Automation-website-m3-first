@@ -218,15 +218,18 @@ export default function ReportsPage() {
                 </div>
 
                 {/* Filter & Search Bar - Matching Quotations, Invoices & POS Search Bar Style */}
-                <div className="flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
-                    <div className="relative flex-1 w-full" ref={searchWrapperRef}>
+                <div className="relative z-30 flex flex-col md:flex-row gap-3 justify-between items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2.5 rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+                    <div className="relative z-40 flex-1 w-full" ref={searchWrapperRef}>
                         <div className="relative flex items-center">
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
                             <Input
                                 type="text"
                                 placeholder="Search products by name..."
                                 value={stockSearch}
-                                onChange={(e) => setStockSearch(e.target.value)}
+                                onChange={(e) => {
+                                    setStockSearch(e.target.value);
+                                    setIsSearchOpen(true);
+                                }}
                                 onFocus={() => setIsSearchOpen(true)}
                                 onClick={() => setIsSearchOpen(true)}
                                 className="w-full pl-10 pr-9 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
@@ -247,48 +250,61 @@ export default function ReportsPage() {
                         </div>
 
                         {/* Quick 4-record dropdown matching other search bars & dark mode */}
-                        {isSearchOpen && rawItems.length > 0 && !stockSearch.trim() && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl border border-neutral-200/90 dark:border-white/10 rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.45)] z-50 overflow-hidden p-1.5 modal-scroll max-h-72">
+                        {isSearchOpen && rawItems.length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0F172A] border border-neutral-200/90 dark:border-white/15 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] z-50 overflow-hidden p-1.5 modal-scroll max-h-72">
                                 <div className="px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-white/5 flex items-center justify-between">
-                                    <span>Quick Select Products</span>
-                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium">({Math.min(rawItems.length, 4)} records)</span>
+                                    <span>{stockSearch.trim() ? 'Matching Products' : 'Quick Select Products'}</span>
+                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-medium">
+                                        ({Math.min(items.length, 4)} records)
+                                    </span>
                                 </div>
-                                {rawItems.slice(0, 4).map((prod: any, idx: number) => (
-                                    <div
-                                        key={idx}
-                                        onClick={() => {
-                                            setStockSearch(prod.name);
-                                            setIsSearchOpen(false);
-                                        }}
-                                        className="px-3.5 py-2.5 hover:bg-neutral-100/80 dark:hover:bg-white/[0.06] rounded-xl cursor-pointer border-b border-neutral-100 dark:border-white/5 last:border-0 flex justify-between items-center transition-colors group gap-3"
-                                    >
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <div className="h-8 w-8 bg-neutral-100 dark:bg-white/[0.05] border border-neutral-200/70 dark:border-white/10 rounded-xl flex items-center justify-center shrink-0">
-                                                <Package className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="font-semibold text-sm text-neutral-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">
-                                                    {prod.name}
+                                {items.slice(0, 4).length > 0 ? (
+                                    items.slice(0, 4).map((prod: any, idx: number) => (
+                                        <div
+                                            key={idx}
+                                            onMouseDown={(e) => {
+                                                e.preventDefault();
+                                                setStockSearch(prod.name);
+                                                setIsSearchOpen(false);
+                                            }}
+                                            onClick={() => {
+                                                setStockSearch(prod.name);
+                                                setIsSearchOpen(false);
+                                            }}
+                                            className="px-3.5 py-2.5 hover:bg-neutral-100/80 dark:hover:bg-white/[0.06] rounded-xl cursor-pointer border-b border-neutral-100 dark:border-white/5 last:border-0 flex justify-between items-center transition-colors group gap-3"
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="h-8 w-8 bg-neutral-100 dark:bg-white/[0.05] border border-neutral-200/70 dark:border-white/10 rounded-xl flex items-center justify-center shrink-0">
+                                                    <Package className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                                                 </div>
-                                                <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium flex items-center gap-2 mt-0.5">
-                                                    <span className={cn(
-                                                        "px-1.5 py-0.2 rounded-full font-semibold text-[10px]",
-                                                        Number(prod.stock_quantity || 0) > 0 
-                                                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30" 
-                                                            : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/30"
-                                                    )}>
-                                                        Stock: {prod.stock_quantity ?? 0}
-                                                    </span>
+                                                <div className="min-w-0">
+                                                    <div className="font-semibold text-sm text-neutral-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors truncate">
+                                                        {prod.name}
+                                                    </div>
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium flex items-center gap-2 mt-0.5">
+                                                        <span className={cn(
+                                                            "px-1.5 py-0.2 rounded-full font-semibold text-[10px]",
+                                                            Number(prod.stock_quantity || 0) > 0 
+                                                                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-500/30" 
+                                                                : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-500/30"
+                                                        )}>
+                                                            Stock: {prod.stock_quantity ?? 0}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <div className="font-bold text-neutral-900 dark:text-white text-sm font-mono">
+                                                    Rs. {Number(prod.price || 0).toLocaleString()}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right shrink-0">
-                                            <div className="font-bold text-neutral-900 dark:text-white text-sm font-mono">
-                                                Rs. {Number(prod.price || 0).toLocaleString()}
-                                            </div>
-                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-4 text-center text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+                                        No products match &quot;{stockSearch}&quot;
                                     </div>
-                                ))}
+                                )}
                             </div>
                         )}
                     </div>
@@ -304,7 +320,7 @@ export default function ReportsPage() {
                     </div>
                 </div>
 
-                <div className="bg-white/40 dark:bg-white/[0.03] backdrop-blur-md border border-white/80 dark:border-white/10 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.3)]">
+                <div className="relative z-0 bg-white/40 dark:bg-white/[0.03] backdrop-blur-md border border-white/80 dark:border-white/10 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.3)]">
                     <div className="overflow-x-auto max-h-[540px] modal-scroll">
                         <table className="w-full text-left border-collapse relative">
                             <thead className="bg-white/70 dark:bg-[#0B111E]/95 backdrop-blur-md border-b border-neutral-200/70 dark:border-white/10 sticky top-0 z-10">
