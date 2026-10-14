@@ -268,29 +268,29 @@ export default function POSPage() {
         <div className="grid grid-cols-2 gap-3 mt-auto">
           <Button 
             variant="outline" 
-            className="h-14 bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+            className="h-14 bg-[#E2D6FE] hover:bg-[#d8c7fd] text-neutral-900 border border-white/80 dark:bg-purple-950/40 dark:hover:bg-purple-900/50 dark:text-purple-200 dark:border-purple-800/40 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             onClick={() => router.push('/dashboard/invoices')}
           >
-            <History className="mr-2 h-4 w-4 text-neutral-700" /> Recent Invoices
+            <History className="mr-2 h-4 w-4 text-neutral-700 dark:text-purple-300" /> Recent Invoices
           </Button>
           <Button 
             variant="outline" 
             disabled={isSavingDraft || isSubmitting}
-            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-white/80 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+            className="h-14 bg-amber-50 hover:bg-amber-100/80 text-amber-800 border border-white/80 dark:bg-amber-950/30 dark:hover:bg-amber-900/40 dark:text-amber-200 dark:border-amber-800/40 rounded-2xl shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             onClick={handleSaveDraft}
           >
             {isSavingDraft ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-amber-600" /> Saving...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-amber-600 dark:text-amber-400" /> Saving...
               </>
             ) : (
               <>
-                <Save className="mr-2 h-4 w-4 text-amber-600" /> Save Draft
+                <Save className="mr-2 h-4 w-4 text-amber-600 dark:text-amber-400" /> Save Draft
               </>
             )}
           </Button>
           <Button 
-            className="h-16 col-span-2 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none"
+            className="h-16 col-span-2 bg-sky-300 hover:bg-sky-400 text-neutral-950 font-bold text-lg rounded-2xl shadow-[0_12px_28px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_12px_32px_rgba(37,99,235,0.45)] transition-all hover:scale-[1.01] active:scale-[0.99] disabled:bg-neutral-200/90 disabled:text-neutral-400 disabled:border-neutral-200/60 disabled:shadow-none disabled:pointer-events-none dark:disabled:bg-neutral-800/60 dark:disabled:text-neutral-500 dark:disabled:border-neutral-700/40 cursor-pointer"
             disabled={items.length === 0 || !selectedClient}
             onClick={() => setIsConfirmModalOpen(true)}
           >

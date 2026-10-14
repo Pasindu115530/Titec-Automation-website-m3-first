@@ -46,20 +46,20 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
     return (
         <>
             <div className="bg-white/40 backdrop-blur-md border border-white/80 rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,0,0,0.06),0_2px_6px_rgba(0,0,0,0.04)]">
-                <div className="p-4 sm:px-6 border-b border-neutral-200/70 bg-white/40">
-                    <h3 className="font-bold text-neutral-800 text-sm">Existing Brands</h3>
+                <div className="p-4 sm:px-6 border-b border-neutral-200/70 dark:border-white/5 bg-white/40">
+                    <h3 className="font-bold text-neutral-800 dark:text-neutral-100 text-sm">Existing Brands</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm border-collapse">
-                        <thead className="border-b border-neutral-200/70 bg-white/30">
+                        <thead className="border-b border-neutral-200/70 dark:border-white/5 bg-white/30 dark:bg-transparent">
                             <tr className="hover:bg-transparent">
                                 <th className="px-6 py-3 w-[120px]">
-                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] border border-white/80 shadow-2xs">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#F1EBFF] text-[#7C3AED] dark:text-purple-300 border border-white/80 dark:border-purple-500/20 shadow-2xs">
                                         Logo
                                     </span>
                                 </th>
                                 <th className="px-6 py-3">
-                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] border border-white/80 shadow-2xs">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#E6F9F7] text-[#0D9488] dark:text-teal-300 border border-white/80 dark:border-teal-500/20 shadow-2xs">
                                         Brand Name
                                     </span>
                                 </th>
@@ -72,7 +72,7 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-100/80">
+                        <tbody className="divide-y divide-neutral-100/80 dark:divide-white/5">
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={3} className="py-20 text-center">
@@ -87,22 +87,23 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                                 </tr>
                             ) : (
                                 brands.map((brand) => (
-                                    <tr key={brand.id} className="hover:bg-white/50 transition-colors">
+                                    <tr key={brand.id} className="hover:bg-white/50 dark:hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4">
-                                            <div className="h-12 w-20 relative flex items-center justify-center bg-white/80 rounded-2xl border border-neutral-200/80 p-1.5 shadow-2xs overflow-hidden">
+                                            <div className="brand-logo-tile h-12 w-20 relative flex items-center justify-center bg-white rounded-2xl border border-neutral-200/80 dark:border-white/20 p-2 shadow-2xs dark:shadow-md overflow-hidden transition-all duration-200 group-hover:scale-105">
                                                 {brand.logo_path ? (
                                                     <img
                                                         src={getImageUrl(brand.logo_path)}
                                                         alt={brand.name}
-                                                        className="max-h-9 max-w-full object-contain"
+                                                        className="max-h-8 max-w-full object-contain filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                                                        loading="lazy"
                                                     />
                                                 ) : (
-                                                    <ImageIcon className="h-5 w-5 text-neutral-300" />
+                                                    <ImageIcon className="h-5 w-5 text-neutral-400" />
                                                 )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="font-bold text-neutral-900 text-sm">{brand.name}</span>
+                                            <span className="font-bold text-neutral-900 dark:text-neutral-100 text-sm">{brand.name}</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
@@ -110,7 +111,7 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => onEdit(brand)}
-                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-white text-neutral-700 hover:text-neutral-950 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white border border-neutral-200/70 dark:border-white/10 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                 >
                                                     <Edit2 className="h-3.5 w-3.5" />
                                                 </Button>
@@ -118,7 +119,7 @@ export default function BrandsTable({ brands, onRefresh, isLoading, onEdit }: Br
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => openDeleteModal(brand)}
-                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 hover:bg-rose-50 text-neutral-400 hover:text-rose-600 border border-neutral-200/70 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
+                                                    className="h-8 w-8 p-0 rounded-xl bg-white/80 dark:bg-white/10 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-neutral-400 dark:text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 border border-neutral-200/70 dark:border-white/10 shadow-2xs transition-all cursor-pointer hover:scale-[1.05] active:scale-[0.95]"
                                                     disabled={isDeleting && brandToDelete?.id === brand.id}
                                                 >
                                                     {isDeleting && brandToDelete?.id === brand.id ? (

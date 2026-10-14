@@ -149,9 +149,9 @@ export default function ClientsPage() {
           <Button
             onClick={handleExportCSV}
             variant="outline"
-            className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-white/80 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
+            className="h-11 px-5 rounded-2xl bg-white hover:bg-neutral-50 text-neutral-800 border border-white/80 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] dark:text-neutral-200 dark:hover:text-white dark:border-white/10 shadow-xs font-semibold text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer flex items-center gap-2"
           >
-            <Download className="h-4 w-4 text-neutral-700" /> Export CSV
+            <Download className="h-4 w-4 text-neutral-700 dark:text-neutral-300" /> Export CSV
           </Button>
           <Button
             onClick={() => setIsAddModalOpen(true)}
@@ -168,7 +168,7 @@ export default function ClientsPage() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
           <Input 
             placeholder="Search by name, phone, email, TIN, city..." 
-            className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-amber-50/30 border-white focus:border-amber-200 text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+            className="w-full pl-10 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

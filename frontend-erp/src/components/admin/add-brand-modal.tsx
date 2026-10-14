@@ -144,11 +144,11 @@ export default function AddBrandModal({ isOpen, onClose, onSuccess, brandToEdit 
                                     Logo
                                 </label>
                                 <div className="flex items-center gap-4 bg-white/80 border border-neutral-200/80 rounded-2xl p-3.5 shadow-2xs">
-                                    <div className="h-16 w-20 border border-neutral-200/80 rounded-xl bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                                    <div className="brand-logo-tile h-16 w-20 border border-neutral-200/80 rounded-xl bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                                         {preview ? (
-                                            <img src={preview} alt="Preview" className="h-full w-full object-contain p-1" />
+                                            <img src={preview} alt="Preview" className="h-full w-full object-contain p-1.5" />
                                         ) : (
-                                            <ImageIcon className="h-6 w-6 text-neutral-300" />
+                                            <ImageIcon className="h-6 w-6 text-neutral-400" />
                                         )}
                                     </div>
                                     <div className="flex-1">

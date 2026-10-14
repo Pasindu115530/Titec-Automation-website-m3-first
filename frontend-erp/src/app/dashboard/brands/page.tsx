@@ -52,8 +52,8 @@ export default function AdminBrandsPage() {
         <div className="max-w-7xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight">Brand Management</h1>
-                    <p className="text-neutral-500 mt-1 text-sm font-medium">Manage partner brands and logos.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight">Brand Management</h1>
+                    <p className="text-neutral-500 dark:text-neutral-400 mt-1 text-sm font-medium">Manage partner brands and logos.</p>
                 </div>
                 <Button
                     onClick={() => setIsModalOpen(true)}
@@ -76,7 +76,7 @@ export default function AdminBrandsPage() {
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                         <Input
                             placeholder="Search brands..."
-                            className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-white border-white focus:border-white text-neutral-900 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/60 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+                            className="w-full pl-10 h-11 bg-white hover:bg-white focus:bg-white border-white focus:border-white text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 rounded-2xl shadow-2xs focus-visible:ring-2 focus-visible:ring-neutral-200/60 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />

@@ -22,6 +22,8 @@ export default function AdminLoginPage() {
     const router = useRouter();
 
     useEffect(() => {
+        // Ensure dark mode does not affect login interface
+        document.documentElement.classList.remove('dark');
         // If already logged in as admin, redirect to admin dashboard
         if (isAdmin) {
             router.push('/dashboard');
@@ -143,7 +145,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F0F2F5] overflow-hidden select-none selection:bg-sky-300 selection:text-neutral-900">
+        <div className="login-isolated min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F0F2F5] overflow-hidden select-none selection:bg-sky-300 selection:text-neutral-900">
             {/* Ambient Dashboard Background Glow Blobs */}
             <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-sky-300/20 rounded-full blur-[100px] pointer-events-none" />
