@@ -62,9 +62,11 @@ export async function generateMetadata(
     const brandName = product.brand || "TiTEC Automation";
     const title = `${product.name} | ${brandName} | TiTEC Automation`;
     const cleanDesc = stripHtml(product.description || "");
-    const priceText = product.show_price !== false && product.price
-        ? ` Price: LKR ${typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}.`
-        : '';
+    const numPrice = typeof product.price === 'string' ? parseFloat(product.price) : Number(product.price || 0);
+    const hasValidPrice = product.show_price !== false && !isNaN(numPrice) && numPrice > 0;
+    const priceText = hasValidPrice
+        ? ` Price: LKR ${numPrice.toFixed(2)}.`
+        : ' Available for quotation.';
     const description = cleanDesc.length > 10
         ? `${cleanDesc.substring(0, 145)}...${priceText}`.trim()
         : `${product.name} by ${brandName}. Industrial automation product available in Sri Lanka.${priceText}`;
@@ -206,13 +208,14 @@ export default async function ProductPage({ params }: Props) {
         },
     };
 
-    if (product.show_price !== false) {
+    const schemaPrice = typeof product.price === 'string' ? parseFloat(product.price) : Number(product.price || 0);
+    if (product.show_price !== false && !isNaN(schemaPrice) && schemaPrice > 0) {
         productJsonLd["offers"] = {
             "@type": "Offer",
             "@id": `${canonicalUrl}#offer`,
             "url": canonicalUrl,
             "priceCurrency": "LKR",
-            "price": product.price,
+            "price": schemaPrice.toFixed(2),
             "priceValidUntil": new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
                 .toISOString().split('T')[0],
             "availability": stockStatus,
