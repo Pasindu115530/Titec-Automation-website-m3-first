@@ -133,32 +133,31 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-full p-1 pl-4 pr-1.5 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-sky-500/80 dark:focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-500/20 dark:focus-within:ring-sky-400/25 focus-within:shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all">
-        <div className="pr-2 text-neutral-400 dark:text-neutral-500 shrink-0">
-          <Search className="h-5 w-5" />
+      <div className="flex gap-2.5 items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2 rounded-[28px] sm:rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+        <div className="relative flex-1 w-full flex items-center">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Search client by name, phone, or NIC..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={handleFocus}
+            onClick={handleFocus}
+            className="w-full pl-10 pr-9 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+          />
+          {isSearching && (
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+              <div className="animate-spin h-4 w-4 border-2 border-neutral-900 dark:border-sky-400 border-t-transparent rounded-full"></div>
+            </div>
+          )}
         </div>
-        <input
-          type="text"
-          placeholder="Search client by name, phone, or NIC..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-1 rounded-full"
-          style={{ outline: 'none', boxShadow: 'none' }}
-          onFocus={handleFocus}
-          onClick={handleFocus}
-        />
-        {isSearching && (
-          <div className="pr-3 shrink-0">
-            <div className="animate-spin h-4 w-4 border-2 border-neutral-900 dark:border-sky-400 border-t-transparent rounded-full"></div>
-          </div>
-        )}
         <Button 
           type="button"
           onClick={() => {
             setIsOpen(false);
             setIsAddModalOpen(true);
           }} 
-          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_4px_18px_rgba(37,99,235,0.45)] rounded-full px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02] cursor-pointer"
+          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_4px_18px_rgba(37,99,235,0.45)] rounded-2xl px-5 h-11 font-semibold text-sm shadow-xs whitespace-nowrap transition-all shrink-0 shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 cursor-pointer"
         >
           <UserPlus className="h-4 w-4 mr-1.5" /> New
         </Button>

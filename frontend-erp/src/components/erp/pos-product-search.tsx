@@ -94,38 +94,36 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-full p-1 pl-4 pr-3 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-sky-500/80 dark:focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-500/20 dark:focus-within:ring-sky-400/25 focus-within:shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all">
-        <div className="pr-2 text-neutral-400 dark:text-neutral-500 shrink-0">
-          <Search className="h-5 w-5" />
+      <div className="flex gap-2.5 items-center bg-white/40 dark:bg-white/[0.03] backdrop-blur-md p-2 rounded-[28px] sm:rounded-[32px] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
+        <div className="relative flex-1 w-full flex items-center">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Scan barcode or search products by name, model, SKU..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={handleFocus}
+            onClick={handleFocus}
+            className="w-full pl-10 pr-9 h-11 bg-white hover:bg-white dark:bg-white/[0.04] dark:hover:bg-white/[0.06] border-white dark:border-white/10 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 rounded-2xl shadow-2xs focus:bg-white dark:focus:bg-white/[0.08] focus:border-sky-400 dark:focus:border-sky-500 focus-visible:ring-2 focus-visible:ring-sky-400/20 focus-visible:ring-offset-0 focus:outline-none transition-all text-sm font-medium"
+          />
+          {query ? (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                if (defaultProducts.length > 0) setResults(defaultProducts);
+              }}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+              title="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : isSearching ? (
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
+              <div className="animate-spin h-4 w-4 border-2 border-neutral-900 dark:border-sky-400 border-t-transparent rounded-full"></div>
+            </div>
+          ) : null}
         </div>
-        <input
-          type="text"
-          placeholder="Scan barcode or search products by name, model, SKU..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-1 rounded-full"
-          style={{ outline: 'none', boxShadow: 'none' }}
-          onFocus={handleFocus}
-          onClick={handleFocus}
-        />
-        {query && (
-          <button
-            type="button"
-            onClick={() => {
-              setQuery('');
-              if (defaultProducts.length > 0) setResults(defaultProducts);
-            }}
-            className="p-1 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-white/10 transition-colors mr-1 shrink-0 cursor-pointer"
-            title="Clear search"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-        {isSearching && (
-          <div className="pr-2 shrink-0">
-            <div className="animate-spin h-4 w-4 border-2 border-neutral-900 dark:border-sky-400 border-t-transparent rounded-full"></div>
-          </div>
-        )}
       </div>
 
       {isOpen && results.length > 0 && (
