@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search, Package } from 'lucide-react';
+import { Search, Package, X } from 'lucide-react';
 import { productService } from '@/services/productService';
 import { cn } from '@/lib/utils';
 
@@ -94,8 +94,8 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-[32px] p-1 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-neutral-400 dark:focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-neutral-900/5 dark:focus-within:ring-sky-500/20 focus-within:shadow-sm transition-all">
-        <div className="pl-3.5 pr-1.5 text-neutral-400 dark:text-neutral-500 shrink-0">
+      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-full p-1 pl-4 pr-3 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-sky-500/80 dark:focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-500/20 dark:focus-within:ring-sky-400/25 focus-within:shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all">
+        <div className="pr-2 text-neutral-400 dark:text-neutral-500 shrink-0">
           <Search className="h-5 w-5" />
         </div>
         <input
@@ -103,12 +103,26 @@ export function POSProductSearch({ onAddProduct }: POSProductSearchProps) {
           placeholder="Scan barcode or search products by name, model, SKU..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-2"
+          className="w-full bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-1 rounded-full"
+          style={{ outline: 'none', boxShadow: 'none' }}
           onFocus={handleFocus}
           onClick={handleFocus}
         />
+        {query && (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery('');
+              if (defaultProducts.length > 0) setResults(defaultProducts);
+            }}
+            className="p-1 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-white hover:bg-neutral-200/50 dark:hover:bg-white/10 transition-colors mr-1 shrink-0 cursor-pointer"
+            title="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
         {isSearching && (
-          <div className="pr-4 shrink-0">
+          <div className="pr-2 shrink-0">
             <div className="animate-spin h-4 w-4 border-2 border-neutral-900 dark:border-sky-400 border-t-transparent rounded-full"></div>
           </div>
         )}

@@ -528,6 +528,17 @@
 	}
 }
 
+/* Prevent default browser rectangular focus rings across styled inputs & components */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible,
+button:focus-visible {
+	outline: none !important;
+}
+
 /* ════════════════════════════════════════════════════════════════
    STARLINE ERP DARK MODE DESIGN SYSTEM
    ════════════════════════════════════════════════════════════════ */

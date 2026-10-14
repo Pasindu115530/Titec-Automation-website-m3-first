@@ -133,8 +133,8 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-[32px] p-1 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-neutral-400 dark:focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-neutral-900/5 dark:focus-within:ring-sky-500/20 focus-within:shadow-sm transition-all">
-        <div className="pl-3.5 pr-1.5 text-neutral-400 dark:text-neutral-500 shrink-0">
+      <div className="relative flex items-center bg-white/40 dark:bg-white/[0.04] backdrop-blur-md rounded-full p-1 pl-4 pr-1.5 border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.03)] focus-within:border-sky-500/80 dark:focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-500/20 dark:focus-within:ring-sky-400/25 focus-within:shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all">
+        <div className="pr-2 text-neutral-400 dark:text-neutral-500 shrink-0">
           <Search className="h-5 w-5" />
         </div>
         <input
@@ -142,7 +142,8 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
           placeholder="Search client by name, phone, or NIC..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none focus:outline-none focus:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-2"
+          className="w-full bg-transparent border-0 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 text-sm sm:text-base font-medium text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-11 px-1 rounded-full"
+          style={{ outline: 'none', boxShadow: 'none' }}
           onFocus={handleFocus}
           onClick={handleFocus}
         />
@@ -157,7 +158,7 @@ export function ClientPicker({ selectedClient, onSelectClient }: ClientPickerPro
             setIsOpen(false);
             setIsAddModalOpen(true);
           }} 
-          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_4px_18px_rgba(37,99,235,0.45)] rounded-[32px] px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all mr-1 shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02] cursor-pointer"
+          className="bg-sky-300 hover:bg-sky-400 text-neutral-950 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 dark:hover:from-blue-500 dark:hover:to-indigo-500 dark:text-white dark:border-blue-400/40 dark:shadow-[0_4px_18px_rgba(37,99,235,0.45)] rounded-full px-4 h-10 font-semibold shadow-xs whitespace-nowrap transition-all shrink-0 text-xs sm:text-sm shadow-[0_8px_24px_rgba(125,211,252,0.45),0_2px_6px_rgba(0,0,0,0.06)] border border-sky-200 scale-[1.02] cursor-pointer"
         >
           <UserPlus className="h-4 w-4 mr-1.5" /> New
         </Button>
