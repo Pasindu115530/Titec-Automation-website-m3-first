@@ -15,6 +15,7 @@ const nextConfig = {
     },
 
     // Prevent browsers from caching pages — always fetch fresh content
+    // Also add Link headers for agent discoverability (RFC 8288 / RFC 9727)
     async headers() {
         return [
             {
@@ -28,6 +29,11 @@ const nextConfig = {
                     {
                         key: 'Pragma',
                         value: 'no-cache',
+                    },
+                    {
+                        // RFC 8288 Link headers for agent discovery
+                        key: 'Link',
+                        value: '</.well-known/api-catalog>; rel="api-catalog", </.well-known/openapi.json>; rel="service-desc"; type="application/json", </api-docs>; rel="service-doc"; type="text/html", </auth.md>; rel="describedby"; type="text/markdown"',
                     },
                 ],
             },
